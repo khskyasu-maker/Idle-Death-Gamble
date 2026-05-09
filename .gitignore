@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.env
+
+# 개인 여행 계획 및 내부 보안 문서 (깃허브 유출 방지)
+private/
+osaka_pachinko_trip_plan.md
+*.secret.*
+

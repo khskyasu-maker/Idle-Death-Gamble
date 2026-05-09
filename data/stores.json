@@ -1,0 +1,108 @@
+{
+  "machine_priority_rules": {
+    "primary_targets": [
+      "エヴァ",
+      "エヴァ15",
+      "新世紀エヴァンゲリオン",
+      "未来への咆哮"
+    ],
+    "fallback_specs": [
+      {
+        "name": "甘デジ",
+        "probability_range": "1/77 ~ 1/119",
+        "priority": 1,
+        "memo": "초당첨이 가벼워 1엔에서 오래 놀기 좋음"
+      },
+      {
+        "name": "ライト",
+        "probability_range": "1/120 ~ 1/159",
+        "priority": 2,
+        "memo": "甘デジ보다 무겁지만 미들보다 부담이 낮음"
+      },
+      {
+        "name": "ライトミドル",
+        "probability_range": "1/160 ~ 1/229",
+        "priority": 3,
+        "memo": "미들보다 가볍고 적당한 출玉 기대 가능"
+      },
+      {
+        "name": "ミドル",
+        "probability_range": "1/300 ~ 1/319",
+        "priority": 4,
+        "memo": "에바15 같은 메인 후보. 단, 초당첨은 무거움"
+      }
+    ]
+  },
+  "stores": [
+    {
+      "id": "rakuen_namba",
+      "name": "楽園なんば",
+      "area": "難波",
+      "priority": 1,
+      "target": "1엔 파친코 / 에바15·에바 계열",
+      "memo": "5/31 답사, 6/1 본공략 후보",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/rakuen-namba.htm",
+        "dmm": "",
+        "minpachi": "https://minpachi.com/楽園なんば店/",
+        "search": ""
+      }
+    },
+    {
+      "id": "arrow_namba_hips",
+      "name": "ARROW namBa HIPS",
+      "area": "難波",
+      "priority": 2,
+      "target": "라쿠엔 실패 시 난바권 대체지",
+      "memo": "",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/arrow-namba.htm",
+        "dmm": "",
+        "minpachi": "https://minpachi.com/arrow-namba-hips/",
+        "search": ""
+      }
+    },
+    {
+      "id": "123_namba",
+      "name": "123難波店",
+      "area": "難波",
+      "priority": 3,
+      "target": "난바권 대체지",
+      "memo": "최근 1엔 회전율은 현장 확인 필요",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/123nanba.htm",
+        "dmm": "",
+        "minpachi": "https://minpachi.com/123難波店/",
+        "search": ""
+      }
+    },
+    {
+      "id": "maruhan_shinsekai",
+      "name": "マルハン新世界店",
+      "area": "新世界",
+      "priority": 4,
+      "target": "난바권 실패 시 외부 대체지",
+      "memo": "신세카이 관광과 병행 가능",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/maruhan-shinsekai.htm",
+        "dmm": "",
+        "minpachi": "https://minpachi.com/マルハン新世界店/",
+        "search": ""
+      }
+    },
+    {
+      "id": "superhall_tennoji",
+      "name": "スーパーホール天王寺",
+      "area": "天王寺",
+      "priority": 5,
+      "target": "덴노지 이동 시 서브 후보",
+      "memo": "",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/superhall.htm",
+        "dmm": "",
+        "minpachi": "https://minpachi.com/スーパーホール/",
+        "search": ""
+      }
+    }
+  ]
+}

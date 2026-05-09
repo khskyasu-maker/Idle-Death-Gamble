@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-05-09 21:26:06 KST",
+  "target": "1엔 파친코",
+  "primary_target": "에바15 / 에바 계열 우선",
+  "fallback_target": "에바 외 대체 (1/99, 1/129, 1/199 전후 가벼운 기종 우선)",
+  "manual_notes_used": true,
+  "ranking": [
+    {
+      "rank": 1,
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば",
+      "score": 85,
+      "confidence": "Medium",
+      "reason": "1엔 에바15/에바 계열 확인됨",
+      "action": "에바 현장 1000엔 회전수 테스트 (현장 1,000엔 회전수 확인 필수)",
+      "data_freshness": "2026-05-09 20:18:05 KST",
+      "source_status": "OK"
+    },
+    {
+      "rank": 2,
+      "store_id": "maruhan_shinsekai",
+      "store_name": "マルハン新世界店",
+      "score": 70,
+      "confidence": "Medium",
+      "reason": "1엔 에바15/에바 계열 확인됨",
+      "action": "에바 현장 1000엔 회전수 테스트 (현장 1,000엔 회전수 확인 필수)",
+      "data_freshness": "2026-05-09 20:18:05 KST",
+      "source_status": "OK"
+    },
+    {
+      "rank": 3,
+      "store_id": "arrow_namba_hips",
+      "store_name": "ARROW namBa HIPS",
+      "score": 65,
+      "confidence": "Medium",
+      "reason": "기본 매장 우선순위 반영",
+      "action": "현장 1000엔 테스트 진행 (현장 1,000엔 회전수 확인 필수)",
+      "data_freshness": "2026-05-09 20:18:05 KST",
+      "source_status": "Failed (Used previous/fallback data)"
+    },
+    {
+      "rank": 4,
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "score": 65,
+      "confidence": "Medium",
+      "reason": "기본 매장 우선순위 반영",
+      "action": "현장 1000엔 테스트 진행 (현장 1,000엔 회전수 확인 필수)",
+      "data_freshness": "2026-05-09 20:18:05 KST",
+      "source_status": "OK"
+    },
+    {
+      "rank": 5,
+      "store_id": "superhall_tennoji",
+      "store_name": "スーパーホール天王寺",
+      "score": 55,
+      "confidence": "Medium",
+      "reason": "기본 매장 우선순위 반영",
+      "action": "현장 1000엔 테스트 진행 (현장 1,000엔 회전수 확인 필수)",
+      "data_freshness": "2026-05-09 20:18:05 KST",
+      "source_status": "OK"
+    }
+  ],
+  "field_decision_guide": {
+    ">=70": "계속 칠 만함",
+    "60-69": "연출 목적이면 가능",
+    "55-59": "오래 앉기 비추천",
+    "<55": "이동 권장"
+  }
+}
