@@ -1,0 +1,158 @@
+{
+  "machine_focus_rules": {
+    "primary_targets": [
+      "1円",
+      "1.111円",
+      "エヴァ",
+      "海物語",
+      "甘デジ",
+      "ライトミドル"
+    ],
+    "notes": [
+      "이 파일은 수집 대상 점포와 객관 링크만 관리합니다.",
+      "방문 순위, 추천 점수, 오늘 갈 곳, 당첨 예측은 저장하지 않습니다.",
+      "현재 관리 범위는 난바권 123難波店, 楽園なんば店, ARROW namBa HIPS의 1円/저대여 중심 정보입니다."
+    ]
+  },
+  "machine_info_targets": {
+    "target_machine_keywords": [
+      "1円",
+      "1.111円",
+      "エヴァ",
+      "海物語",
+      "甘デジ",
+      "ライトミドル"
+    ],
+    "primary_machine_info_file": "data/namba-actual-1yen-lineup.json",
+    "notes": [
+      "P-WORLD and DMM are used for store and machine-installation confirmation, not for per-machine 台番号 history.",
+      "台番号별 大当り, 総回転, 差玉, and スランプグラフ are out of scope.",
+      "Use data/namba-actual-1yen-lineup.json for corrected Namba low-rate machine information."
+    ]
+  },
+  "stores": [
+    {
+      "id": "rakuen_namba",
+      "name": "楽園なんば店",
+      "area": "難波",
+      "role": "namba_low_rate_focus",
+      "collection_order": 1,
+      "scope": "1.111円パチ / 100円90玉",
+      "memo": "라쿠엔 난바점 저대여 객관 정보 확인 대상",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/rakuen-nanba.htm",
+        "dmm": "https://p-town.dmm.com/shops/osaka/12558",
+        "minpachi": "https://minpachi.com/楽園なんば店/",
+        "search": ""
+      },
+      "machine_data": {
+        "status": "manual_lineup_managed",
+        "target_machine_keywords": [
+          "1.111円",
+          "エヴァ",
+          "海物語",
+          "甘デジ",
+          "ライトミドル"
+        ],
+        "sources": [
+          {
+            "provider": "dmm_pachitown",
+            "kind": "store_page",
+            "url": "https://p-town.dmm.com/shops/osaka/12558",
+            "access_status": "http_200",
+            "notes": "DMM store page reference. Per-unit 台データ collection is out of scope."
+          },
+          {
+            "provider": "pworld",
+            "kind": "store_page",
+            "url": "https://www.p-world.co.jp/osaka/rakuen-nanba.htm",
+            "access_status": "public_reference",
+            "notes": "P-WORLD store profile reference."
+          }
+        ]
+      }
+    },
+    {
+      "id": "123_namba",
+      "name": "123難波店",
+      "area": "難波",
+      "role": "namba_low_rate_focus",
+      "collection_order": 2,
+      "scope": "1円パチ",
+      "memo": "123 난바점 1円 객관 정보 확인 대상",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/nanba123.htm",
+        "dmm": "https://p-town.dmm.com/shops/osaka/7568",
+        "minpachi": "https://minpachi.com/123難波店/",
+        "search": ""
+      },
+      "machine_data": {
+        "status": "manual_lineup_managed",
+        "target_machine_keywords": [
+          "1円",
+          "エヴァ",
+          "海物語",
+          "甘デジ",
+          "ライトミドル"
+        ],
+        "sources": [
+          {
+            "provider": "dmm_pachitown",
+            "kind": "store_page",
+            "url": "https://p-town.dmm.com/shops/osaka/7568",
+            "access_status": "http_200",
+            "notes": "DMM store page reference. Per-unit 台データ collection is out of scope."
+          },
+          {
+            "provider": "pworld",
+            "kind": "store_page",
+            "url": "https://www.p-world.co.jp/osaka/nanba123.htm",
+            "access_status": "public_reference",
+            "notes": "P-WORLD store profile reference."
+          }
+        ]
+      }
+    },
+    {
+      "id": "arrow_namba_hips",
+      "name": "ARROW namBa HIPS",
+      "area": "難波",
+      "role": "namba_low_rate_focus",
+      "collection_order": 3,
+      "scope": "1円パチ",
+      "memo": "ARROW namBa HIPS 1円 객관 정보 확인 대상",
+      "links": {
+        "pworld": "https://www.p-world.co.jp/osaka/arrow-nanba-hips.htm",
+        "dmm": "https://p-town.dmm.com/shops/osaka/7579",
+        "minpachi": "https://minpachi.com/arrow-nanba-hips/",
+        "search": ""
+      },
+      "machine_data": {
+        "status": "manual_lineup_managed",
+        "target_machine_keywords": [
+          "1円",
+          "エヴァ",
+          "海物語",
+          "甘デジ",
+          "ライトミドル"
+        ],
+        "sources": [
+          {
+            "provider": "dmm_pachitown",
+            "kind": "store_page",
+            "url": "https://p-town.dmm.com/shops/osaka/7579",
+            "access_status": "http_200",
+            "notes": "DMM store page reference. Per-unit 台データ collection is out of scope."
+          },
+          {
+            "provider": "pworld",
+            "kind": "store_page",
+            "url": "https://www.p-world.co.jp/osaka/arrow-nanba-hips.htm",
+            "access_status": "public_reference",
+            "notes": "P-WORLD store profile reference."
+          }
+        ]
+      }
+    }
+  ]
+}

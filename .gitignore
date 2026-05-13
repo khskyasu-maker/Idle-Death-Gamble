@@ -1,0 +1,33 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+*.sqlite
+*.sqlite3
+*.db
+*.db-*
+
+# Local/private-only files
+private/
+.agents/
+.codex/
+osaka_pachinko_trip_plan.md
+*.secret.*
+data/travel-*.md
+data/travel-*.json
+data/*itinerary*
+data/*schedule*
+data/*booking*
+data/*reservation*
+data/*hotel*
+data/*flight*
+private-*.md
+private-*.json
+
+# Generated or private data that should not be published by default.
+data/collected.json
+data/latest.json
+data/latest-report.md
+data/machine-snapshots/
+data/manual-notes.md
+results.csv
