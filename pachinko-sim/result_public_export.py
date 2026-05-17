@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from html import escape
 from pathlib import Path
@@ -11,6 +12,7 @@ from session_limits import SESSION_TIME_LIMIT_HOURS
 
 
 DEFAULT_DOCS_DIR = Path(__file__).resolve().parents[1] / "docs"
+PUBLIC_EXPORT_DIR_ENV = "PACHINKO_SIM_PUBLIC_DOCS_DIR"
 LATEST_SIM_RESULT_BASENAME = "latest-sim-results"
 LEGACY_PUBLIC_SIM_PATTERNS = (
     "sim-results-*.json",
@@ -24,6 +26,13 @@ MetricsFn = Callable[[List[Dict[str, Any]], int], Dict[str, Any]]
 
 def kst_now_text() -> str:
     return datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S KST")
+
+
+def public_docs_dir_from_env(default_docs_dir: Path = DEFAULT_DOCS_DIR) -> Path:
+    env_value = os.environ.get(PUBLIC_EXPORT_DIR_ENV)
+    if not env_value:
+        return default_docs_dir
+    return Path(env_value)
 
 
 def clean_legacy_public_sim_results(docs_dir: Path) -> None:
@@ -268,9 +277,10 @@ def save_public_sim_results(
     result_rows: List[Dict[str, Any]],
     iterations: int,
     calculate_metrics_fn: MetricsFn,
-    docs_dir: Path = DEFAULT_DOCS_DIR,
+    docs_dir: Path | None = None,
     generated_at: str | None = None,
 ) -> Dict[str, Path]:
+    docs_dir = docs_dir or public_docs_dir_from_env()
     docs_dir.mkdir(parents=True, exist_ok=True)
     clean_legacy_public_sim_results(docs_dir)
     payload = build_public_sim_result_payload(

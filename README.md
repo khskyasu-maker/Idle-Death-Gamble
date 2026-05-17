@@ -55,6 +55,18 @@ GitHub에 넣지 않는 데이터:
 python scripts/check.py
 ```
 
+생성 캐시와 구 시뮬 결과 파일을 확인하려면:
+
+```bash
+python scripts/clean.py
+```
+
+실제로 정리하려면:
+
+```bash
+python scripts/clean.py --apply
+```
+
 리포트 재생성까지 포함하려면:
 
 ```bash

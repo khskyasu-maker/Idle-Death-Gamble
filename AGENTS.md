@@ -113,6 +113,7 @@ Do not store or publish dynamic decision data in GitHub:
     ├── analyze.py                # Rule-based analysis and ranking
     ├── build_report.py           # Report generation; this is the real report builder
     ├── check.py                  # Local syntax/JSON/test/validation/dev-tool check runner
+    ├── clean.py                  # Dry-run by default local generated artifact cleaner
     ├── validate_data.py          # Public data and simulator consistency validation
     └── utils.py                  # Shared paths, JSON/text I/O, logging, KST time
 ```
@@ -148,6 +149,7 @@ The normal data and report pipeline is:
 - Do not store simulator scores, visit rankings, recommended machines, keep/quit decisions, or strategy outcomes in public `data/` files. In public `docs/`, only the explicit latest sanitized aggregate table is allowed.
 - Do not accumulate simulator result history. If the user explicitly chooses CSV save in the CLI, overwrite local gitignored `results.csv` with the latest run only.
 - If the user explicitly chooses public simulator sharing, overwrite only `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, and `docs/latest-sim-results.html` with sanitized aggregate metrics. Do not create timestamped result files.
+- For CLI smoke runs that must not touch public `docs/`, set `PACHINKO_SIM_PUBLIC_DOCS_DIR` to a temporary directory.
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
 - When changing simulator assumptions, update `pachinko-sim/ARCHITECTURE.md` and keep `pachinko-sim/README.md` aligned.
 - When adding or correcting a machine model from DMM/official/product pages, follow `pachinko-sim/SPEC_MODELING_GUIDE.md`.
@@ -345,10 +347,22 @@ Optional developer-tool check when `.venv` has `requirements-dev.txt` installed:
 python scripts/check.py --dev-tools --coverage
 ```
 
+Local generated artifact check:
+
+```bash
+python scripts/clean.py
+```
+
+Local generated artifact cleanup:
+
+```bash
+python scripts/clean.py --apply
+```
+
 Equivalent manual syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py
 ```
 
 JSON validation:

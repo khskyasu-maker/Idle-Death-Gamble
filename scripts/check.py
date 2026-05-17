@@ -100,6 +100,7 @@ def main() -> int:
     validate_json_files()
     run_step("Unit tests", [PYTHON, "-m", "unittest", "discover", "-s", "tests"])
     run_step("Data validation", [PYTHON, "scripts/validate_data.py"])
+    run_step("Clean dry-run", [PYTHON, "scripts/clean.py"])
 
     if args.report:
         run_step("Analyze", [PYTHON, "scripts/analyze.py"])

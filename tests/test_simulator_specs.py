@@ -1,4 +1,7 @@
+import contextlib
+import io
 import json
+import os
 import random
 import sys
 import tempfile
@@ -8,7 +11,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SIM_DIR = ROOT / "pachinko-sim"
+SCRIPTS_DIR = ROOT / "scripts"
 sys.path.insert(0, str(SIM_DIR))
+sys.path.insert(0, str(SCRIPTS_DIR))
 
 from machine_traits import machine_has_lt, machine_has_upper  # noqa: E402
 from machines import MACHINES  # noqa: E402
@@ -27,6 +32,8 @@ from result_csv import CSV_HEADERS, matrix_result_csv_row, save_matrix_to_csv  #
 from result_public_export import (  # noqa: E402
     build_public_sim_result_markdown,
     build_public_sim_result_payload,
+    public_docs_dir_from_env,
+    PUBLIC_EXPORT_DIR_ENV,
     save_public_sim_results,
 )
 from result_store_views import (  # noqa: E402
@@ -35,6 +42,7 @@ from result_store_views import (  # noqa: E402
     store_comparison_name_rows,
     store_comparison_reference_rotation_text,
 )
+import clean as clean_script  # noqa: E402
 from result_stats import profit_condition_thresholds, wilson_interval  # noqa: E402
 from rotation import (  # noqa: E402
     border_case_rates,
@@ -509,6 +517,53 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual("테스트 모드", saved_payload["mode"])
         self.assertFalse((docs_dir / "sim-results-old.md").exists())
         self.assertTrue(paths["html"].name.endswith(".html"))
+
+    def test_public_sim_result_export_dir_can_be_overridden_for_cli_smoke(self):
+        original_value = os.environ.get(PUBLIC_EXPORT_DIR_ENV)
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                os.environ[PUBLIC_EXPORT_DIR_ENV] = tmpdir
+                self.assertEqual(Path(tmpdir), public_docs_dir_from_env())
+        finally:
+            if original_value is None:
+                os.environ.pop(PUBLIC_EXPORT_DIR_ENV, None)
+            else:
+                os.environ[PUBLIC_EXPORT_DIR_ENV] = original_value
+
+    def test_clean_script_is_dry_run_by_default_and_removes_known_garbage_only(self):
+        original_root = clean_script.ROOT
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                root = Path(tmpdir)
+                clean_script.ROOT = root
+                file_targets = [
+                    root / ".coverage",
+                    root / "results.csv",
+                    root / "docs" / "sim-results-old.md",
+                ]
+                dir_targets = [
+                    root / "pachinko-sim" / "__pycache__",
+                ]
+                keep = root / "docs" / "latest-sim-results.md"
+                for path in file_targets:
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("garbage", encoding="utf-8")
+                for path in dir_targets:
+                    path.mkdir(parents=True, exist_ok=True)
+                keep.parent.mkdir(parents=True, exist_ok=True)
+                keep.write_text("keep", encoding="utf-8")
+
+                with contextlib.redirect_stdout(io.StringIO()):
+                    dry_run_targets = clean_script.clean(dry_run=True)
+                self.assertTrue(all(path.exists() for path in [*file_targets, *dir_targets]))
+                self.assertIn(root / "docs" / "sim-results-old.md", dry_run_targets)
+
+                with contextlib.redirect_stdout(io.StringIO()):
+                    clean_script.clean(dry_run=False)
+                self.assertTrue(keep.exists())
+                self.assertTrue(all(not path.exists() for path in [*file_targets, *dir_targets]))
+        finally:
+            clean_script.ROOT = original_root
 
     def test_store_comparison_view_builds_installed_and_missing_rows(self):
         def metrics_stub(results, iterations):
