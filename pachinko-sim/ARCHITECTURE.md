@@ -51,7 +51,7 @@ pachinko-sim/cli_modes.py + pachinko-sim/cli_inputs.py + pachinko-sim/cli_contex
 pachinko-sim/result.py
         |
         v
-pachinko-sim/result_metrics.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_export.py
+pachinko-sim/result_metrics.py + pachinko-sim/result_output_helpers.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_export.py
         |
         v
 CLI output / optional latest-only local results.csv / optional latest-only public docs/latest-sim-results.*
@@ -359,6 +359,7 @@ Important current limitation:
 pure helpers to:
 
 - `result_metrics.py`: Monte Carlo aggregate metrics such as profit, hit, stay-time, cash exhaustion, and condition rows
+- `result_output_helpers.py`: output text helpers, benchmark comparison values, LT/upper-RUSH labels, and reusable table rows
 - `result_stats.py`: Monte Carlo uncertainty helpers, Wilson intervals, quantile intervals, tail means, and useful-profit condition rows
 - `result_formatting.py`: terminal table width handling, yen/percent/minute text, and ASCII bar/table helpers
 - `result_csv.py`: latest-only matrix CSV serialization used only after explicit user confirmation

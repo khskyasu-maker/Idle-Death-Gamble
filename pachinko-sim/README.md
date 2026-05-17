@@ -65,6 +65,7 @@ python3 scripts/clean.py --apply
 - `simulator.py`: 순수 확률 기반 계산 및 시뮬레이션 코어 (UI 로직 없음)
 - `result.py`: 계산된 결과를 화면에 출력하고 사용자용 표를 조립
 - `result_metrics.py`: 반복 결과에서 평균/분위수/체류 시간/조건부 플러스율 같은 집계 지표 계산
+- `result_output_helpers.py`: 출력 문구, 보더/스펙 비교, LT/상위RUSH 표시, 표 행 보조 로직
 - `result_stats.py`: Wilson 구간, t 기반 평균 구간, 분위수 구간, 조건부 플러스율 같은 순수 통계 보조 로직
 - `result_formatting.py`: ASCII 표, 금액, 퍼센트, 시간 표시 같은 터미널 포맷 보조 로직
 - `result_csv.py`: 사용자가 명시적으로 선택한 경우에만 gitignored `results.csv`에 최신 매트릭스 결과를 덮어쓰는 CSV 직렬화 로직

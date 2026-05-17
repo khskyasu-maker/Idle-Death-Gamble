@@ -94,6 +94,7 @@ pachinko-sim/
 ├── rotation.py          # 회전율/보더/단위 환산
 ├── scenarios.py         # 단일/매트릭스/예산/전략 시나리오 빌더
 ├── result_metrics.py    # calculate_metrics, 신뢰구간, 조건부 플러스 통계
+├── result_output_helpers.py # 출력 문구, 보더/스펙 비교, 표 행 보조
 ├── output_tables.py     # ASCII 테이블 row 생성과 출력 텍스트
 ├── result_csv.py        # results.csv 최신 결과 덮어쓰기 전용
 ├── result_public_export.py # docs/latest-sim-results.* 최신 공개 집계표 덮어쓰기 전용
@@ -329,7 +330,8 @@ CLI에는 회전율 입력 모드를 추가한다.
 ### 6단계: 통계/출력 분리
 
 - 완료: `result_metrics.py`로 순수 통계 이동
-- 진행 중: `output_tables.py` 또는 기존 `result_store_views.py` 계열로 표시 로직 추가 분리
+- 완료: `result_output_helpers.py`로 출력 문구/보더/벤치마크/표 행 보조 로직 이동
+- 진행 중: `output_tables.py` 또는 기존 `result_store_views.py` 계열로 대형 표 조립 추가 분리
 - 완료: `main.py`를 thin entry point로 축소하고 CLI 흐름을 `cli_*` 모듈로 분리
 - `result.py`는 호환 출력 조립 모듈로 유지하면서 계속 축소
 
@@ -354,9 +356,7 @@ CLI에는 회전율 입력 모드를 추가한다.
 실행 체크:
 
 ```bash
-python3 -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
-python3 -m unittest discover -s tests
-python3 scripts/validate_data.py
+python3 scripts/check.py
 python3 scripts/analyze.py
 python3 scripts/build_report.py
 ```

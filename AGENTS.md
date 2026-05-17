@@ -100,6 +100,7 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── simulator.py              # Monte Carlo session engine
 │   ├── result.py                 # CLI result assembly and user-facing output
 │   ├── result_metrics.py          # Monte Carlo metric aggregation
+│   ├── result_output_helpers.py   # Output text, benchmark, and table helper functions
 │   ├── result_stats.py           # Pure statistical helper functions
 │   ├── result_formatting.py       # Terminal table, yen, percent, and time formatting helpers
 │   ├── result_csv.py              # Explicit opt-in latest-only local CSV serialization
@@ -369,7 +370,7 @@ python scripts/clean.py --apply
 Equivalent manual syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_metrics.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_result_exports.py tests/test_clean.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_metrics.py pachinko-sim/result_output_helpers.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_result_exports.py tests/test_clean.py
 ```
 
 JSON validation:

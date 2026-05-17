@@ -12,13 +12,13 @@ from machine_traits import machine_has_lt, machine_has_upper  # noqa: E402
 from machines import MACHINES  # noqa: E402
 from machines import Machine, Payout  # noqa: E402
 from model_checks import theoretical_no_hit_rate, validate_all_machine_models, validate_machine_model  # noqa: E402
-from result import (  # noqa: E402
+from result_formatting import build_ascii_table, minutes_text, yen  # noqa: E402
+from result_metrics import calculate_metrics  # noqa: E402
+from result_output_helpers import (  # noqa: E402
     benchmark_model_value,
     denominator_tail_rows,
     fall_state_continue_chance,
 )
-from result_formatting import build_ascii_table, minutes_text, yen  # noqa: E402
-from result_metrics import calculate_metrics  # noqa: E402
 from result_store_views import (  # noqa: E402
     build_store_comparison_view,
     store_comparison_assumption_text,
