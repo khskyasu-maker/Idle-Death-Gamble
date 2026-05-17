@@ -103,13 +103,26 @@ KNOWN_SPEC_EXPECTATIONS = {
         "normal_weights": [0.10, 0.54, 0.36],
         "normal_states": ["ST", "ST", "JITAN"],
         "normal_counts_as_rush": [True, False, False],
+        "st_weights": [0.60, 0.40],
+        "jitan_weights": [0.60, 0.40],
     },
     "shin_eva_129_lt": {
         "normal_prob": 129.8,
         "high_prob": 54.4,
         "normal_weights": [0.005, 0.500, 0.495],
         "normal_states": ["LT", "ST", "NORMAL"],
+        "normal_counts_as_rush": [True, True, False],
         "st_weights": [0.10, 0.90],
+        "lt_weights": [1.00],
+    },
+    "eva_beginning": {
+        "normal_prob": 399.9,
+        "high_prob": 99.6,
+        "normal_weights": [0.005, 0.500, 0.495],
+        "normal_states": ["LT", "LT", "JITAN"],
+        "normal_counts_as_rush": [True, True, False],
+        "jitan_weights": [1.00],
+        "lt_weights": [0.005, 0.995],
     },
     "sea_5_black_lt": {
         "normal_prob": 99.9,
@@ -154,6 +167,8 @@ KNOWN_SPEC_EXPECTATIONS = {
         "normal_weights": [0.01, 0.58, 0.41],
         "normal_states": ["ST", "ST", "JITAN"],
         "normal_counts_as_rush": [True, False, False],
+        "st_weights": [0.50, 0.50],
+        "jitan_weights": [0.50, 0.50],
     },
     "shin_eva_type_rei": {
         "normal_prob": 319.7,
@@ -161,6 +176,8 @@ KNOWN_SPEC_EXPECTATIONS = {
         "normal_weights": [0.01, 0.62, 0.37],
         "normal_states": ["ST", "ST", "JITAN"],
         "normal_counts_as_rush": [True, True, False],
+        "st_weights": [1.00],
+        "jitan_weights": [1.00],
     },
     "eva_15_special_199": {
         "normal_prob": 199.2,
@@ -168,6 +185,8 @@ KNOWN_SPEC_EXPECTATIONS = {
         "normal_weights": [0.01, 0.24, 0.75],
         "normal_states": ["ST", "ST", "JITAN"],
         "normal_counts_as_rush": [True, True, False],
+        "st_weights": [1.00],
+        "jitan_weights": [1.00],
     },
     "re_zero_99": {
         "normal_prob": 99.9,

@@ -88,7 +88,7 @@ without inventing mechanics.
 
 | Family | Category to check first | Local examples | Notes |
 | --- | --- | --- | --- |
-| Eva / エヴァ | V-ST, breakthrough V-ST, or LT 1種2種 | `eva_15_roar`, `eva_15_premium`, `shin_eva_129_lt` | Treat `はじまりの記憶` as unsupported/selectable only if low-rate installation is confirmed. |
+| Eva / エヴァ | V-ST, breakthrough V-ST, LT-ST, or LT 1種2種 | `eva_15_roar`, `eva_15_premium`, `shin_eva_type_rei`, `shin_eva_premium_99`, `shin_eva_129_lt`, `eva_beginning` | Promote only when low-rate installation is confirmed. Use shared Eva templates when the state flow matches. |
 | Daiumi / 海物語 | 確変ループ, ST, 1種2種, LT, or non-LT upper RUSH | `sea_5_special`, `sea_5_agnes`, `sea_5_black_lt`, `sea_5_black_199` | Sea machines often need `KAKUBEN`, `JITAN`, and slower `sea_classic` time assumptions. |
 | Re:Zero / リゼロ | 1種2種 RUSH or ST-like limited RUSH | `re_zero_99`, `re_zero_199`, `re_zero_s2_129`, `re_zero_s2_349` | Use fast time assumptions; verify 3000-ball and bonus split carefully. |
 | Hokuto / 北斗 | fall-type, battle RUSH, or LT | `hokuto_10` | Do not approximate fall/LT mechanics as plain ST when fall probability is public. |
@@ -280,8 +280,8 @@ Public pages may show either paid-out balls or net balls. This simulator's
 Use this order:
 
 1. If public page gives `出玉` or `獲得`, use that value.
-2. If only `払出` is shown, use the payout value but note it may be slightly
-   optimistic.
+2. If only `払出` is shown, convert to a practical budgeting value when the
+   same family already uses one, and note the conversion in `notes`.
 3. If round/count/award are shown, calculate `rounds * count * award`, then apply
    a conservative adjustment only when the existing model family already does so.
 4. Do not mix 4円 and 1円 values. Machine spec is rate-independent; border and

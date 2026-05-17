@@ -198,6 +198,99 @@ def eva_vst_split_entry(
     )
 
 
+def eva_breakthrough_st_jitan(
+    machine_id: str,
+    name_ja: str,
+    name_ko: str,
+    source: str,
+    normal_prob: float,
+    high_prob: float,
+    direct_rush_weight: float,
+    challenge_st_weight: float,
+    challenge_jitan_weight: float,
+    challenge_st_spins: int,
+    challenge_jitan_spins: int,
+    rush_st_spins: int,
+    rush_jitan_spins: int,
+    first_10r_balls: int,
+    first_3r_balls: int,
+    right_10r_balls: int,
+    right_3r_balls: int,
+    right_10r_weight: float,
+    right_3r_weight: float,
+    risk_grade: str,
+    spec_type: str,
+    confidence: str = "medium",
+    simplification_notes: str = "",
+    notes: str = "",
+    ball_variance: float = 0.03,
+) -> Machine:
+    def right_distribution():
+        return [
+            Payout(
+                balls=right_10r_balls,
+                weight=right_10r_weight,
+                next_state="ST",
+                st_spins=rush_st_spins,
+                jitan_spins=rush_jitan_spins,
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=right_3r_balls,
+                weight=right_3r_weight,
+                next_state="ST",
+                st_spins=rush_st_spins,
+                jitan_spins=rush_jitan_spins,
+                ball_variance=ball_variance,
+            ),
+        ]
+
+    return Machine(
+        id=machine_id,
+        name_ja=name_ja,
+        name_ko=name_ko,
+        spec_type=spec_type,
+        risk_grade=risk_grade,
+        normal_prob=normal_prob,
+        high_prob=high_prob,
+        normal_hit_dist=[
+            Payout(
+                balls=first_10r_balls,
+                weight=direct_rush_weight,
+                next_state="ST",
+                st_spins=rush_st_spins,
+                jitan_spins=rush_jitan_spins,
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=first_3r_balls,
+                weight=challenge_st_weight,
+                next_state="ST",
+                st_spins=challenge_st_spins,
+                counts_as_rush=False,
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=first_3r_balls,
+                weight=challenge_jitan_weight,
+                next_state="JITAN",
+                jitan_spins=challenge_jitan_spins,
+                counts_as_rush=False,
+                ball_variance=ball_variance,
+            ),
+        ],
+        st_hit_dist=right_distribution(),
+        jitan_hit_dist=right_distribution(),
+        kakuben_hit_dist=[],
+        lt_hit_dist=[],
+        simplification_notes=simplification_notes,
+        spec_source=source,
+        confidence=confidence,
+        notes=notes,
+        is_estimated=confidence != "high",
+    )
+
+
 def re_zero_rush(
     machine_id: str,
     name_ja: str,

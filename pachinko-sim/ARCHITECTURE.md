@@ -108,6 +108,11 @@ Core fields:
 - `spec_source`, `confidence`, `is_estimated`, `notes`
 - `Payout.counts_as_rush`: distinguishes short challenge/time-short states from actual RUSH entry metrics
 
+`Payout.balls` is the simulator's practical budgeting value. If a public source
+shows only `払出(지급)`, the model may use a conservative obtained-ball
+approximation when that family already has a checked conversion rule. The public
+paid-out value and the conversion basis must stay visible in `notes`.
+
 Model confidence policy:
 
 - `high`: public specs are reflected in an individual model

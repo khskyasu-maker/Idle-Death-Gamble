@@ -143,10 +143,12 @@ PUBLIC_BENCHMARKS = {
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 129.8, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD"},
         {"label_ja": "ST中", "label_ko": "ST 중", "public": 35.7, "metric": "high_prob", "unit": "denom", "source": "P-WORLD"},
         {"label_ja": "RUSH直行", "label_ko": "러시 직행", "public": 10.0, "metric": "normal_counted_rush_weight", "unit": "pct", "source": "P-WORLD"},
+        {"label_ja": "RUSH継続率", "label_ko": "러시 계속률", "public": 80.0, "metric": "rush_combo_hit_chance", "unit": "pct", "source": "P-WORLD/DMM"},
     ],
     "shin_eva_129_lt": [
         {"label_ja": "図柄揃い確率 通常時", "label_ko": "도안 당첨 확률 통상시", "public": 129.8, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD"},
         {"label_ja": "右打ち中", "label_ko": "우타치 중", "public": 54.4, "metric": "high_prob", "unit": "denom", "source": "P-WORLD"},
+        {"label_ja": "LT直行割合", "label_ko": "LT 직행 비율", "public": 0.5, "metric": "normal_state_weight", "states": ["LT"], "unit": "pct", "source": "P-WORLD/DMM"},
         {"label_ja": "RUSH継続率", "label_ko": "러시 계속률", "public": 70.0, "metric": "high_hit_chance", "spins": 64, "unit": "pct", "source": "P-WORLD"},
         {"label_ja": "LT継続率", "label_ko": "LT 계속률", "public": 91.0, "metric": "high_hit_chance", "spins": 127, "unit": "pct", "source": "P-WORLD"},
     ],
@@ -155,6 +157,12 @@ PUBLIC_BENCHMARKS = {
         {"label_ja": "高確率中", "label_ko": "고확률 중", "public": 82.6, "metric": "high_prob", "unit": "denom", "source": "P-WORLD"},
         {"label_ja": "ST突入割合", "label_ko": "ST 직접 돌입 비율", "public": 25.0, "metric": "normal_state_weight", "states": ["ST"], "unit": "pct", "source": "P-WORLD"},
         {"label_ja": "ST継続率", "label_ko": "ST 계속률", "public": 81.0, "metric": "high_hit_chance", "spins": 135, "unit": "pct", "source": "P-WORLD"},
+    ],
+    "eva_beginning": [
+        {"label_ja": "図柄揃い確率 通常時", "label_ko": "도안 당첨 확률 통상시", "public": 399.9, "metric": "normal_prob", "unit": "denom", "source": "DMM/P-WORLD"},
+        {"label_ja": "右打ち中", "label_ko": "우타치 중", "public": 99.6, "metric": "high_prob", "unit": "denom", "source": "DMM/P-WORLD"},
+        {"label_ja": "ST突入率(時短込み)", "label_ko": "ST 진입률(시단 되돌림 포함)", "public": 61.0, "metric": "normal_rush_with_jitan", "rush_states": ["LT"], "unit": "pct", "source": "DMM/P-WORLD"},
+        {"label_ja": "ST継続率", "label_ko": "ST 계속률", "public": 80.0, "metric": "high_hit_chance", "spins": 157, "unit": "pct", "source": "DMM/P-WORLD"},
     ],
     "re_zero_99": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 99.9, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD"},

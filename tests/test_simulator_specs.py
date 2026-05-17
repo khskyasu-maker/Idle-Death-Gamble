@@ -137,6 +137,34 @@ class SimulatorSpecTests(unittest.TestCase):
             sum(p.weight for p in re_zero_s2_129.st_hit_dist if p.is_lt),
         )
 
+    def test_remaining_eva_models_use_practical_outputs(self):
+        expectations = {
+            "eva_15_premium": ([930, 280, 280], [930, 280], [930, 280]),
+            "shin_eva_premium_99": ([930, 280, 280], [930, 280], [930, 280]),
+            "shin_eva_type_rei": ([1400, 280, 280], [1400], [1400]),
+            "eva_15_special_199": ([1020, 300, 300], [1020], [1020]),
+            "shin_eva_129_lt": ([930, 280, 280], [930, 930], []),
+        }
+        for machine_id, (normal_balls, st_balls, jitan_balls) in expectations.items():
+            with self.subTest(machine_id=machine_id):
+                machine = MACHINES[machine_id]
+                self.assertEqual(normal_balls, [p.balls for p in machine.normal_hit_dist])
+                self.assertEqual(st_balls, [p.balls for p in machine.st_hit_dist])
+                self.assertEqual(jitan_balls, [p.balls for p in machine.jitan_hit_dist])
+                self.assertTrue(all(p.ball_variance == 0.03 for p in machine.normal_hit_dist))
+
+        eva_beginning = MACHINES["eva_beginning"]
+        self.assertTrue(machine_has_lt(eva_beginning))
+        self.assertEqual([1400, 280, 280], [p.balls for p in eva_beginning.normal_hit_dist])
+        self.assertEqual(["LT", "LT", "JITAN"], [p.next_state for p in eva_beginning.normal_hit_dist])
+        self.assertEqual([True, True, False], [p.counts_as_rush for p in eva_beginning.normal_hit_dist])
+        self.assertEqual([], eva_beginning.st_hit_dist)
+        self.assertEqual([280], [p.balls for p in eva_beginning.jitan_hit_dist])
+        self.assertEqual([4480, 2240], [p.balls for p in eva_beginning.lt_hit_dist])
+
+        shin_eva_lt = MACHINES["shin_eva_129_lt"]
+        self.assertEqual([True, True, False], [p.counts_as_rush for p in shin_eva_lt.normal_hit_dist])
+
     def test_additional_sea_models_match_public_step_specs(self):
         black4 = MACHINES["sea_4_special_black"]
         self.assertEqual([1500, 750, 450], [p.balls for p in black4.normal_hit_dist])
