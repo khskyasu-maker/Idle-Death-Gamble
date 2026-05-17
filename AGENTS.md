@@ -168,6 +168,7 @@ The normal data and report pipeline is:
 - Do not accumulate simulator result history. If the user explicitly chooses CSV save in the CLI, overwrite local gitignored `results.csv` with the latest run only.
 - If the user explicitly chooses public simulator sharing, overwrite only `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, and `docs/latest-sim-results.html` with sanitized aggregate metrics. Do not create timestamped result files.
 - Use `scripts/publish_sim_results.py` for the standard public simulator aggregate. It uses fixed per-row seeds so the same machine/budget/rotation condition can be reproduced without depending on execution order.
+- Public rotation sensitivity sections are allowed only as sanitized pre-trip assumption analysis. They must not contain actual play results, personal spending, visit instructions, or raw Monte Carlo samples.
 - For CLI smoke runs that must not touch public `docs/`, set `PACHINKO_SIM_PUBLIC_DOCS_DIR` to a temporary directory.
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
 - When changing simulator assumptions, update `pachinko-sim/ARCHITECTURE.md` and keep `pachinko-sim/README.md` aligned.

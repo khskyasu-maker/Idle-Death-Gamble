@@ -1,6 +1,6 @@
 {
-  "schema_version": 2,
-  "generated_at": "2026-05-18 02:59:59 KST",
+  "schema_version": 3,
+  "generated_at": "2026-05-18 03:57:31 KST",
   "publication_scope": "latest sanitized aggregate simulator result only",
   "simulation_method": {
     "summary": "공개 기종 스펙을 상태 전이 모델로 옮긴 뒤, 공개된 예산/회전수/교환율/중단 규칙 조건에서 Monte Carlo로 반복 집계합니다.",
@@ -29,6 +29,7 @@
       "공개 표는 평균, 중앙값, 꼬리 손실, 체류 시간, 당첨, RUSH, 플러스 마감, 연속 지표를 보여줍니다",
       "플러스 마감률은 Wilson 방식 95% 신뢰구간을 함께 표시합니다",
       "평균 손익은 표준오차를 함께 공개해 불안정한 행과 안정적인 행을 구분할 수 있게 합니다",
+      "회전율 민감도는 원시 표본을 저장하지 않고 기종별 요약 범위만 공개합니다",
       "JSON에는 행별 simulation_seed를 저장해 같은 조건을 재현할 수 있게 합니다"
     ],
     "pre_sim_vs_actual_reading": [
@@ -63,6 +64,1379 @@
     "confidence": "mixed"
   },
   "iterations": 5000,
+  "analysis": {
+    "rotation_sensitivity": {
+      "budget_yen": 10000,
+      "iterations": 3000,
+      "scope": "rotation-input sensitivity summary, not actual play results",
+      "rows": [
+        {
+          "category": "대해물어",
+          "machine": "P 대해물어4 스페셜",
+          "store": "라쿠엔/2대",
+          "budget_yen": 10000,
+          "rotation_range_text": "67.5-82.5회/1000엔",
+          "median_time_range_text": "412~540분",
+          "plus_range_text": "31.8~49.3%",
+          "funds_exhausted_range_text": "41.0~56.4%",
+          "median_profit_range_text": "-9,986엔~-373엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 67.5,
+              "simulation_seed": 8801343365715461234,
+              "median_play_minutes": 411.9,
+              "positive_close_rate_pct": 31.8,
+              "positive_close_rate_ci_low_pct": 30.2,
+              "positive_close_rate_ci_high_pct": 33.5,
+              "funds_exhausted_stop_rate_pct": 56.4,
+              "median_profit_yen": -9986,
+              "avg_profit_standard_error_yen": 213
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 72.5,
+              "simulation_seed": 6720300412310083872,
+              "median_play_minutes": 513.26,
+              "positive_close_rate_pct": 37.7,
+              "positive_close_rate_ci_low_pct": 35.9,
+              "positive_close_rate_ci_high_pct": 39.4,
+              "funds_exhausted_stop_rate_pct": 51.2,
+              "median_profit_yen": -9985,
+              "avg_profit_standard_error_yen": 223
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 77.5,
+              "simulation_seed": 16659217965807851574,
+              "median_play_minutes": 539.87,
+              "positive_close_rate_pct": 43.4,
+              "positive_close_rate_ci_low_pct": 41.6,
+              "positive_close_rate_ci_high_pct": 45.1,
+              "funds_exhausted_stop_rate_pct": 44.4,
+              "median_profit_yen": -4379,
+              "avg_profit_standard_error_yen": 240
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 82.5,
+              "simulation_seed": 1868800316374540845,
+              "median_play_minutes": 539.89,
+              "positive_close_rate_pct": 49.3,
+              "positive_close_rate_ci_low_pct": 47.5,
+              "positive_close_rate_ci_high_pct": 51.1,
+              "funds_exhausted_stop_rate_pct": 41.0,
+              "median_profit_yen": -373,
+              "avg_profit_standard_error_yen": 253
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "P 대해물어4 스페셜 BLACK",
+          "store": "123/10대",
+          "budget_yen": 10000,
+          "rotation_range_text": "74.5-89.5회/1000엔",
+          "median_time_range_text": "540~540분",
+          "plus_range_text": "45.6~64.6%",
+          "funds_exhausted_range_text": "23.2~39.2%",
+          "median_profit_range_text": "-2,244엔~+5,682엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 74.5,
+              "simulation_seed": 2023071086178799053,
+              "median_play_minutes": 539.86,
+              "positive_close_rate_pct": 45.6,
+              "positive_close_rate_ci_low_pct": 43.9,
+              "positive_close_rate_ci_high_pct": 47.4,
+              "funds_exhausted_stop_rate_pct": 39.2,
+              "median_profit_yen": -2244,
+              "avg_profit_standard_error_yen": 209
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 79.5,
+              "simulation_seed": 7107873373351657805,
+              "median_play_minutes": 539.89,
+              "positive_close_rate_pct": 52.7,
+              "positive_close_rate_ci_low_pct": 50.9,
+              "positive_close_rate_ci_high_pct": 54.5,
+              "funds_exhausted_stop_rate_pct": 32.4,
+              "median_profit_yen": 1055,
+              "avg_profit_standard_error_yen": 227
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 84.5,
+              "simulation_seed": 13215745063610419657,
+              "median_play_minutes": 539.9,
+              "positive_close_rate_pct": 57.3,
+              "positive_close_rate_ci_low_pct": 55.5,
+              "positive_close_rate_ci_high_pct": 59.0,
+              "funds_exhausted_stop_rate_pct": 27.5,
+              "median_profit_yen": 3115,
+              "avg_profit_standard_error_yen": 230
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 89.5,
+              "simulation_seed": 12581740355248061248,
+              "median_play_minutes": 539.91,
+              "positive_close_rate_pct": 64.6,
+              "positive_close_rate_ci_low_pct": 62.9,
+              "positive_close_rate_ci_high_pct": 66.3,
+              "funds_exhausted_stop_rate_pct": 23.2,
+              "median_profit_yen": 5682,
+              "avg_profit_standard_error_yen": 241
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "P 대해물어5",
+          "store": "HIPS/4대",
+          "budget_yen": 10000,
+          "rotation_range_text": "65-80회/1000엔",
+          "median_time_range_text": "433~540분",
+          "plus_range_text": "32.5~48.9%",
+          "funds_exhausted_range_text": "39.5~55.8%",
+          "median_profit_range_text": "-9,986엔~-507엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 65.0,
+              "simulation_seed": 2183896171932410517,
+              "median_play_minutes": 432.82,
+              "positive_close_rate_pct": 32.5,
+              "positive_close_rate_ci_low_pct": 30.8,
+              "positive_close_rate_ci_high_pct": 34.2,
+              "funds_exhausted_stop_rate_pct": 55.8,
+              "median_profit_yen": -9986,
+              "avg_profit_standard_error_yen": 225
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 70.0,
+              "simulation_seed": 13484553970874995514,
+              "median_play_minutes": 539.78,
+              "positive_close_rate_pct": 38.7,
+              "positive_close_rate_ci_low_pct": 37.0,
+              "positive_close_rate_ci_high_pct": 40.5,
+              "funds_exhausted_stop_rate_pct": 49.6,
+              "median_profit_yen": -9505,
+              "avg_profit_standard_error_yen": 245
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 75.0,
+              "simulation_seed": 3420700982612958997,
+              "median_play_minutes": 539.84,
+              "positive_close_rate_pct": 42.4,
+              "positive_close_rate_ci_low_pct": 40.6,
+              "positive_close_rate_ci_high_pct": 44.1,
+              "funds_exhausted_stop_rate_pct": 45.9,
+              "median_profit_yen": -4896,
+              "avg_profit_standard_error_yen": 258
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 80.0,
+              "simulation_seed": 2400211591596240153,
+              "median_play_minutes": 539.87,
+              "positive_close_rate_pct": 48.9,
+              "positive_close_rate_ci_low_pct": 47.1,
+              "positive_close_rate_ci_high_pct": 50.7,
+              "funds_exhausted_stop_rate_pct": 39.5,
+              "median_profit_yen": -507,
+              "avg_profit_standard_error_yen": 269
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "P 대해물어5 블랙",
+          "store": "123/3대",
+          "budget_yen": 10000,
+          "rotation_range_text": "66.5-81.5회/1000엔",
+          "median_time_range_text": "500~540분",
+          "plus_range_text": "34.7~54.0%",
+          "funds_exhausted_range_text": "33.9~52.3%",
+          "median_profit_range_text": "-9,984엔~+1,972엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 66.5,
+              "simulation_seed": 11536979114538918326,
+              "median_play_minutes": 499.62,
+              "positive_close_rate_pct": 34.7,
+              "positive_close_rate_ci_low_pct": 33.1,
+              "positive_close_rate_ci_high_pct": 36.5,
+              "funds_exhausted_stop_rate_pct": 52.3,
+              "median_profit_yen": -9984,
+              "avg_profit_standard_error_yen": 229
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 71.5,
+              "simulation_seed": 18160784692445644800,
+              "median_play_minutes": 539.83,
+              "positive_close_rate_pct": 40.8,
+              "positive_close_rate_ci_low_pct": 39.1,
+              "positive_close_rate_ci_high_pct": 42.6,
+              "funds_exhausted_stop_rate_pct": 45.3,
+              "median_profit_yen": -5832,
+              "avg_profit_standard_error_yen": 249
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 76.5,
+              "simulation_seed": 7475777533620846863,
+              "median_play_minutes": 539.86,
+              "positive_close_rate_pct": 47.0,
+              "positive_close_rate_ci_low_pct": 45.2,
+              "positive_close_rate_ci_high_pct": 48.8,
+              "funds_exhausted_stop_rate_pct": 40.5,
+              "median_profit_yen": -1785,
+              "avg_profit_standard_error_yen": 267
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 81.5,
+              "simulation_seed": 16300292656767928677,
+              "median_play_minutes": 539.89,
+              "positive_close_rate_pct": 54.0,
+              "positive_close_rate_ci_low_pct": 52.2,
+              "positive_close_rate_ci_high_pct": 55.8,
+              "funds_exhausted_stop_rate_pct": 33.9,
+              "median_profit_yen": 1972,
+              "avg_profit_standard_error_yen": 277
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "P 대해물어5 스페셜",
+          "store": "123/4대",
+          "budget_yen": 10000,
+          "rotation_range_text": "66-81회/1000엔",
+          "median_time_range_text": "388~540분",
+          "plus_range_text": "29.7~44.3%",
+          "funds_exhausted_range_text": "43.6~58.2%",
+          "median_profit_range_text": "-9,987엔~-3,461엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 66.0,
+              "simulation_seed": 12666306273116952760,
+              "median_play_minutes": 387.85,
+              "positive_close_rate_pct": 29.7,
+              "positive_close_rate_ci_low_pct": 28.1,
+              "positive_close_rate_ci_high_pct": 31.3,
+              "funds_exhausted_stop_rate_pct": 58.2,
+              "median_profit_yen": -9987,
+              "avg_profit_standard_error_yen": 196
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 71.0,
+              "simulation_seed": 1219961899848616949,
+              "median_play_minutes": 499.9,
+              "positive_close_rate_pct": 35.0,
+              "positive_close_rate_ci_low_pct": 33.3,
+              "positive_close_rate_ci_high_pct": 36.8,
+              "funds_exhausted_stop_rate_pct": 52.0,
+              "median_profit_yen": -9985,
+              "avg_profit_standard_error_yen": 215
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 76.0,
+              "simulation_seed": 2843353785588571707,
+              "median_play_minutes": 539.81,
+              "positive_close_rate_pct": 37.7,
+              "positive_close_rate_ci_low_pct": 35.9,
+              "positive_close_rate_ci_high_pct": 39.4,
+              "funds_exhausted_stop_rate_pct": 49.4,
+              "median_profit_yen": -9295,
+              "avg_profit_standard_error_yen": 226
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 81.0,
+              "simulation_seed": 3777408607153187122,
+              "median_play_minutes": 539.86,
+              "positive_close_rate_pct": 44.3,
+              "positive_close_rate_ci_low_pct": 42.6,
+              "positive_close_rate_ci_high_pct": 46.1,
+              "funds_exhausted_stop_rate_pct": 43.6,
+              "median_profit_yen": -3461,
+              "avg_profit_standard_error_yen": 239
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "P 마와룽 대해물어4 스페셜 With 아그네스 램 119",
+          "store": "HIPS/2대",
+          "budget_yen": 10000,
+          "rotation_range_text": "68.5-83.5회/1000엔",
+          "median_time_range_text": "540~540분",
+          "plus_range_text": "21.7~45.7%",
+          "funds_exhausted_range_text": "24.3~48.6%",
+          "median_profit_range_text": "-9,050엔~-1,029엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 68.5,
+              "simulation_seed": 1429780618549478078,
+              "median_play_minutes": 539.8,
+              "positive_close_rate_pct": 21.7,
+              "positive_close_rate_ci_low_pct": 20.2,
+              "positive_close_rate_ci_high_pct": 23.2,
+              "funds_exhausted_stop_rate_pct": 48.6,
+              "median_profit_yen": -9050,
+              "avg_profit_standard_error_yen": 119
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 73.5,
+              "simulation_seed": 8202795445344937174,
+              "median_play_minutes": 539.87,
+              "positive_close_rate_pct": 31.3,
+              "positive_close_rate_ci_low_pct": 29.7,
+              "positive_close_rate_ci_high_pct": 33.0,
+              "funds_exhausted_stop_rate_pct": 37.0,
+              "median_profit_yen": -4864,
+              "avg_profit_standard_error_yen": 134
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 78.5,
+              "simulation_seed": 15454991760939755770,
+              "median_play_minutes": 539.89,
+              "positive_close_rate_pct": 38.0,
+              "positive_close_rate_ci_low_pct": 36.3,
+              "positive_close_rate_ci_high_pct": 39.8,
+              "funds_exhausted_stop_rate_pct": 30.9,
+              "median_profit_yen": -2916,
+              "avg_profit_standard_error_yen": 142
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 83.5,
+              "simulation_seed": 4679967060296664702,
+              "median_play_minutes": 539.91,
+              "positive_close_rate_pct": 45.7,
+              "positive_close_rate_ci_low_pct": 44.0,
+              "positive_close_rate_ci_high_pct": 47.5,
+              "funds_exhausted_stop_rate_pct": 24.3,
+              "median_profit_yen": -1029,
+              "avg_profit_standard_error_yen": 148
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "PA 대해물어4 스페셜 With 아그네스 램",
+          "store": "123/4대",
+          "budget_yen": 10000,
+          "rotation_range_text": "69-84회/1000엔",
+          "median_time_range_text": "540~540분",
+          "plus_range_text": "27.6~55.9%",
+          "funds_exhausted_range_text": "16.1~38.5%",
+          "median_profit_range_text": "-5,535엔~+1,292엔",
+          "sensitivity_label": "높음",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 69.0,
+              "simulation_seed": 13003398112442691965,
+              "median_play_minutes": 539.86,
+              "positive_close_rate_pct": 27.6,
+              "positive_close_rate_ci_low_pct": 26.0,
+              "positive_close_rate_ci_high_pct": 29.2,
+              "funds_exhausted_stop_rate_pct": 38.5,
+              "median_profit_yen": -5535,
+              "avg_profit_standard_error_yen": 122
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 74.0,
+              "simulation_seed": 10567053341695393532,
+              "median_play_minutes": 539.88,
+              "positive_close_rate_pct": 37.0,
+              "positive_close_rate_ci_low_pct": 35.3,
+              "positive_close_rate_ci_high_pct": 38.7,
+              "funds_exhausted_stop_rate_pct": 29.8,
+              "median_profit_yen": -3017,
+              "avg_profit_standard_error_yen": 136
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 79.0,
+              "simulation_seed": 12064238756445550273,
+              "median_play_minutes": 539.91,
+              "positive_close_rate_pct": 45.3,
+              "positive_close_rate_ci_low_pct": 43.5,
+              "positive_close_rate_ci_high_pct": 47.1,
+              "funds_exhausted_stop_rate_pct": 22.6,
+              "median_profit_yen": -1075,
+              "avg_profit_standard_error_yen": 148
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 84.0,
+              "simulation_seed": 10159361061748654934,
+              "median_play_minutes": 539.92,
+              "positive_close_rate_pct": 55.9,
+              "positive_close_rate_ci_low_pct": 54.1,
+              "positive_close_rate_ci_high_pct": 57.6,
+              "funds_exhausted_stop_rate_pct": 16.1,
+              "median_profit_yen": 1292,
+              "avg_profit_standard_error_yen": 148
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "PA 대해물어5 With 아그네스 램",
+          "store": "123/10대",
+          "budget_yen": 10000,
+          "rotation_range_text": "56-71회/1000엔",
+          "median_time_range_text": "419~540분",
+          "plus_range_text": "11.3~33.9%",
+          "funds_exhausted_range_text": "32.7~63.5%",
+          "median_profit_range_text": "-9,985엔~-3,921엔",
+          "sensitivity_label": "높음",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 56.0,
+              "simulation_seed": 6726317581892141740,
+              "median_play_minutes": 419.25,
+              "positive_close_rate_pct": 11.3,
+              "positive_close_rate_ci_low_pct": 10.2,
+              "positive_close_rate_ci_high_pct": 12.5,
+              "funds_exhausted_stop_rate_pct": 63.5,
+              "median_profit_yen": -9985,
+              "avg_profit_standard_error_yen": 93
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 61.0,
+              "simulation_seed": 5226513880743231898,
+              "median_play_minutes": 510.85,
+              "positive_close_rate_pct": 16.3,
+              "positive_close_rate_ci_low_pct": 15.1,
+              "positive_close_rate_ci_high_pct": 17.7,
+              "funds_exhausted_stop_rate_pct": 53.0,
+              "median_profit_yen": -9983,
+              "avg_profit_standard_error_yen": 106
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 66.0,
+              "simulation_seed": 15754938948372068577,
+              "median_play_minutes": 539.84,
+              "positive_close_rate_pct": 24.1,
+              "positive_close_rate_ci_low_pct": 22.6,
+              "positive_close_rate_ci_high_pct": 25.6,
+              "funds_exhausted_stop_rate_pct": 42.7,
+              "median_profit_yen": -6916,
+              "avg_profit_standard_error_yen": 119
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 71.0,
+              "simulation_seed": 12773361478102597354,
+              "median_play_minutes": 539.88,
+              "positive_close_rate_pct": 33.9,
+              "positive_close_rate_ci_low_pct": 32.2,
+              "positive_close_rate_ci_high_pct": 35.6,
+              "funds_exhausted_stop_rate_pct": 32.7,
+              "median_profit_yen": -3921,
+              "avg_profit_standard_error_yen": 132
+            }
+          ]
+        },
+        {
+          "category": "대해물어",
+          "machine": "PA 대해물어5 블랙 LT 99버전",
+          "store": "123/5대",
+          "budget_yen": 10000,
+          "rotation_range_text": "62-77회/1000엔",
+          "median_time_range_text": "401~540분",
+          "plus_range_text": "29.1~45.2%",
+          "funds_exhausted_range_text": "40.6~58.6%",
+          "median_profit_range_text": "-9,985엔~-2,539엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 62.0,
+              "simulation_seed": 12335409628176108317,
+              "median_play_minutes": 400.9,
+              "positive_close_rate_pct": 29.1,
+              "positive_close_rate_ci_low_pct": 27.5,
+              "positive_close_rate_ci_high_pct": 30.8,
+              "funds_exhausted_stop_rate_pct": 58.6,
+              "median_profit_yen": -9985,
+              "avg_profit_standard_error_yen": 240
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 67.0,
+              "simulation_seed": 1100006104342563365,
+              "median_play_minutes": 492.16,
+              "positive_close_rate_pct": 34.8,
+              "positive_close_rate_ci_low_pct": 33.1,
+              "positive_close_rate_ci_high_pct": 36.6,
+              "funds_exhausted_stop_rate_pct": 52.4,
+              "median_profit_yen": -9984,
+              "avg_profit_standard_error_yen": 255
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 72.0,
+              "simulation_seed": 5126541301141050711,
+              "median_play_minutes": 539.83,
+              "positive_close_rate_pct": 40.0,
+              "positive_close_rate_ci_low_pct": 38.3,
+              "positive_close_rate_ci_high_pct": 41.8,
+              "funds_exhausted_stop_rate_pct": 46.3,
+              "median_profit_yen": -6737,
+              "avg_profit_standard_error_yen": 261
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 77.0,
+              "simulation_seed": 11823676353294761752,
+              "median_play_minutes": 539.86,
+              "positive_close_rate_pct": 45.2,
+              "positive_close_rate_ci_low_pct": 43.4,
+              "positive_close_rate_ci_high_pct": 47.0,
+              "funds_exhausted_stop_rate_pct": 40.6,
+              "median_profit_yen": -2539,
+              "avg_profit_standard_error_yen": 280
+            }
+          ]
+        },
+        {
+          "category": "에바",
+          "machine": "P 신 에반게리온 129 LT 버전",
+          "store": "123/4대",
+          "budget_yen": 10000,
+          "rotation_range_text": "63-78회/1000엔",
+          "median_time_range_text": "321~540분",
+          "plus_range_text": "27.7~43.1%",
+          "funds_exhausted_range_text": "47.0~63.2%",
+          "median_profit_range_text": "-9,987엔~-5,902엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 63.0,
+              "simulation_seed": 633685217367761493,
+              "median_play_minutes": 321.36,
+              "positive_close_rate_pct": 27.7,
+              "positive_close_rate_ci_low_pct": 26.2,
+              "positive_close_rate_ci_high_pct": 29.4,
+              "funds_exhausted_stop_rate_pct": 63.2,
+              "median_profit_yen": -9987,
+              "avg_profit_standard_error_yen": 277
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 68.0,
+              "simulation_seed": 2590145127471349550,
+              "median_play_minutes": 390.26,
+              "positive_close_rate_pct": 33.4,
+              "positive_close_rate_ci_low_pct": 31.7,
+              "positive_close_rate_ci_high_pct": 35.1,
+              "funds_exhausted_stop_rate_pct": 57.4,
+              "median_profit_yen": -9986,
+              "avg_profit_standard_error_yen": 310
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 73.0,
+              "simulation_seed": 7417136230024270403,
+              "median_play_minutes": 444.6,
+              "positive_close_rate_pct": 38.0,
+              "positive_close_rate_ci_low_pct": 36.3,
+              "positive_close_rate_ci_high_pct": 39.8,
+              "funds_exhausted_stop_rate_pct": 54.0,
+              "median_profit_yen": -9986,
+              "avg_profit_standard_error_yen": 335
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 78.0,
+              "simulation_seed": 3297562826605023590,
+              "median_play_minutes": 539.85,
+              "positive_close_rate_pct": 43.1,
+              "positive_close_rate_ci_low_pct": 41.3,
+              "positive_close_rate_ci_high_pct": 44.9,
+              "funds_exhausted_stop_rate_pct": 47.0,
+              "median_profit_yen": -5902,
+              "avg_profit_standard_error_yen": 341
+            }
+          ]
+        },
+        {
+          "category": "에바",
+          "machine": "P 신 에반게리온 Type 레이",
+          "store": "123/4대",
+          "budget_yen": 10000,
+          "rotation_range_text": "62-77회/1000엔",
+          "median_time_range_text": "257~379분",
+          "plus_range_text": "24.6~35.8%",
+          "funds_exhausted_range_text": "56.7~67.9%",
+          "median_profit_range_text": "-9,989엔~-9,988엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 62.0,
+              "simulation_seed": 2806163978353418136,
+              "median_play_minutes": 257.05,
+              "positive_close_rate_pct": 24.6,
+              "positive_close_rate_ci_low_pct": 23.1,
+              "positive_close_rate_ci_high_pct": 26.2,
+              "funds_exhausted_stop_rate_pct": 67.9,
+              "median_profit_yen": -9989,
+              "avg_profit_standard_error_yen": 250
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 67.0,
+              "simulation_seed": 8583114637176528606,
+              "median_play_minutes": 284.92,
+              "positive_close_rate_pct": 28.2,
+              "positive_close_rate_ci_low_pct": 26.6,
+              "positive_close_rate_ci_high_pct": 29.8,
+              "funds_exhausted_stop_rate_pct": 64.3,
+              "median_profit_yen": -9989,
+              "avg_profit_standard_error_yen": 274
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 72.0,
+              "simulation_seed": 3522434935526304072,
+              "median_play_minutes": 339.38,
+              "positive_close_rate_pct": 33.2,
+              "positive_close_rate_ci_low_pct": 31.6,
+              "positive_close_rate_ci_high_pct": 34.9,
+              "funds_exhausted_stop_rate_pct": 59.1,
+              "median_profit_yen": -9988,
+              "avg_profit_standard_error_yen": 302
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 77.0,
+              "simulation_seed": 5853161392399949733,
+              "median_play_minutes": 379.34,
+              "positive_close_rate_pct": 35.8,
+              "positive_close_rate_ci_low_pct": 34.1,
+              "positive_close_rate_ci_high_pct": 37.5,
+              "funds_exhausted_stop_rate_pct": 56.7,
+              "median_profit_yen": -9988,
+              "avg_profit_standard_error_yen": 308
+            }
+          ]
+        },
+        {
+          "category": "에바",
+          "machine": "P 신 에반게리온 프리미엄 모델",
+          "store": "123/3대",
+          "budget_yen": 10000,
+          "rotation_range_text": "61-76회/1000엔",
+          "median_time_range_text": "516~540분",
+          "plus_range_text": "30.5~52.7%",
+          "funds_exhausted_range_text": "30.1~51.2%",
+          "median_profit_range_text": "-9,980엔~+935엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 61.0,
+              "simulation_seed": 901412591756647158,
+              "median_play_minutes": 516.1,
+              "positive_close_rate_pct": 30.5,
+              "positive_close_rate_ci_low_pct": 28.9,
+              "positive_close_rate_ci_high_pct": 32.2,
+              "funds_exhausted_stop_rate_pct": 51.2,
+              "median_profit_yen": -9980,
+              "avg_profit_standard_error_yen": 178
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 66.0,
+              "simulation_seed": 5800377193170673689,
+              "median_play_minutes": 539.84,
+              "positive_close_rate_pct": 36.9,
+              "positive_close_rate_ci_low_pct": 35.2,
+              "positive_close_rate_ci_high_pct": 38.7,
+              "funds_exhausted_stop_rate_pct": 44.6,
+              "median_profit_yen": -6096,
+              "avg_profit_standard_error_yen": 191
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 71.0,
+              "simulation_seed": 7431222588050987712,
+              "median_play_minutes": 539.87,
+              "positive_close_rate_pct": 45.6,
+              "positive_close_rate_ci_low_pct": 43.8,
+              "positive_close_rate_ci_high_pct": 47.4,
+              "funds_exhausted_stop_rate_pct": 37.6,
+              "median_profit_yen": -2047,
+              "avg_profit_standard_error_yen": 199
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 76.0,
+              "simulation_seed": 6106821531072583820,
+              "median_play_minutes": 539.9,
+              "positive_close_rate_pct": 52.7,
+              "positive_close_rate_ci_low_pct": 50.9,
+              "positive_close_rate_ci_high_pct": 54.5,
+              "funds_exhausted_stop_rate_pct": 30.1,
+              "median_profit_yen": 935,
+              "avg_profit_standard_error_yen": 213
+            }
+          ]
+        },
+        {
+          "category": "에바",
+          "machine": "P 에바 미래로의 포효 프리미엄 모델",
+          "store": "123/2대",
+          "budget_yen": 10000,
+          "rotation_range_text": "64.5-79.5회/1000엔",
+          "median_time_range_text": "508~540분",
+          "plus_range_text": "33.2~53.2%",
+          "funds_exhausted_range_text": "33.8~51.4%",
+          "median_profit_range_text": "-9,982엔~+1,389엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 64.5,
+              "simulation_seed": 46115532138445756,
+              "median_play_minutes": 507.86,
+              "positive_close_rate_pct": 33.2,
+              "positive_close_rate_ci_low_pct": 31.6,
+              "positive_close_rate_ci_high_pct": 34.9,
+              "funds_exhausted_stop_rate_pct": 51.4,
+              "median_profit_yen": -9982,
+              "avg_profit_standard_error_yen": 193
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 69.5,
+              "simulation_seed": 13110614535226126401,
+              "median_play_minutes": 539.84,
+              "positive_close_rate_pct": 41.0,
+              "positive_close_rate_ci_low_pct": 39.3,
+              "positive_close_rate_ci_high_pct": 42.8,
+              "funds_exhausted_stop_rate_pct": 44.8,
+              "median_profit_yen": -5010,
+              "avg_profit_standard_error_yen": 216
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 74.5,
+              "simulation_seed": 13801972733947765548,
+              "median_play_minutes": 539.87,
+              "positive_close_rate_pct": 45.8,
+              "positive_close_rate_ci_low_pct": 44.0,
+              "positive_close_rate_ci_high_pct": 47.6,
+              "funds_exhausted_stop_rate_pct": 39.4,
+              "median_profit_yen": -1952,
+              "avg_profit_standard_error_yen": 227
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 79.5,
+              "simulation_seed": 17046618447201099501,
+              "median_play_minutes": 539.9,
+              "positive_close_rate_pct": 53.2,
+              "positive_close_rate_ci_low_pct": 51.4,
+              "positive_close_rate_ci_high_pct": 55.0,
+              "funds_exhausted_stop_rate_pct": 33.8,
+              "median_profit_yen": 1389,
+              "avg_profit_standard_error_yen": 240
+            }
+          ]
+        },
+        {
+          "category": "에바",
+          "machine": "P 에바15 스페셜 에디션 199",
+          "store": "123/3대",
+          "budget_yen": 10000,
+          "rotation_range_text": "62-77회/1000엔",
+          "median_time_range_text": "330~540분",
+          "plus_range_text": "27.1~42.6%",
+          "funds_exhausted_range_text": "47.7~63.2%",
+          "median_profit_range_text": "-9,987엔~-6,423엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 62.0,
+              "simulation_seed": 10519839819575078995,
+              "median_play_minutes": 329.86,
+              "positive_close_rate_pct": 27.1,
+              "positive_close_rate_ci_low_pct": 25.5,
+              "positive_close_rate_ci_high_pct": 28.7,
+              "funds_exhausted_stop_rate_pct": 63.2,
+              "median_profit_yen": -9987,
+              "avg_profit_standard_error_yen": 220
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 67.0,
+              "simulation_seed": 2116993671195904850,
+              "median_play_minutes": 405.7,
+              "positive_close_rate_pct": 32.6,
+              "positive_close_rate_ci_low_pct": 31.0,
+              "positive_close_rate_ci_high_pct": 34.3,
+              "funds_exhausted_stop_rate_pct": 57.1,
+              "median_profit_yen": -9986,
+              "avg_profit_standard_error_yen": 240
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 72.0,
+              "simulation_seed": 13063509903931451559,
+              "median_play_minutes": 478.22,
+              "positive_close_rate_pct": 37.8,
+              "positive_close_rate_ci_low_pct": 36.1,
+              "positive_close_rate_ci_high_pct": 39.5,
+              "funds_exhausted_stop_rate_pct": 52.5,
+              "median_profit_yen": -9985,
+              "avg_profit_standard_error_yen": 251
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 77.0,
+              "simulation_seed": 2747547440486823591,
+              "median_play_minutes": 539.84,
+              "positive_close_rate_pct": 42.6,
+              "positive_close_rate_ci_low_pct": 40.8,
+              "positive_close_rate_ci_high_pct": 44.4,
+              "funds_exhausted_stop_rate_pct": 47.7,
+              "median_profit_yen": -6423,
+              "avg_profit_standard_error_yen": 268
+            }
+          ]
+        },
+        {
+          "category": "에바",
+          "machine": "e 에바 시작의 기억",
+          "store": "123/1대",
+          "budget_yen": 10000,
+          "rotation_range_text": "63.5-78.5회/1000엔",
+          "median_time_range_text": "181~262분",
+          "plus_range_text": "20.8~30.3%",
+          "funds_exhausted_range_text": "64.7~74.1%",
+          "median_profit_range_text": "-9,991엔~-9,990엔",
+          "sensitivity_label": "낮음",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 63.5,
+              "simulation_seed": 578991137740112864,
+              "median_play_minutes": 180.78,
+              "positive_close_rate_pct": 20.8,
+              "positive_close_rate_ci_low_pct": 19.4,
+              "positive_close_rate_ci_high_pct": 22.3,
+              "funds_exhausted_stop_rate_pct": 74.1,
+              "median_profit_yen": -9991,
+              "avg_profit_standard_error_yen": 290
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 68.5,
+              "simulation_seed": 16108569165988415934,
+              "median_play_minutes": 200.55,
+              "positive_close_rate_pct": 23.0,
+              "positive_close_rate_ci_low_pct": 21.6,
+              "positive_close_rate_ci_high_pct": 24.6,
+              "funds_exhausted_stop_rate_pct": 71.7,
+              "median_profit_yen": -9991,
+              "avg_profit_standard_error_yen": 307
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 73.5,
+              "simulation_seed": 8738917003290317501,
+              "median_play_minutes": 231.35,
+              "positive_close_rate_pct": 27.2,
+              "positive_close_rate_ci_low_pct": 25.7,
+              "positive_close_rate_ci_high_pct": 28.9,
+              "funds_exhausted_stop_rate_pct": 67.3,
+              "median_profit_yen": -9990,
+              "avg_profit_standard_error_yen": 337
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 78.5,
+              "simulation_seed": 300391722857331363,
+              "median_play_minutes": 262.27,
+              "positive_close_rate_pct": 30.3,
+              "positive_close_rate_ci_low_pct": 28.7,
+              "positive_close_rate_ci_high_pct": 32.0,
+              "funds_exhausted_stop_rate_pct": 64.7,
+              "median_profit_yen": -9991,
+              "avg_profit_standard_error_yen": 362
+            }
+          ]
+        },
+        {
+          "category": "에바",
+          "machine": "에바 미래로의 포효 (에바15)",
+          "store": "123/6대",
+          "budget_yen": 10000,
+          "rotation_range_text": "66-81회/1000엔",
+          "median_time_range_text": "278~472분",
+          "plus_range_text": "27.6~40.1%",
+          "funds_exhausted_range_text": "52.3~64.8%",
+          "median_profit_range_text": "-9,989엔~-9,987엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 66.0,
+              "simulation_seed": 5028420617854060672,
+              "median_play_minutes": 277.56,
+              "positive_close_rate_pct": 27.6,
+              "positive_close_rate_ci_low_pct": 26.1,
+              "positive_close_rate_ci_high_pct": 29.3,
+              "funds_exhausted_stop_rate_pct": 64.8,
+              "median_profit_yen": -9989,
+              "avg_profit_standard_error_yen": 272
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 71.0,
+              "simulation_seed": 4057661493426146956,
+              "median_play_minutes": 330.03,
+              "positive_close_rate_pct": 32.6,
+              "positive_close_rate_ci_low_pct": 31.0,
+              "positive_close_rate_ci_high_pct": 34.3,
+              "funds_exhausted_stop_rate_pct": 59.9,
+              "median_profit_yen": -9988,
+              "avg_profit_standard_error_yen": 281
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 76.0,
+              "simulation_seed": 875531546215490921,
+              "median_play_minutes": 382.28,
+              "positive_close_rate_pct": 36.1,
+              "positive_close_rate_ci_low_pct": 34.4,
+              "positive_close_rate_ci_high_pct": 37.8,
+              "funds_exhausted_stop_rate_pct": 57.1,
+              "median_profit_yen": -9988,
+              "avg_profit_standard_error_yen": 310
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 81.0,
+              "simulation_seed": 16649395179395061901,
+              "median_play_minutes": 471.69,
+              "positive_close_rate_pct": 40.1,
+              "positive_close_rate_ci_low_pct": 38.4,
+              "positive_close_rate_ci_high_pct": 41.9,
+              "funds_exhausted_stop_rate_pct": 52.3,
+              "median_profit_yen": -9987,
+              "avg_profit_standard_error_yen": 320
+            }
+          ]
+        },
+        {
+          "category": "기타",
+          "machine": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
+          "store": "123/1대",
+          "budget_yen": 10000,
+          "rotation_range_text": "60-90회/1000엔",
+          "median_time_range_text": "426~540분",
+          "plus_range_text": "35.5~72.5%",
+          "funds_exhausted_range_text": "20.7~55.7%",
+          "median_profit_range_text": "-9,984엔~+14,291엔",
+          "sensitivity_label": "높음",
+          "case_metrics": [
+            {
+              "label": "60회/1000엔",
+              "spins_per_1000yen": 60.0,
+              "simulation_seed": 16440149425713886366,
+              "median_play_minutes": 425.95,
+              "positive_close_rate_pct": 35.5,
+              "positive_close_rate_ci_low_pct": 33.8,
+              "positive_close_rate_ci_high_pct": 37.2,
+              "funds_exhausted_stop_rate_pct": 55.7,
+              "median_profit_yen": -9984,
+              "avg_profit_standard_error_yen": 292
+            },
+            {
+              "label": "70회/1000엔",
+              "spins_per_1000yen": 70.0,
+              "simulation_seed": 1179290556396306784,
+              "median_play_minutes": 539.85,
+              "positive_close_rate_pct": 47.6,
+              "positive_close_rate_ci_low_pct": 45.9,
+              "positive_close_rate_ci_high_pct": 49.4,
+              "funds_exhausted_stop_rate_pct": 42.8,
+              "median_profit_yen": -2077,
+              "avg_profit_standard_error_yen": 344
+            },
+            {
+              "label": "80회/1000엔",
+              "spins_per_1000yen": 80.0,
+              "simulation_seed": 12237404339079429291,
+              "median_play_minutes": 539.9,
+              "positive_close_rate_pct": 59.9,
+              "positive_close_rate_ci_low_pct": 58.2,
+              "positive_close_rate_ci_high_pct": 61.7,
+              "funds_exhausted_stop_rate_pct": 30.8,
+              "median_profit_yen": 6830,
+              "avg_profit_standard_error_yen": 368
+            },
+            {
+              "label": "90회/1000엔",
+              "spins_per_1000yen": 90.0,
+              "simulation_seed": 12582028950481570769,
+              "median_play_minutes": 539.93,
+              "positive_close_rate_pct": 72.5,
+              "positive_close_rate_ci_low_pct": 70.8,
+              "positive_close_rate_ci_high_pct": 74.0,
+              "funds_exhausted_stop_rate_pct": 20.7,
+              "median_profit_yen": 14291,
+              "avg_profit_standard_error_yen": 391
+            }
+          ]
+        },
+        {
+          "category": "기타",
+          "machine": "P 리제로 귀신들린 99버전",
+          "store": "123/1대",
+          "budget_yen": 10000,
+          "rotation_range_text": "67.5-82.5회/1000엔",
+          "median_time_range_text": "540~540분",
+          "plus_range_text": "40.3~60.6%",
+          "funds_exhausted_range_text": "26.8~45.0%",
+          "median_profit_range_text": "-5,462엔~+4,862엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 67.5,
+              "simulation_seed": 11574853194377708590,
+              "median_play_minutes": 539.84,
+              "positive_close_rate_pct": 40.3,
+              "positive_close_rate_ci_low_pct": 38.5,
+              "positive_close_rate_ci_high_pct": 42.0,
+              "funds_exhausted_stop_rate_pct": 45.0,
+              "median_profit_yen": -5462,
+              "avg_profit_standard_error_yen": 232
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 72.5,
+              "simulation_seed": 10502850138311677454,
+              "median_play_minutes": 539.87,
+              "positive_close_rate_pct": 48.3,
+              "positive_close_rate_ci_low_pct": 46.5,
+              "positive_close_rate_ci_high_pct": 50.1,
+              "funds_exhausted_stop_rate_pct": 36.9,
+              "median_profit_yen": -698,
+              "avg_profit_standard_error_yen": 242
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 77.5,
+              "simulation_seed": 3369411372257030590,
+              "median_play_minutes": 539.89,
+              "positive_close_rate_pct": 56.4,
+              "positive_close_rate_ci_low_pct": 54.6,
+              "positive_close_rate_ci_high_pct": 58.1,
+              "funds_exhausted_stop_rate_pct": 31.0,
+              "median_profit_yen": 3051,
+              "avg_profit_standard_error_yen": 260
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 82.5,
+              "simulation_seed": 5162056376166314427,
+              "median_play_minutes": 539.91,
+              "positive_close_rate_pct": 60.6,
+              "positive_close_rate_ci_low_pct": 58.8,
+              "positive_close_rate_ci_high_pct": 62.3,
+              "funds_exhausted_stop_rate_pct": 26.8,
+              "median_profit_yen": 4862,
+              "avg_profit_standard_error_yen": 267
+            }
+          ]
+        },
+        {
+          "category": "기타",
+          "machine": "P 리제로 시즌2 129버전",
+          "store": "HIPS/2대",
+          "budget_yen": 10000,
+          "rotation_range_text": "60-75회/1000엔",
+          "median_time_range_text": "282~474분",
+          "plus_range_text": "21.4~36.5%",
+          "funds_exhausted_range_text": "52.5~69.4%",
+          "median_profit_range_text": "-9,987엔~-9,986엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 60.0,
+              "simulation_seed": 3450195158896418047,
+              "median_play_minutes": 281.53,
+              "positive_close_rate_pct": 21.4,
+              "positive_close_rate_ci_low_pct": 20.0,
+              "positive_close_rate_ci_high_pct": 22.9,
+              "funds_exhausted_stop_rate_pct": 69.4,
+              "median_profit_yen": -9987,
+              "avg_profit_standard_error_yen": 200
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 65.0,
+              "simulation_seed": 7337411165076912449,
+              "median_play_minutes": 329.39,
+              "positive_close_rate_pct": 26.2,
+              "positive_close_rate_ci_low_pct": 24.7,
+              "positive_close_rate_ci_high_pct": 27.8,
+              "funds_exhausted_stop_rate_pct": 63.7,
+              "median_profit_yen": -9987,
+              "avg_profit_standard_error_yen": 230
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 70.0,
+              "simulation_seed": 9073264398605858274,
+              "median_play_minutes": 359.2,
+              "positive_close_rate_pct": 29.6,
+              "positive_close_rate_ci_low_pct": 28.0,
+              "positive_close_rate_ci_high_pct": 31.3,
+              "funds_exhausted_stop_rate_pct": 60.3,
+              "median_profit_yen": -9987,
+              "avg_profit_standard_error_yen": 244
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 75.0,
+              "simulation_seed": 4824424313351057968,
+              "median_play_minutes": 474.05,
+              "positive_close_rate_pct": 36.5,
+              "positive_close_rate_ci_low_pct": 34.8,
+              "positive_close_rate_ci_high_pct": 38.2,
+              "funds_exhausted_stop_rate_pct": 52.5,
+              "median_profit_yen": -9986,
+              "avg_profit_standard_error_yen": 268
+            }
+          ]
+        },
+        {
+          "category": "기타",
+          "machine": "e 갑철성의 카바네리2 사카세야 산젠",
+          "store": "123/2대",
+          "budget_yen": 10000,
+          "rotation_range_text": "60-90회/1000엔",
+          "median_time_range_text": "193~410분",
+          "plus_range_text": "20.7~40.8%",
+          "funds_exhausted_range_text": "54.0~74.0%",
+          "median_profit_range_text": "-9,990엔~-9,989엔",
+          "sensitivity_label": "중간",
+          "case_metrics": [
+            {
+              "label": "60회/1000엔",
+              "spins_per_1000yen": 60.0,
+              "simulation_seed": 6210474679768233743,
+              "median_play_minutes": 193.02,
+              "positive_close_rate_pct": 20.7,
+              "positive_close_rate_ci_low_pct": 19.3,
+              "positive_close_rate_ci_high_pct": 22.2,
+              "funds_exhausted_stop_rate_pct": 74.0,
+              "median_profit_yen": -9989,
+              "avg_profit_standard_error_yen": 283
+            },
+            {
+              "label": "70회/1000엔",
+              "spins_per_1000yen": 70.0,
+              "simulation_seed": 9316239230052991802,
+              "median_play_minutes": 230.55,
+              "positive_close_rate_pct": 25.1,
+              "positive_close_rate_ci_low_pct": 23.6,
+              "positive_close_rate_ci_high_pct": 26.7,
+              "funds_exhausted_stop_rate_pct": 68.9,
+              "median_profit_yen": -9990,
+              "avg_profit_standard_error_yen": 322
+            },
+            {
+              "label": "80회/1000엔",
+              "spins_per_1000yen": 80.0,
+              "simulation_seed": 16013815437499610120,
+              "median_play_minutes": 300.21,
+              "positive_close_rate_pct": 33.5,
+              "positive_close_rate_ci_low_pct": 31.8,
+              "positive_close_rate_ci_high_pct": 35.2,
+              "funds_exhausted_stop_rate_pct": 61.0,
+              "median_profit_yen": -9990,
+              "avg_profit_standard_error_yen": 377
+            },
+            {
+              "label": "90회/1000엔",
+              "spins_per_1000yen": 90.0,
+              "simulation_seed": 12802758995585156242,
+              "median_play_minutes": 409.52,
+              "positive_close_rate_pct": 40.8,
+              "positive_close_rate_ci_low_pct": 39.0,
+              "positive_close_rate_ci_high_pct": 42.5,
+              "funds_exhausted_stop_rate_pct": 54.0,
+              "median_profit_yen": -9989,
+              "avg_profit_standard_error_yen": 431
+            }
+          ]
+        },
+        {
+          "category": "기타",
+          "machine": "e 도쿄구울",
+          "store": "123/2대",
+          "budget_yen": 10000,
+          "rotation_range_text": "60-90회/1000엔",
+          "median_time_range_text": "205~538분",
+          "plus_range_text": "21.5~44.2%",
+          "funds_exhausted_range_text": "50.1~72.6%",
+          "median_profit_range_text": "-9,989엔~-9,984엔",
+          "sensitivity_label": "높음",
+          "case_metrics": [
+            {
+              "label": "60회/1000엔",
+              "spins_per_1000yen": 60.0,
+              "simulation_seed": 9844853017191488191,
+              "median_play_minutes": 204.55,
+              "positive_close_rate_pct": 21.5,
+              "positive_close_rate_ci_low_pct": 20.1,
+              "positive_close_rate_ci_high_pct": 23.0,
+              "funds_exhausted_stop_rate_pct": 72.6,
+              "median_profit_yen": -9988,
+              "avg_profit_standard_error_yen": 287
+            },
+            {
+              "label": "70회/1000엔",
+              "spins_per_1000yen": 70.0,
+              "simulation_seed": 6924703149125510265,
+              "median_play_minutes": 251.57,
+              "positive_close_rate_pct": 28.1,
+              "positive_close_rate_ci_low_pct": 26.5,
+              "positive_close_rate_ci_high_pct": 29.7,
+              "funds_exhausted_stop_rate_pct": 65.8,
+              "median_profit_yen": -9989,
+              "avg_profit_standard_error_yen": 333
+            },
+            {
+              "label": "80회/1000엔",
+              "spins_per_1000yen": 80.0,
+              "simulation_seed": 12948842811410035348,
+              "median_play_minutes": 333.73,
+              "positive_close_rate_pct": 36.3,
+              "positive_close_rate_ci_low_pct": 34.6,
+              "positive_close_rate_ci_high_pct": 38.0,
+              "funds_exhausted_stop_rate_pct": 58.3,
+              "median_profit_yen": -9989,
+              "avg_profit_standard_error_yen": 389
+            },
+            {
+              "label": "90회/1000엔",
+              "spins_per_1000yen": 90.0,
+              "simulation_seed": 16053354500695636629,
+              "median_play_minutes": 538.32,
+              "positive_close_rate_pct": 44.2,
+              "positive_close_rate_ci_low_pct": 42.5,
+              "positive_close_rate_ci_high_pct": 46.0,
+              "funds_exhausted_stop_rate_pct": 50.1,
+              "median_profit_yen": -9984,
+              "avg_profit_standard_error_yen": 429
+            }
+          ]
+        },
+        {
+          "category": "기타",
+          "machine": "디지하네 P 북두의 권 자모",
+          "store": "123/1대",
+          "budget_yen": 10000,
+          "rotation_range_text": "65.5-80.5회/1000엔",
+          "median_time_range_text": "540~540분",
+          "plus_range_text": "27.6~56.3%",
+          "funds_exhausted_range_text": "18.6~43.6%",
+          "median_profit_range_text": "-6,940엔~+1,564엔",
+          "sensitivity_label": "높음",
+          "case_metrics": [
+            {
+              "label": "보더-5",
+              "spins_per_1000yen": 65.5,
+              "simulation_seed": 7118871849829776005,
+              "median_play_minutes": 539.84,
+              "positive_close_rate_pct": 27.6,
+              "positive_close_rate_ci_low_pct": 26.0,
+              "positive_close_rate_ci_high_pct": 29.2,
+              "funds_exhausted_stop_rate_pct": 43.6,
+              "median_profit_yen": -6940,
+              "avg_profit_standard_error_yen": 149
+            },
+            {
+              "label": "보더±0",
+              "spins_per_1000yen": 70.5,
+              "simulation_seed": 1004055433456103433,
+              "median_play_minutes": 539.87,
+              "positive_close_rate_pct": 35.1,
+              "positive_close_rate_ci_low_pct": 33.4,
+              "positive_close_rate_ci_high_pct": 36.8,
+              "funds_exhausted_stop_rate_pct": 36.7,
+              "median_profit_yen": -4163,
+              "avg_profit_standard_error_yen": 162
+            },
+            {
+              "label": "보더+5",
+              "spins_per_1000yen": 75.5,
+              "simulation_seed": 3422300819749423372,
+              "median_play_minutes": 539.9,
+              "positive_close_rate_pct": 44.9,
+              "positive_close_rate_ci_low_pct": 43.1,
+              "positive_close_rate_ci_high_pct": 46.7,
+              "funds_exhausted_stop_rate_pct": 26.4,
+              "median_profit_yen": -1275,
+              "avg_profit_standard_error_yen": 175
+            },
+            {
+              "label": "보더+10",
+              "spins_per_1000yen": 80.5,
+              "simulation_seed": 18319807043823654950,
+              "median_play_minutes": 539.92,
+              "positive_close_rate_pct": 56.3,
+              "positive_close_rate_ci_low_pct": 54.5,
+              "positive_close_rate_ci_high_pct": 58.0,
+              "funds_exhausted_stop_rate_pct": 18.6,
+              "median_profit_yen": 1564,
+              "avg_profit_standard_error_yen": 181
+            }
+          ]
+        }
+      ]
+    }
+  },
   "rows": [
     {
       "category": "대해물어",

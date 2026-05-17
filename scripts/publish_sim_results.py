@@ -18,9 +18,12 @@ from stores import STORE_INVENTORY, store_contexts_for_machine  # noqa: E402
 
 DEFAULT_BUDGETS = [10000, 15000, 20000]
 DEFAULT_ITERATIONS = 5000
+DEFAULT_SENSITIVITY_BUDGET = 10000
+DEFAULT_SENSITIVITY_ITERATIONS = 3000
 DEFAULT_EXCHANGE_RATE = 0.89
 DEFAULT_BASE_SEED = 20260518
 FALLBACK_SPINS_PER_1000Y = 70.0
+FALLBACK_SENSITIVITY_SPINS = [60.0, 70.0, 80.0, 90.0]
 
 CATEGORY_LABELS = {
     "daiumi": "대해물어",
@@ -45,6 +48,11 @@ def parse_budgets(value: str) -> list[int]:
 
 def row_seed(base_seed: int, machine_id: str, budget: int, spins_per_1000y: float) -> int:
     payload = f"{base_seed}:{machine_id}:{budget}:{spins_per_1000y:.3f}".encode("utf-8")
+    return int.from_bytes(hashlib.blake2b(payload, digest_size=8).digest(), "big")
+
+
+def analysis_seed(base_seed: int, namespace: str, machine_id: str, budget: int, spins_per_1000y: float) -> int:
+    payload = f"{base_seed}:{namespace}:{machine_id}:{budget}:{spins_per_1000y:.3f}".encode("utf-8")
     return int.from_bytes(hashlib.blake2b(payload, digest_size=8).digest(), "big")
 
 
@@ -103,6 +111,63 @@ def summary_machine() -> Machine:
     )
 
 
+def format_minutes_range(min_minutes: float, max_minutes: float) -> str:
+    return f"{min_minutes:.0f}~{max_minutes:.0f}분"
+
+
+def format_pct_range(min_pct: float, max_pct: float) -> str:
+    return f"{min_pct:.1f}~{max_pct:.1f}%"
+
+
+def format_yen_range(min_yen: int, max_yen: int) -> str:
+    return f"{min_yen:+,}엔~{max_yen:+,}엔"
+
+
+def rotation_sensitivity_cases(border: float | None) -> list[tuple[str, float]]:
+    if border is None:
+        return [(f"{spins:.0f}회/1000엔", spins) for spins in FALLBACK_SENSITIVITY_SPINS]
+    return [
+        ("보더-5", max(1.0, border - 5.0)),
+        ("보더±0", border),
+        ("보더+5", border + 5.0),
+        ("보더+10", border + 10.0),
+    ]
+
+
+def sensitivity_label(plus_range: float, median_time_range: float, exhausted_range: float) -> str:
+    if plus_range >= 25.0 or median_time_range >= 240.0 or exhausted_range >= 30.0:
+        return "높음"
+    if plus_range >= 12.0 or median_time_range >= 90.0 or exhausted_range >= 15.0:
+        return "중간"
+    return "낮음"
+
+
+def simulate_case(
+    *,
+    machine: Machine,
+    context: dict,
+    budget: int,
+    spins_per_1000y: float,
+    exchange_rate: float,
+    iterations: int,
+    seed: int,
+    border: float | None,
+) -> list[dict]:
+    return simulate_multiple(
+        machine,
+        budget=budget,
+        lend_rate=float(context.get("rental_rate") or 1.0),
+        spins_per_1000y=spins_per_1000y,
+        exchange_rate=exchange_rate,
+        iterations=iterations,
+        strategy="no_rule",
+        session_policy="play_until_budget_and_balls_gone",
+        start_variance=True,
+        border_spins_per_1000y=border,
+        seed=seed,
+    )
+
+
 def build_result_rows(
     *,
     budgets: list[int],
@@ -126,18 +191,15 @@ def build_result_rows(
 
         for budget in budgets:
             seed = row_seed(base_seed, machine_id, budget, spins_per_1000y)
-            results = simulate_multiple(
-                machine,
+            results = simulate_case(
+                machine=machine,
+                context=context,
                 budget=budget,
-                lend_rate=float(context.get("rental_rate") or 1.0),
                 spins_per_1000y=spins_per_1000y,
                 exchange_rate=exchange_rate,
                 iterations=iterations,
-                strategy="no_rule",
-                session_policy="play_until_budget_and_balls_gone",
-                start_variance=True,
-                border_spins_per_1000y=border,
                 seed=seed,
+                border=border,
             )
             metrics = calculate_metrics(results, iterations)
             store = context.get("store_short_label", context.get("store_name", "-"))
@@ -178,10 +240,103 @@ def build_result_rows(
     ]
 
 
+def build_rotation_sensitivity(
+    *,
+    budget: int,
+    iterations: int,
+    exchange_rate: float,
+    base_seed: int,
+) -> dict:
+    rows = []
+    for machine_id in active_model_ids():
+        machine = MACHINES[machine_id]
+        context = preferred_context(machine_id)
+        category = row_category(context)
+        border = context.get("border_spins_per_1000yen")
+        border = float(border) if border is not None else None
+        case_metrics = []
+        for label, spins_per_1000y in rotation_sensitivity_cases(border):
+            seed = analysis_seed(base_seed, "rotation_sensitivity", machine_id, budget, spins_per_1000y)
+            results = simulate_case(
+                machine=machine,
+                context=context,
+                budget=budget,
+                spins_per_1000y=spins_per_1000y,
+                exchange_rate=exchange_rate,
+                iterations=iterations,
+                seed=seed,
+                border=border,
+            )
+            metrics = calculate_metrics(results, iterations)
+            case_metrics.append(
+                {
+                    "label": label,
+                    "spins_per_1000yen": round(spins_per_1000y, 2),
+                    "simulation_seed": seed,
+                    "median_play_minutes": round(metrics["median_play_minutes"], 2),
+                    "positive_close_rate_pct": round(metrics["positive_close_rate"], 1),
+                    "positive_close_rate_ci_low_pct": round(metrics["positive_close_rate_ci_low"], 1),
+                    "positive_close_rate_ci_high_pct": round(metrics["positive_close_rate_ci_high"], 1),
+                    "funds_exhausted_stop_rate_pct": round(metrics["funds_exhausted_stop_rate"], 1),
+                    "median_profit_yen": metrics["median_profit"],
+                    "avg_profit_standard_error_yen": metrics["avg_profit_standard_error"],
+                }
+            )
+            print(
+                f"sensitivity\t{category}\t{machine_id}\t{label}\t{budget}\t"
+                f"seed={seed}\tspins={spins_per_1000y:.1f}\t"
+                f"p50={metrics['median_play_minutes']:.1f}\tplus={metrics['positive_close_rate']:.1f}",
+                flush=True,
+            )
+
+        median_times = [case["median_play_minutes"] for case in case_metrics]
+        plus_rates = [case["positive_close_rate_pct"] for case in case_metrics]
+        exhausted_rates = [case["funds_exhausted_stop_rate_pct"] for case in case_metrics]
+        median_profits = [case["median_profit_yen"] for case in case_metrics]
+        rotation_min = min(case["spins_per_1000yen"] for case in case_metrics)
+        rotation_max = max(case["spins_per_1000yen"] for case in case_metrics)
+        median_time_range = max(median_times) - min(median_times)
+        plus_range = max(plus_rates) - min(plus_rates)
+        exhausted_range = max(exhausted_rates) - min(exhausted_rates)
+        store = context.get("store_short_label", context.get("store_name", "-"))
+        count = context.get("count", 0)
+        rows.append(
+            {
+                "category": category,
+                "machine": machine_label(machine),
+                "store": f"{store}/{count}대",
+                "budget_yen": budget,
+                "rotation_range_text": f"{rotation_min:g}-{rotation_max:g}회/1000엔",
+                "median_time_range_text": format_minutes_range(min(median_times), max(median_times)),
+                "plus_range_text": format_pct_range(min(plus_rates), max(plus_rates)),
+                "funds_exhausted_range_text": format_pct_range(min(exhausted_rates), max(exhausted_rates)),
+                "median_profit_range_text": format_yen_range(min(median_profits), max(median_profits)),
+                "sensitivity_label": sensitivity_label(plus_range, median_time_range, exhausted_range),
+                "case_metrics": case_metrics,
+            }
+        )
+
+    rows.sort(
+        key=lambda row: (
+            CATEGORY_ORDER.get(row["category"], 99),
+            row["machine"],
+        )
+    )
+    return {
+        "budget_yen": budget,
+        "iterations": iterations,
+        "scope": "rotation-input sensitivity summary, not actual play results",
+        "rows": rows,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Publish latest sanitized simulator aggregate table.")
     parser.add_argument("--iterations", type=int, default=DEFAULT_ITERATIONS)
     parser.add_argument("--budgets", type=parse_budgets, default=DEFAULT_BUDGETS)
+    parser.add_argument("--sensitivity-budget", type=int, default=DEFAULT_SENSITIVITY_BUDGET)
+    parser.add_argument("--sensitivity-iterations", type=int, default=DEFAULT_SENSITIVITY_ITERATIONS)
+    parser.add_argument("--skip-sensitivity", action="store_true")
     parser.add_argument("--exchange-rate", type=float, default=DEFAULT_EXCHANGE_RATE)
     parser.add_argument("--base-seed", type=int, default=DEFAULT_BASE_SEED)
     args = parser.parse_args()
@@ -192,6 +347,14 @@ def main() -> int:
         exchange_rate=args.exchange_rate,
         base_seed=args.base_seed,
     )
+    extra_analysis = {}
+    if not args.skip_sensitivity:
+        extra_analysis["rotation_sensitivity"] = build_rotation_sensitivity(
+            budget=args.sensitivity_budget,
+            iterations=args.sensitivity_iterations,
+            exchange_rate=args.exchange_rate,
+            base_seed=args.base_seed,
+        )
     paths = save_public_sim_results(
         "대표 저대여 설치 조건(점포 순위 아님)",
         "대해물어/에바/기타 활성 모델 예산별 10k/15k/20k 비교",
@@ -199,6 +362,7 @@ def main() -> int:
         rows,
         args.iterations,
         calculate_metrics,
+        extra_analysis=extra_analysis,
     )
     print(f"saved {paths}", flush=True)
     return 0

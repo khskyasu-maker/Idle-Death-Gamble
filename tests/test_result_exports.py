@@ -171,18 +171,40 @@ class ResultExportTests(unittest.TestCase):
             5,
             metrics_stub,
             generated_at="2026-05-17 12:00:00 KST",
+            extra_analysis={
+                "rotation_sensitivity": {
+                    "budget_yen": 10000,
+                    "iterations": 3,
+                    "rows": [
+                        {
+                            "category": "대해물어",
+                            "machine": "P 대해물어5",
+                            "store": "123/4대",
+                            "rotation_range_text": "60-75회/1000엔",
+                            "median_time_range_text": "120-540분",
+                            "plus_range_text": "20.0-40.0%",
+                            "funds_exhausted_range_text": "30.0-60.0%",
+                            "median_profit_range_text": "-10,000엔~+1,000엔",
+                            "sensitivity_label": "높음",
+                        }
+                    ],
+                }
+            },
         )
         markdown = build_public_sim_result_markdown(payload)
 
         self.assertFalse(payload["privacy_policy"]["raw_sample_sessions_included"])
-        self.assertEqual(2, payload["schema_version"])
+        self.assertEqual(3, payload["schema_version"])
         self.assertIn("simulation_method", payload)
         self.assertIn("model_structure", payload["simulation_method"])
         self.assertIn("statistics", payload["simulation_method"])
+        self.assertIn("analysis", payload)
         self.assertNotIn("results", payload["rows"][0])
         self.assertIn("최신 공개 시뮬 결과", markdown)
         self.assertIn("시뮬 설계와 구성", markdown)
         self.assertIn("사전 유추와 실제 결과 비교 기준", markdown)
+        self.assertIn("회전율 민감도 요약", markdown)
+        self.assertIn("60-75회/1000엔", markdown)
         self.assertIn("기종", markdown)
         self.assertIn("평균최대연", markdown)
         self.assertIn("플러스95%CI", markdown)

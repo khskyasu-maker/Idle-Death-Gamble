@@ -70,6 +70,7 @@ def simulation_method_summary() -> Dict[str, Any]:
             "공개 표는 평균, 중앙값, 꼬리 손실, 체류 시간, 당첨, RUSH, 플러스 마감, 연속 지표를 보여줍니다",
             "플러스 마감률은 Wilson 방식 95% 신뢰구간을 함께 표시합니다",
             "평균 손익은 표준오차를 함께 공개해 불안정한 행과 안정적인 행을 구분할 수 있게 합니다",
+            "회전율 민감도는 원시 표본을 저장하지 않고 기종별 요약 범위만 공개합니다",
             "JSON에는 행별 simulation_seed를 저장해 같은 조건을 재현할 수 있게 합니다",
         ],
         "pre_sim_vs_actual_reading": [
@@ -146,6 +147,100 @@ def build_public_method_html(method: Dict[str, Any]) -> str:
         html.append("</ul>")
     html.append("</section>")
     return "\n".join(html)
+
+
+def build_rotation_sensitivity_markdown(analysis: Dict[str, Any]) -> str:
+    sensitivity = analysis.get("rotation_sensitivity") if analysis else None
+    if not sensitivity:
+        return ""
+
+    rows = sensitivity.get("rows", [])
+    if not rows:
+        return ""
+
+    md = "## 회전율 민감도 요약\n\n"
+    md += f"- 예산: {yen(sensitivity.get('budget_yen', 0))}\n"
+    md += f"- 반복: {sensitivity.get('iterations', 0)}회\n"
+    md += "- 목적: 실제 현장 결과가 아니라 여행 전 입력 회전수 오차가 체류/손익 지표를 얼마나 흔드는지 보는 사전 분석입니다.\n"
+    md += "- 해석: 민감도가 높을수록 현장 첫 1,000円 회전수 확인이 더 중요합니다. 점포 순위나 방문 지시가 아닙니다.\n\n"
+
+    headers = [
+        "분류",
+        "기종",
+        "점포",
+        "회전범위",
+        "P50시간범위",
+        "플러스범위",
+        "완전소진범위",
+        "중앙손익범위",
+        "민감도",
+    ]
+    md += "|" + "|".join(headers) + "|\n"
+    md += "|" + "|".join("---" for _ in headers) + "|\n"
+    for row in rows:
+        values = [
+            row.get("category", ""),
+            row.get("machine", ""),
+            row.get("store", ""),
+            row.get("rotation_range_text", ""),
+            row.get("median_time_range_text", ""),
+            row.get("plus_range_text", ""),
+            row.get("funds_exhausted_range_text", ""),
+            row.get("median_profit_range_text", ""),
+            row.get("sensitivity_label", ""),
+        ]
+        md += "|" + "|".join(str(value).replace("|", "/") for value in values) + "|\n"
+    md += "\n"
+    return md
+
+
+def build_rotation_sensitivity_html(analysis: Dict[str, Any]) -> str:
+    sensitivity = analysis.get("rotation_sensitivity") if analysis else None
+    if not sensitivity:
+        return ""
+
+    rows = sensitivity.get("rows", [])
+    if not rows:
+        return ""
+
+    headers = [
+        "분류",
+        "기종",
+        "점포",
+        "회전범위",
+        "P50시간범위",
+        "플러스범위",
+        "완전소진범위",
+        "중앙손익범위",
+        "민감도",
+    ]
+    head_cells = "".join(f"<th>{escape(header)}</th>" for header in headers)
+    body_rows = []
+    for row in rows:
+        values = [
+            row.get("category", ""),
+            row.get("machine", ""),
+            row.get("store", ""),
+            row.get("rotation_range_text", ""),
+            row.get("median_time_range_text", ""),
+            row.get("plus_range_text", ""),
+            row.get("funds_exhausted_range_text", ""),
+            row.get("median_profit_range_text", ""),
+            row.get("sensitivity_label", ""),
+        ]
+        body_rows.append("<tr>" + "".join(f"<td>{escape(str(value))}</td>" for value in values) + "</tr>")
+
+    return f"""
+  <section class="note">
+    <h2>회전율 민감도 요약</h2>
+    <p><strong>예산:</strong> {escape(yen(sensitivity.get('budget_yen', 0)))} / <strong>반복:</strong> {escape(str(sensitivity.get('iterations', 0)))}회</p>
+    <p>실제 현장 결과가 아니라 여행 전 입력 회전수 오차가 체류/손익 지표를 얼마나 흔드는지 보는 사전 분석입니다. 민감도가 높을수록 현장 첫 1,000円 회전수 확인이 더 중요합니다.</p>
+    <table>
+      <thead><tr>{head_cells}</tr></thead>
+      <tbody>{''.join(body_rows)}</tbody>
+    </table>
+  </section>
+"""
 
 
 def public_case_label(row: Dict[str, Any]) -> str:
@@ -243,9 +338,10 @@ def build_public_sim_result_payload(
     iterations: int,
     calculate_metrics_fn: MetricsFn,
     generated_at: str | None = None,
+    extra_analysis: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "generated_at": generated_at or kst_now_text(),
         "publication_scope": "latest sanitized aggregate simulator result only",
         "simulation_method": simulation_method_summary(),
@@ -269,6 +365,7 @@ def build_public_sim_result_payload(
             "confidence": machine.confidence,
         },
         "iterations": iterations,
+        "analysis": extra_analysis or {},
         "rows": public_result_rows(machine, result_rows, iterations, calculate_metrics_fn),
     }
 
@@ -359,6 +456,7 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
     md += f"- 반복: {payload['iterations']}회\n"
     md += "- 범위: 공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.\n\n"
     md += build_public_method_markdown(payload.get("simulation_method", {}))
+    md += build_rotation_sensitivity_markdown(payload.get("analysis", {}))
     md += "|" + "|".join(headers) + "|\n"
     md += "|" + "|".join("---" for _ in headers) + "|\n"
     for row in payload["rows"]:
@@ -400,6 +498,7 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
 
     machine = payload["machine"]
     method_html = build_public_method_html(payload.get("simulation_method", {}))
+    sensitivity_html = build_rotation_sensitivity_html(payload.get("analysis", {}))
     return f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -429,6 +528,7 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
   </div>
   <div class="note">공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.</div>
   {method_html}
+{sensitivity_html}
   <table>
     <thead><tr>{head_cells}</tr></thead>
     <tbody>{''.join(body_rows)}</tbody>
@@ -447,6 +547,7 @@ def save_public_sim_results(
     calculate_metrics_fn: MetricsFn,
     docs_dir: Path | None = None,
     generated_at: str | None = None,
+    extra_analysis: Dict[str, Any] | None = None,
 ) -> Dict[str, Path]:
     docs_dir = docs_dir or public_docs_dir_from_env()
     docs_dir.mkdir(parents=True, exist_ok=True)
@@ -459,6 +560,7 @@ def save_public_sim_results(
         iterations,
         calculate_metrics_fn,
         generated_at=generated_at,
+        extra_analysis=extra_analysis,
     )
     json_path = docs_dir / f"{LATEST_SIM_RESULT_BASENAME}.json"
     md_path = docs_dir / f"{LATEST_SIM_RESULT_BASENAME}.md"
