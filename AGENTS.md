@@ -62,6 +62,8 @@ Do not store or publish dynamic decision data in GitHub:
 ├── .github/workflows/daily.yml   # Manual GitHub Actions workflow
 ├── README.md                     # Project overview and Pages setup notes
 ├── requirements.txt              # Python dependencies
+├── requirements-dev.txt          # Optional local developer tools
+├── pyproject.toml                # Ruff/pytest/coverage configuration
 ├── data/
 │   ├── stores.json               # Store list, URL targets, and machine rules
 │   ├── namba-actual-1yen-lineup.json # Corrected Namba low-rate lineup
@@ -89,7 +91,11 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── rotation.py                # Rotation-rate, border, and rate-unit conversion helpers
 │   ├── store_comparison.py        # Same-machine store comparison scenario builder
 │   ├── simulator.py              # Monte Carlo session engine
-│   ├── result.py                 # ASCII output, metrics, and CSV append helper
+│   ├── result.py                 # CLI result assembly and user-facing output
+│   ├── result_stats.py           # Pure statistical helper functions
+│   ├── result_formatting.py       # Terminal table, yen, percent, and time formatting helpers
+│   ├── result_csv.py              # Explicit opt-in CSV append serialization
+│   ├── result_store_views.py      # Same-machine store comparison view row builders
 │   ├── stores.py                 # Local simulator lineup adapter from public JSON
 │   ├── model_checks.py           # Deterministic model consistency checks
 │   ├── README.md                 # Simulator usage notes
@@ -102,6 +108,7 @@ Do not store or publish dynamic decision data in GitHub:
     ├── collect.py                # External page collection
     ├── analyze.py                # Rule-based analysis and ranking
     ├── build_report.py           # Report generation; this is the real report builder
+    ├── check.py                  # Local syntax/JSON/test/validation/dev-tool check runner
     ├── validate_data.py          # Public data and simulator consistency validation
     └── utils.py                  # Shared paths, JSON/text I/O, logging, KST time
 ```
@@ -141,6 +148,46 @@ The normal data and report pipeline is:
 - When adding or correcting a machine model from DMM/official/product pages, follow `pachinko-sim/SPEC_MODELING_GUIDE.md`.
 - Prefer reusable factories in `pachinko-sim/machine_templates.py` for machines with the same structure; add a new template only when it represents a real shared mechanic.
 - When Japanese text appears in simulator output or maintained docs, include a Korean translation next to it where practical.
+
+## Development Direction
+
+Current near-term development should keep improving correctness, maintainability, and explainability before adding more speculative features.
+
+- Keep `result.py` shrinking. New output tables, row builders, formatting helpers, and pure statistics should move into focused helper modules when they can be tested without running the interactive CLI.
+- Prefer deterministic unit tests for pure logic. For result/output helpers, use small fixed dictionaries and metric stubs rather than slow Monte Carlo runs.
+- Do not add a new simulator model just because a machine name appears in a store lineup. Add or promote a model only after the public spec structure is understood well enough to encode the state transitions.
+- If a model is useful but partially uncertain, mark it with conservative `confidence`, `is_estimated`, `spec_source`, and visible `notes`; do not hide uncertainty in output.
+- Keep machine-family duplication low. Reuse `machine_templates.py` for repeated mechanics such as 海物語(바다이야기) loop/ST patterns, Eva V-ST patterns, or other verified shared structures.
+- Keep simulation mechanics separate from presentation. Probability/state transitions belong in `simulator.py` and machine definitions; store scenario assumptions belong in `store_comparison.py`; output shaping belongs in `result_*` helper modules.
+- Keep time and ball economics explicit. Net ball consumption, gross fired balls, ベース(반환), right-side spend, payout/effect time, soft stop, cash-input cutoff, and hard stop must remain separately inspectable.
+- Keep same-machine store comparison rate-aware. Do not collapse `동일 1000엔 회전수`, `동일 헤소 입상 품질`, and `동일 보더 마진` into one generic comparison.
+- Use free, lightweight Python developer tools only when they add clear value. Optional tools belong in `requirements-dev.txt` and `pyproject.toml`; core runtime should remain standard-library-first unless there is a strong reason.
+- Avoid broad rewrites. Make small, reviewable patches that preserve existing CLI behavior unless the user explicitly asks for a behavior change.
+
+## Machine Modeling Workflow
+
+When adding or correcting simulator models:
+
+1. Verify the machine is relevant to the current low-rate scope: 1円/1.111円 in the target Namba stores, or a deliberate reference model for tests.
+2. Read public machine specs from DMM, official manufacturer pages, or trusted spec sites such as ちょんぼりすた. Store only objective fields in public data.
+3. Translate Japanese spec terms through `pachinko-sim/SPEC_MODELING_GUIDE.md` before editing Python distributions.
+4. Choose an existing family factory when the flow matches; otherwise model directly first, then extract a template only after a second real machine shares the structure.
+5. Convert `払出(지급)` to practical obtained balls only when the family has an explicit documented conversion rule. Keep that basis in `notes`.
+6. Add or update public benchmark checks in `spec_benchmarks.py` when a source exposes comparable values such as 初当り(초당첨), RUSH突入(러시 진입), 継続(계속), LT, or upper-RUSH rates.
+7. Add deterministic unit tests for payout weights, state names, LT vs non-LT upper RUSH, and any unusual state such as 転落(전락), 残保留(잔보류), 確変(확변), or ジンベェタイム(진베에 타임).
+8. Update `pachinko-sim/ARCHITECTURE.md` and `pachinko-sim/README.md` when assumptions, modules, or user-visible metrics change.
+
+Do not invent missing specs. If a page does not confirm a mechanic, either leave the model unsupported, keep it as a clearly marked low-confidence estimate, or ask for source confirmation.
+
+## Python Development Guidelines
+
+- Keep code compatible with Python 3.11 because GitHub Actions uses Python 3.11.
+- Prefer dataclasses and typed helper functions for structured simulator data over untyped nested dictionaries when creating new core objects.
+- Runtime dictionaries are acceptable at CLI/output boundaries, but new shared contracts should be documented by names, tests, or small typed helpers.
+- Avoid circular imports between `result.py` and `result_*` helper modules. Helper modules should not import the interactive CLI.
+- Keep random Monte Carlo behavior out of deterministic tests unless a fixed seed and wide tolerance are intentionally part of the test.
+- Do not create or overwrite local result files automatically. `results.csv` remains explicit opt-in append-only behavior.
+- Preserve UTF-8 Korean/Japanese text. This repository intentionally contains bilingual user-facing output.
 
 ## Local Development Commands
 
@@ -281,10 +328,22 @@ Blank URLs are allowed and are recorded as `skipped` with `No URL`.
 
 Before finishing changes, run the checks that match the change scope.
 
-Syntax check:
+Preferred full local check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
+python scripts/check.py
+```
+
+Optional developer-tool check when `.venv` has `requirements-dev.txt` installed:
+
+```bash
+python scripts/check.py --dev-tools --coverage
+```
+
+Equivalent manual syntax check:
+
+```bash
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py
 ```
 
 JSON validation:
