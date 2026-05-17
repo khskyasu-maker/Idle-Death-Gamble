@@ -110,6 +110,17 @@ class SimulatorSpecTests(unittest.TestCase):
             sum(p.weight for p in shin_eva_lt.st_hit_dist if p.next_state == "LT"),
         )
 
+    def test_eva15_319_uses_practical_vst_outputs(self):
+        eva15 = MACHINES["eva_15_roar"]
+        self.assertEqual([1400, 420, 420], [p.balls for p in eva15.normal_hit_dist])
+        self.assertEqual([0.03, 0.56, 0.41], [p.weight for p in eva15.normal_hit_dist])
+        self.assertEqual(["ST", "ST", "JITAN"], [p.next_state for p in eva15.normal_hit_dist])
+        self.assertEqual([True, True, False], [p.counts_as_rush for p in eva15.normal_hit_dist])
+        self.assertEqual({163}, {p.st_spins for p in eva15.normal_hit_dist if p.next_state == "ST"})
+        self.assertEqual({100}, {p.jitan_spins for p in eva15.normal_hit_dist if p.next_state == "JITAN"})
+        self.assertEqual([1400], [p.balls for p in eva15.st_hit_dist])
+        self.assertEqual([1400], [p.balls for p in eva15.jitan_hit_dist])
+
         mediterranean = MACHINES["mediterranean_2_89"]
         self.assertEqual({24}, {p.st_spins for p in mediterranean.normal_hit_dist})
         self.assertEqual(

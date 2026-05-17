@@ -1,4 +1,4 @@
-from machine_templates import sea_kakuhen_10r
+from machine_templates import eva_vst_split_entry, sea_kakuhen_10r
 from machine_types import Machine, Payout
 
 MACHINES = {
@@ -135,32 +135,33 @@ MACHINES = {
     ),
 
     # B-4. 新世紀エヴァンゲリオン〜未来への咆哮〜 (에바15 미들)
-    "eva_15_roar": Machine(
-        id="eva_15_roar",
+    "eva_15_roar": eva_vst_split_entry(
+        machine_id="eva_15_roar",
         name_ja="新世紀エヴァンゲリオン〜未来への咆哮〜",
         name_ko="신세기 에반게리온 미래로의 포효 (에바15)",
-        spec_type="미들 / V-ST",
-        risk_grade="1/319",
+        source="SANKYO collection/925 / DMMぱちタウン machines/4021 / GA 2021-10-07 T1Y sheet",
         normal_prob=319.7,
         high_prob=99.4,
-        normal_hit_dist=[
-            Payout(balls=1500, weight=0.03, next_state="ST", st_spins=163),
-            Payout(balls=450, weight=0.56, next_state="ST", st_spins=163),
-            Payout(balls=450, weight=0.41, next_state="JITAN", jitan_spins=100, counts_as_rush=False),
-        ],
-        st_hit_dist=[
-            Payout(balls=1500, weight=1.00, next_state="ST", st_spins=163)
-        ],
-        jitan_hit_dist=[
-            Payout(balls=1500, weight=1.00, next_state="ST", st_spins=163)
-        ],
-        kakuben_hit_dist=[],
-        lt_hit_dist=[],
-        simplification_notes="特図1 10R確変 3% / 3R確変 56% / 3R通常 41%. 時短100 중 당첨 시 ST163으로 승격.",
-        spec_source="P-WORLD / DMMぱちタウン / SANKYO",
+        st_spins=163,
+        jitan_spins=100,
+        first_10r_weight=0.03,
+        first_3r_st_weight=0.56,
+        first_3r_jitan_weight=0.41,
+        first_10r_balls=1400,
+        first_3r_balls=420,
+        right_balls=1400,
+        risk_grade="1/319",
+        spec_type="미들 / V-ST",
         confidence="high",
-        notes="残保留 4개引き戻し는 별도 보류 상태 없이 ST/時短 회전수에 일부 흡수.",
-        is_estimated=False,
+        simplification_notes=(
+            "特図1 10R確変 3% / 3R確変 56% / 3R通常 41%. "
+            "通常後 時短100 중 당첨 시 ST163으로 승격."
+        ),
+        notes=(
+            "DMM/SANKYO는 우측 ALL1500個払出로 표기하지만 예산/체류시간 계산은 "
+            "T1Y 근사 10R 1400발, 3R 420발을 사용. ST継続率 약81%는 ST163회 기준으로 검증. "
+            "右打ち中의 잔존ヘソ特図1通常後 時短500 예외와 残保留4는 별도 상태로 모델링하지 않음."
+        ),
     ),
 
     # B-5. P新世紀エヴァンゲリオン〜未来への咆哮〜PREMIUM MODEL (에바15 프리미엄 1/129)

@@ -122,6 +122,8 @@ PUBLIC_BENCHMARKS = {
     "eva_15_roar": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 319.7, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD/DMM"},
         {"label_ja": "高確率中", "label_ko": "고확률 중", "public": 99.4, "metric": "high_prob", "unit": "denom", "source": "P-WORLD/DMM"},
+        {"label_ja": "ST直行割合", "label_ko": "ST 직행 비율", "public": 59.0, "metric": "normal_state_weight", "states": ["ST"], "unit": "pct", "source": "DMM/GA"},
+        {"label_ja": "時短100引き戻し", "label_ko": "시단100 되돌림", "public": 26.9, "metric": "normal_hit_chance", "spins": 100, "unit": "pct", "source": "calculated from 1/319.7"},
         {"label_ja": "ST突入率(時短込み)", "label_ko": "ST 진입률(시단 되돌림 포함)", "public": 70.0, "metric": "normal_rush_with_jitan", "rush_states": ["ST"], "unit": "pct", "source": "Japanese spec sites"},
         {"label_ja": "ST継続率", "label_ko": "ST 계속률", "public": 81.0, "metric": "high_hit_chance", "spins": 163, "unit": "pct", "source": "Japanese spec sites"},
     ],

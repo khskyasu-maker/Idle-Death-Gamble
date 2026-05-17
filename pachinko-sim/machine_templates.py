@@ -116,6 +116,88 @@ def eva_vst(
     )
 
 
+def eva_vst_split_entry(
+    machine_id: str,
+    name_ja: str,
+    name_ko: str,
+    source: str,
+    normal_prob: float,
+    high_prob: float,
+    st_spins: int,
+    jitan_spins: int,
+    first_10r_weight: float,
+    first_3r_st_weight: float,
+    first_3r_jitan_weight: float,
+    first_10r_balls: int,
+    first_3r_balls: int,
+    right_balls: int,
+    risk_grade: str,
+    spec_type: str = "에바 / V-ST",
+    confidence: str = "medium",
+    simplification_notes: str = "",
+    notes: str = "",
+    ball_variance: float = 0.03,
+) -> Machine:
+    return Machine(
+        id=machine_id,
+        name_ja=name_ja,
+        name_ko=name_ko,
+        spec_type=spec_type,
+        risk_grade=risk_grade,
+        normal_prob=normal_prob,
+        high_prob=high_prob,
+        normal_hit_dist=[
+            Payout(
+                balls=first_10r_balls,
+                weight=first_10r_weight,
+                next_state="ST",
+                st_spins=st_spins,
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=first_3r_balls,
+                weight=first_3r_st_weight,
+                next_state="ST",
+                st_spins=st_spins,
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=first_3r_balls,
+                weight=first_3r_jitan_weight,
+                next_state="JITAN",
+                jitan_spins=jitan_spins,
+                counts_as_rush=False,
+                ball_variance=ball_variance,
+            ),
+        ],
+        st_hit_dist=[
+            Payout(
+                balls=right_balls,
+                weight=1.0,
+                next_state="ST",
+                st_spins=st_spins,
+                ball_variance=ball_variance,
+            )
+        ],
+        jitan_hit_dist=[
+            Payout(
+                balls=right_balls,
+                weight=1.0,
+                next_state="ST",
+                st_spins=st_spins,
+                ball_variance=ball_variance,
+            )
+        ],
+        kakuben_hit_dist=[],
+        lt_hit_dist=[],
+        simplification_notes=simplification_notes,
+        spec_source=source,
+        confidence=confidence,
+        notes=notes,
+        is_estimated=confidence != "high",
+    )
+
+
 def re_zero_rush(
     machine_id: str,
     name_ja: str,
