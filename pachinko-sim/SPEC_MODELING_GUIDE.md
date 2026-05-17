@@ -298,6 +298,8 @@ Use this order:
 1. If public page gives `出玉` or `獲得`, use that value.
 2. If only `払出` is shown, convert to a practical budgeting value when the
    same family already uses one, and note the conversion in `notes`.
+   - Current Eva and Daiumi models use about 93% of `払出`, rounded to the
+     nearest 10 balls, for budgeting.
 3. If round/count/award are shown, calculate `rounds * count * award`, then apply
    a conservative adjustment only when the existing model family already does so.
 4. Do not mix 4円 and 1円 values. Machine spec is rate-independent; border and

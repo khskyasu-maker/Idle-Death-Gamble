@@ -82,7 +82,7 @@ class SimulatorSpecTests(unittest.TestCase):
     def test_core_lt_machine_step_specs(self):
         sea_black_lt = MACHINES["sea_5_black_lt"]
         self.assertTrue(machine_has_lt(sea_black_lt))
-        self.assertEqual([330, 330], [p.balls for p in sea_black_lt.normal_hit_dist])
+        self.assertEqual([310, 310], [p.balls for p in sea_black_lt.normal_hit_dist])
         self.assertAlmostEqual(
             0.70,
             sum(p.weight for p in sea_black_lt.normal_hit_dist if p.next_state == "ST"),
@@ -93,11 +93,11 @@ class SimulatorSpecTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             0.40,
-            sum(p.weight for p in sea_black_lt.st_hit_dist if p.balls == 880),
+            sum(p.weight for p in sea_black_lt.st_hit_dist if p.balls == 820),
         )
         self.assertAlmostEqual(
             0.60,
-            sum(p.weight for p in sea_black_lt.st_hit_dist if p.balls == 330),
+            sum(p.weight for p in sea_black_lt.st_hit_dist if p.balls == 310),
         )
 
         shin_eva_lt = MACHINES["shin_eva_129_lt"]
@@ -196,7 +196,7 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual({200}, {p.jitan_spins for p in sea5_special.jitan_hit_dist if p.next_state == "JITAN"})
 
         sea5_agnes = MACHINES["sea_5_agnes"]
-        self.assertEqual([1080, 648, 432, 432], [p.balls for p in sea5_agnes.normal_hit_dist])
+        self.assertEqual([1000, 600, 400, 400], [p.balls for p in sea5_agnes.normal_hit_dist])
         self.assertEqual([10], sorted({p.st_spins for p in sea5_agnes.normal_hit_dist}))
         self.assertEqual([15, 40, 110], sorted({p.jitan_spins for p in sea5_agnes.normal_hit_dist}))
         self.assertEqual(
@@ -205,7 +205,7 @@ class SimulatorSpecTests(unittest.TestCase):
         )
 
         black4 = MACHINES["sea_4_special_black"]
-        self.assertEqual([1500, 750, 450], [p.balls for p in black4.normal_hit_dist])
+        self.assertEqual([1400, 700, 420], [p.balls for p in black4.normal_hit_dist])
         self.assertAlmostEqual(0.30, black4.normal_hit_dist[0].weight)
         self.assertAlmostEqual(0.30, black4.normal_hit_dist[1].weight)
         self.assertAlmostEqual(0.40, black4.normal_hit_dist[2].weight)

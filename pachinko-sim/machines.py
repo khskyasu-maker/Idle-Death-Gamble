@@ -119,24 +119,24 @@ MACHINES = {
         normal_prob=99.9,
         high_prob=41.0,
         normal_hit_dist=[
-            Payout(balls=330, weight=0.70, next_state='ST', st_spins=39),
-            Payout(balls=330, weight=0.30, next_state='NORMAL')
+            Payout(balls=310, weight=0.70, next_state='ST', st_spins=39, ball_variance=0.03),
+            Payout(balls=310, weight=0.30, next_state='NORMAL', counts_as_rush=False, ball_variance=0.03)
         ],
         st_hit_dist=[
-            Payout(balls=880, weight=0.10, next_state='LT', st_spins=110, is_lt=True), # 10% LT 진입
-            Payout(balls=880, weight=0.30, next_state='ST', st_spins=39),
-            Payout(balls=330, weight=0.60, next_state='ST', st_spins=39)
+            Payout(balls=820, weight=0.10, next_state='LT', st_spins=110, is_lt=True, ball_variance=0.03), # 10% LT 진입
+            Payout(balls=820, weight=0.30, next_state='ST', st_spins=39, ball_variance=0.03),
+            Payout(balls=310, weight=0.60, next_state='ST', st_spins=39, ball_variance=0.03)
         ],
         jitan_hit_dist=[],
         kakuben_hit_dist=[],
         lt_hit_dist=[
-            Payout(balls=880, weight=0.40, next_state='LT', st_spins=110, is_lt=True),
-            Payout(balls=330, weight=0.60, next_state='LT', st_spins=110, is_lt=True)
+            Payout(balls=820, weight=0.40, next_state='LT', st_spins=110, is_lt=True, ball_variance=0.03),
+            Payout(balls=310, weight=0.60, next_state='LT', st_spins=110, is_lt=True, ball_variance=0.03)
         ],
         simplification_notes="初当り는 전부 3R이며 70%가 ST. 일반 ST는 35회+残保留4개를 39회로 합산, ST 중 大当り는 8R LT 10% / 8R ST 30% / 3R ST 60%. LT는 공개 継続期待値 약93%에 맞춰 110회로 모델링.",
         spec_source="P-WORLD database/10197 / DMM machines/4735",
         confidence="high",
-        notes="LT 종료 후 잔보류 당첨의 일반 ST振分 예외는 보수적으로 제외.",
+        notes="880/330払出은 예산 계산용 실전 근사 820/310발로 사용. LT 종료 후 잔보류 당첨의 일반 ST振分 예외는 보수적으로 제외.",
         is_estimated=False,
     ),
 
@@ -348,7 +348,7 @@ MACHINES.update(
             kakuben_normal_jitan_spins=100,
             confidence="high",
             simplification_notes="ヘソ/電チュー共通 54%確変・46%通常. 時短/遊タイム中の通常当り後だけ 時短200으로 분리.",
-            notes="遊タイム 950회 도달 후 時短350은 시작回転 입력 기능이 없어 미반영.",
+            notes="1500払出은 예산 계산용 실전 근사 1400발로 사용. 遊タイム 950회 도달 후 時短350은 시작回転 입력 기능이 없어 미반영.",
         ),
         "sea_3r3": Machine(
             id="sea_3r3",
@@ -390,24 +390,24 @@ MACHINES.update(
             normal_prob=199.8,
             high_prob=44.0,
             normal_hit_dist=[
-                Payout(balls=450, weight=1.00, next_state="ST", st_spins=54),
+                Payout(balls=420, weight=1.00, next_state="ST", st_spins=54, ball_variance=0.03),
             ],
             st_hit_dist=[
-                Payout(balls=1500, weight=0.04, next_state="UPPER", st_spins=90),
-                Payout(balls=1500, weight=0.46, next_state="ST", st_spins=54),
-                Payout(balls=450, weight=0.50, next_state="ST", st_spins=54),
+                Payout(balls=1400, weight=0.04, next_state="UPPER", st_spins=90, ball_variance=0.03),
+                Payout(balls=1400, weight=0.46, next_state="ST", st_spins=54, ball_variance=0.03),
+                Payout(balls=420, weight=0.50, next_state="ST", st_spins=54, ball_variance=0.03),
             ],
             jitan_hit_dist=[],
             kakuben_hit_dist=[],
             lt_hit_dist=[],
             upper_hit_dist=[
-                Payout(balls=1500, weight=0.50, next_state="UPPER", st_spins=90),
-                Payout(balls=450, weight=0.50, next_state="UPPER", st_spins=90),
+                Payout(balls=1400, weight=0.50, next_state="UPPER", st_spins=90, ball_variance=0.03),
+                Payout(balls=420, weight=0.50, next_state="UPPER", st_spins=90, ball_variance=0.03),
             ],
             simplification_notes="初当り後は通常ST 50回+残保留4. ST中大当り의 4%만 GOLDパールRUSH(86回+残保留4)로 승격.",
             spec_source="P-WORLD database/9916 / P-WORLD news",
             confidence="high",
-            notes="GOLDパールRUSH는 LT가 아닌 상위ST로 집계하며, LT 진입률에는 포함하지 않습니다.",
+            notes="1500/450払出은 예산 계산용 실전 근사 1400/420발로 사용. GOLDパールRUSH는 LT가 아닌 상위ST로 집계하며, LT 진입률에는 포함하지 않습니다.",
             is_estimated=False,
         ),
         "sea_4_special_black": Machine(
@@ -419,14 +419,14 @@ MACHINES.update(
             normal_prob=199.8,
             high_prob=40.6,
             normal_hit_dist=[
-                Payout(balls=1500, weight=0.30, next_state="ST", st_spins=51),
-                Payout(balls=750, weight=0.30, next_state="ST", st_spins=51),
-                Payout(balls=450, weight=0.40, next_state="ST", st_spins=51),
+                Payout(balls=1400, weight=0.30, next_state="ST", st_spins=51, ball_variance=0.03),
+                Payout(balls=700, weight=0.30, next_state="ST", st_spins=51, ball_variance=0.03),
+                Payout(balls=420, weight=0.40, next_state="ST", st_spins=51, ball_variance=0.03),
             ],
             st_hit_dist=[
-                Payout(balls=1500, weight=0.30, next_state="ST", st_spins=51),
-                Payout(balls=750, weight=0.30, next_state="ST", st_spins=51),
-                Payout(balls=450, weight=0.40, next_state="ST", st_spins=51),
+                Payout(balls=1400, weight=0.30, next_state="ST", st_spins=51, ball_variance=0.03),
+                Payout(balls=700, weight=0.30, next_state="ST", st_spins=51, ball_variance=0.03),
+                Payout(balls=420, weight=0.40, next_state="ST", st_spins=51, ball_variance=0.03),
             ],
             jitan_hit_dist=[],
             kakuben_hit_dist=[],
@@ -434,7 +434,7 @@ MACHINES.update(
             simplification_notes="ST突入率100%, ST51회(전サポ50회)를 하나의 ST 상태로 모델링. 10R30% / 5R30% / 3R40%를 반영.",
             spec_source="Pachiseven machines/6278 / Dechau machine/545",
             confidence="high",
-            notes="1회전만 잠복ST가 되는 전サポ50회 표기는 실전 체감상 ST51회 추첨으로 합산.",
+            notes="1500/750/450払出은 예산 계산용 실전 근사 1400/700/420발로 사용. 1회전만 잠복ST가 되는 전サポ50회 표기는 실전 체감상 ST51회 추첨으로 합산.",
             is_estimated=False,
         ),
         "sea_4_special": sea_kakuhen_loop(
@@ -453,7 +453,7 @@ MACHINES.update(
             kakuben_normal_jitan_spins=120,
             confidence="high",
             simplification_notes="ヘソ・電チュー共通 10R確変52% / 10R通常48%. 非電サポ通常後は時短100, 電サポ中通常後는 時短120으로 분리.",
-            notes="遊タイム950회 도달 시 時短350은 시작 회전수 입력이 없어 미반영.",
+            notes="1500払出은 예산 계산용 실전 근사 1400발로 사용. 遊タイム950회 도달 시 時短350은 시작 회전수 입력이 없어 미반영.",
         ),
         "sea_4_agnes": sea_st_jitan(
             machine_id="sea_4_agnes",
@@ -471,7 +471,7 @@ MACHINES.update(
             risk_grade="1/99",
             confidence="high",
             simplification_notes="ST10회 + 時短15/40/90회. 공개振分 10R4%, 6R60%, 4R6%/30%를 반영.",
-            notes="遊タイム379회는 시작回転 입력이 없어 미반영.",
+            notes="1080/648/432払出은 예산 계산용 실전 근사 1000/600/400발로 사용. 遊タイム379회는 시작回転 입력이 없어 미반영.",
         ),
         "sea_extreme_japan": Machine(
             id="sea_extreme_japan",
@@ -610,7 +610,7 @@ MACHINES.update(
             risk_grade="1/119",
             confidence="high",
             simplification_notes="ST10회 + 時短20/40/90회. 119ver. 공개振分 10R4%, 6R56%, 4R7%/33%를 반영.",
-            notes="遊タイム450회는 시작回転 입력이 없어 미반영.",
+            notes="1300/780/520払出은 예산 계산용 실전 근사 1210/730/480발로 사용. 遊タイム450회는 시작回転 입력이 없어 미반영.",
         ),
         "oki_sea_5_yozakura": Machine(
             id="oki_sea_5_yozakura",
@@ -872,7 +872,7 @@ MACHINES["sea_5_agnes"] = sea_st_jitan(
     risk_grade="1/99",
     confidence="high",
     simplification_notes="ST10회 + 時短15/40/110회. P-WORLD 공개振分(10R 4%, 6R 60%, 4R 6%/30%)을 반영.",
-    notes="ハピネスチャンス中 대당첨은 모두 120회 전サポ라는 예외는 별도 상태 없이 평균 분포로 근사.",
+    notes="1080/648/432払出은 예산 계산용 실전 근사 1000/600/400발로 사용. ハピネスチャンス中 대당첨은 모두 120회 전サポ라는 예외는 별도 상태 없이 평균 분포로 근사.",
 )
 MACHINES["mediterranean_2_89"] = Machine(
     id="mediterranean_2_89",

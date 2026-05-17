@@ -9,8 +9,8 @@ PUBLIC_BENCHMARKS = {
     "sea_5_agnes": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 99.9, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD"},
         {"label_ja": "高確率中", "label_ko": "고확률 중", "public": 19.5, "metric": "high_prob", "unit": "denom", "source": "P-WORLD"},
-        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 4.0, "metric": "normal_balls_weight", "balls": 1080, "unit": "pct", "source": "P-WORLD"},
-        {"label_ja": "6R割合", "label_ko": "6R 비율", "public": 60.0, "metric": "normal_balls_weight", "balls": 648, "unit": "pct", "source": "P-WORLD"},
+        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 4.0, "metric": "normal_balls_weight", "balls": 1000, "unit": "pct", "source": "P-WORLD"},
+        {"label_ja": "6R割合", "label_ko": "6R 비율", "public": 60.0, "metric": "normal_balls_weight", "balls": 600, "unit": "pct", "source": "P-WORLD"},
     ],
     "oki_sea_6": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 319.6, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD"},
@@ -36,9 +36,9 @@ PUBLIC_BENCHMARKS = {
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 199.8, "metric": "normal_prob", "unit": "denom", "source": "Pachiseven/Dechau"},
         {"label_ja": "高確率中", "label_ko": "고확률 중", "public": 40.6, "metric": "high_prob", "unit": "denom", "source": "Pachiseven/Dechau"},
         {"label_ja": "ST継続率", "label_ko": "ST 계속률", "public": 72.0, "metric": "high_hit_chance", "spins": 51, "unit": "pct", "source": "Pachiseven/Dechau"},
-        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 30.0, "metric": "normal_balls_weight", "balls": 1500, "unit": "pct", "source": "Dechau"},
-        {"label_ja": "5R割合", "label_ko": "5R 비율", "public": 30.0, "metric": "normal_balls_weight", "balls": 750, "unit": "pct", "source": "Dechau"},
-        {"label_ja": "3R割合", "label_ko": "3R 비율", "public": 40.0, "metric": "normal_balls_weight", "balls": 450, "unit": "pct", "source": "Dechau"},
+        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 30.0, "metric": "normal_balls_weight", "balls": 1400, "unit": "pct", "source": "Dechau"},
+        {"label_ja": "5R割合", "label_ko": "5R 비율", "public": 30.0, "metric": "normal_balls_weight", "balls": 700, "unit": "pct", "source": "Dechau"},
+        {"label_ja": "3R割合", "label_ko": "3R 비율", "public": 40.0, "metric": "normal_balls_weight", "balls": 420, "unit": "pct", "source": "Dechau"},
     ],
     "sea_4_special": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 319.6, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD/Pachiseven"},
@@ -50,8 +50,8 @@ PUBLIC_BENCHMARKS = {
     "sea_4_agnes": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 99.9, "metric": "normal_prob", "unit": "denom", "source": "Pachiseven/なな徹"},
         {"label_ja": "高確率中", "label_ko": "고확률 중", "public": 19.5, "metric": "high_prob", "unit": "denom", "source": "Pachiseven/なな徹"},
-        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 4.0, "metric": "normal_balls_weight", "balls": 1080, "unit": "pct", "source": "Pachiseven/なな徹"},
-        {"label_ja": "6R割合", "label_ko": "6R 비율", "public": 60.0, "metric": "normal_balls_weight", "balls": 648, "unit": "pct", "source": "Pachiseven/なな徹"},
+        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 4.0, "metric": "normal_balls_weight", "balls": 1000, "unit": "pct", "source": "Pachiseven/なな徹"},
+        {"label_ja": "6R割合", "label_ko": "6R 비율", "public": 60.0, "metric": "normal_balls_weight", "balls": 600, "unit": "pct", "source": "Pachiseven/なな徹"},
     ],
     "sea_3r3": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 99.9, "metric": "normal_prob", "unit": "denom", "source": "Pachiseven/DMM"},
@@ -98,8 +98,8 @@ PUBLIC_BENCHMARKS = {
     "mawarun_sea_4_agnes_119": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 119.8, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD/Dechau"},
         {"label_ja": "高確率中", "label_ko": "고확률 중", "public": 19.5, "metric": "high_prob", "unit": "denom", "source": "P-WORLD/Dechau"},
-        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 4.0, "metric": "normal_balls_weight", "balls": 1300, "unit": "pct", "source": "Dechau"},
-        {"label_ja": "6R割合", "label_ko": "6R 비율", "public": 56.0, "metric": "normal_balls_weight", "balls": 780, "unit": "pct", "source": "Dechau"},
+        {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 4.0, "metric": "normal_balls_weight", "balls": 1210, "unit": "pct", "source": "Dechau"},
+        {"label_ja": "6R割合", "label_ko": "6R 비율", "public": 56.0, "metric": "normal_balls_weight", "balls": 730, "unit": "pct", "source": "Dechau"},
     ],
     "sea_5_black_lt": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 99.9, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD/HAZUSE"},
@@ -107,8 +107,8 @@ PUBLIC_BENCHMARKS = {
         {"label_ja": "ST突入率", "label_ko": "ST 돌입률", "public": 70.0, "metric": "normal_state_weight", "states": ["ST"], "unit": "pct", "source": "P-WORLD/HAZUSE"},
         {"label_ja": "通常ST継続率", "label_ko": "일반 ST 계속률", "public": 62.0, "metric": "high_hit_chance", "spins": 39, "unit": "pct", "source": "P-WORLD/HAZUSE"},
         {"label_ja": "LT突入割合", "label_ko": "LT 돌입 비율", "public": 10.0, "metric": "st_state_weight", "states": ["LT"], "unit": "pct", "source": "P-WORLD/HAZUSE"},
-        {"label_ja": "ST中8R割合", "label_ko": "ST 중 8R 비율", "public": 40.0, "metric": "st_balls_weight", "balls": 880, "unit": "pct", "source": "P-WORLD"},
-        {"label_ja": "ST中3R割合", "label_ko": "ST 중 3R 비율", "public": 60.0, "metric": "st_balls_weight", "balls": 330, "unit": "pct", "source": "P-WORLD"},
+        {"label_ja": "ST中8R割合", "label_ko": "ST 중 8R 비율", "public": 40.0, "metric": "st_balls_weight", "balls": 820, "unit": "pct", "source": "P-WORLD"},
+        {"label_ja": "ST中3R割合", "label_ko": "ST 중 3R 비율", "public": 60.0, "metric": "st_balls_weight", "balls": 310, "unit": "pct", "source": "P-WORLD"},
         {"label_ja": "LT継続率", "label_ko": "LT 계속률", "public": 93.0, "metric": "high_hit_chance", "spins": 110, "unit": "pct", "source": "P-WORLD/HAZUSE"},
     ],
     "mediterranean_2_89": [

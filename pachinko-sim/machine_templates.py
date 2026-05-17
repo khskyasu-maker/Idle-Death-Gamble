@@ -1,6 +1,13 @@
 from machine_types import Machine, Payout
 
 
+PRACTICAL_PAYOUT_RATIO = 0.93
+
+
+def practical_paid_out_balls(paid_out_balls: int, ratio: float = PRACTICAL_PAYOUT_RATIO) -> int:
+    return int(round((paid_out_balls * ratio) / 10.0) * 10)
+
+
 def sea_kakuhen_loop(
     machine_id: str,
     name_ja: str,
@@ -19,7 +26,9 @@ def sea_kakuhen_loop(
     simplification_notes: str = "",
     notes: str = "",
     ball_variance: float = 0.03,
+    paid_out_to_practical_ratio: float = PRACTICAL_PAYOUT_RATIO,
 ) -> Machine:
+    practical_balls = practical_paid_out_balls(balls, paid_out_to_practical_ratio)
     jitan_normal_jitan_spins = (
         normal_jitan_spins if jitan_normal_jitan_spins is None else jitan_normal_jitan_spins
     )
@@ -35,9 +44,14 @@ def sea_kakuhen_loop(
         normal_prob=normal_prob,
         high_prob=high_prob,
         normal_hit_dist=[
-            Payout(balls=balls, weight=kakuhen_weight, next_state="KAKUBEN", ball_variance=ball_variance),
             Payout(
-                balls=balls,
+                balls=practical_balls,
+                weight=kakuhen_weight,
+                next_state="KAKUBEN",
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=practical_balls,
                 weight=normal_weight,
                 next_state="JITAN",
                 jitan_spins=normal_jitan_spins,
@@ -47,9 +61,14 @@ def sea_kakuhen_loop(
         ],
         st_hit_dist=[],
         jitan_hit_dist=[
-            Payout(balls=balls, weight=kakuhen_weight, next_state="KAKUBEN", ball_variance=ball_variance),
             Payout(
-                balls=balls,
+                balls=practical_balls,
+                weight=kakuhen_weight,
+                next_state="KAKUBEN",
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=practical_balls,
                 weight=normal_weight,
                 next_state="JITAN",
                 jitan_spins=jitan_normal_jitan_spins,
@@ -57,9 +76,14 @@ def sea_kakuhen_loop(
             ),
         ],
         kakuben_hit_dist=[
-            Payout(balls=balls, weight=kakuhen_weight, next_state="KAKUBEN", ball_variance=ball_variance),
             Payout(
-                balls=balls,
+                balls=practical_balls,
+                weight=kakuhen_weight,
+                next_state="KAKUBEN",
+                ball_variance=ball_variance,
+            ),
+            Payout(
+                balls=practical_balls,
                 weight=normal_weight,
                 next_state="JITAN",
                 jitan_spins=kakuben_normal_jitan_spins,
@@ -95,8 +119,8 @@ def sea_kakuhen_10r(
         normal_weight=0.40,
         balls=1500,
         confidence=confidence,
-        simplification_notes="확변 60% / 통상 40% / 통상 후 시단 100회인 바다 미들 기본형. 전 당첨 10R 1500발 지급 모델.",
-        notes="DMM 스펙의 주요 확률/전サポ 구조를 반영. 보류연, 3000 보너스 일부 연출은 1500발 연속 당첨으로 근사.",
+        simplification_notes="확변 60% / 통상 40% / 통상 후 시단 100회인 바다 미들 기본형. 전 당첨 10R 1500払出 모델.",
+        notes="DMM 스펙의 주요 확률/전サポ 구조를 반영. 1500払出은 예산 계산용 실전 근사 1400발로 사용. 보류연, 3000 보너스 일부 연출은 1500払出 연속 당첨으로 근사.",
     )
 
 
@@ -114,11 +138,12 @@ def sea_st_jitan(
     simplification_notes: str = "",
     notes: str = "",
     ball_variance: float = 0.03,
+    paid_out_to_practical_ratio: float = PRACTICAL_PAYOUT_RATIO,
 ) -> Machine:
     def distribution():
         return [
             Payout(
-                balls=balls,
+                balls=practical_paid_out_balls(balls, paid_out_to_practical_ratio),
                 weight=weight,
                 next_state="ST",
                 st_spins=st_spins,

@@ -110,8 +110,10 @@ Core fields:
 
 `Payout.balls` is the simulator's practical budgeting value. If a public source
 shows only `払出(지급)`, the model may use a conservative obtained-ball
-approximation when that family already has a checked conversion rule. The public
-paid-out value and the conversion basis must stay visible in `notes`.
+approximation when that family already has a checked conversion rule. Current
+Eva and 大海物語(대해물어) checked models convert `払出` to about 93%, rounded to
+the nearest 10 balls. The public paid-out value and the conversion basis must
+stay visible in `notes`.
 
 Model confidence policy:
 
@@ -308,7 +310,8 @@ Statistical layers:
 - table quality: truncated normal distribution around field/reference rotation
 - start-entry count: binomial distribution from fired balls and start probability
 - jackpot wait: geometric distribution for independent Bernoulli spins
-- payout realization: truncated normal distribution around nominal payout balls
+- payout realization: truncated normal distribution around nominal practical
+  budgeting balls, not raw `払出(지급)` when the model has a conversion rule
 - play time: deterministic conversion from sampled spins/balls/events through
   `time_model.py` assumptions
 - categorical rates: Wilson confidence intervals
