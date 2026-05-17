@@ -16,7 +16,6 @@ from cli_inputs import (
 )
 from machines import MACHINES
 from result import (
-    border_label,
     print_budget_matrix_results,
     print_matrix_results,
     print_model_profile_results,
@@ -26,6 +25,7 @@ from result import (
     print_strategy_matrix_results,
     save_matrix_to_csv,
 )
+from result_output_helpers import border_label
 from rotation import estimate_summary
 from simulator import (
     BUDGET_CASES,

@@ -95,6 +95,7 @@ pachinko-sim/
 ├── scenarios.py         # 단일/매트릭스/예산/전략 시나리오 빌더
 ├── result_metrics.py    # calculate_metrics, 신뢰구간, 조건부 플러스 통계
 ├── result_output_helpers.py # 출력 문구, 보더/스펙 비교, 표 행 보조
+├── result_table_builders.py # 반복 출력용 표 행 생성
 ├── output_tables.py     # ASCII 테이블 row 생성과 출력 텍스트
 ├── result_csv.py        # results.csv 최신 결과 덮어쓰기 전용
 ├── result_public_export.py # docs/latest-sim-results.* 최신 공개 집계표 덮어쓰기 전용
@@ -331,7 +332,8 @@ CLI에는 회전율 입력 모드를 추가한다.
 
 - 완료: `result_metrics.py`로 순수 통계 이동
 - 완료: `result_output_helpers.py`로 출력 문구/보더/벤치마크/표 행 보조 로직 이동
-- 진행 중: `output_tables.py` 또는 기존 `result_store_views.py` 계열로 대형 표 조립 추가 분리
+- 완료: `result_table_builders.py`로 단일/반복/매트릭스/예산/프로파일/전략 표 행 생성 이동
+- 진행 중: 남은 `result.py` 출력 함수 자체를 더 작은 프린터 모듈로 나눌지 여부 판단
 - 완료: `main.py`를 thin entry point로 축소하고 CLI 흐름을 `cli_*` 모듈로 분리
 - `result.py`는 호환 출력 조립 모듈로 유지하면서 계속 축소
 
