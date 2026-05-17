@@ -11,7 +11,7 @@ sys.path.insert(0, str(SIM_DIR))
 from machine_traits import machine_has_lt, machine_has_upper  # noqa: E402
 from machines import MACHINES  # noqa: E402
 from machines import Machine, Payout  # noqa: E402
-from model_checks import theoretical_no_hit_rate, validate_all_machine_models  # noqa: E402
+from model_checks import theoretical_no_hit_rate, validate_all_machine_models, validate_machine_model  # noqa: E402
 from result import (  # noqa: E402
     SESSION_TIME_LIMIT_HOURS,
     benchmark_model_value,
@@ -109,6 +109,25 @@ class SimulatorSpecTests(unittest.TestCase):
             0.10,
             sum(p.weight for p in shin_eva_lt.st_hit_dist if p.next_state == "LT"),
         )
+
+    def test_lt_state_models_must_define_lt_distribution(self):
+        broken = Machine(
+            id="broken_lt",
+            name_ja="壊れたLT",
+            name_ko="깨진 LT",
+            spec_type="test LT",
+            risk_grade="test",
+            normal_prob=99.9,
+            high_prob=50.0,
+            normal_hit_dist=[Payout(balls=300, weight=1.0, next_state="LT")],
+            st_hit_dist=[],
+            jitan_hit_dist=[],
+            kakuben_hit_dist=[],
+            lt_hit_dist=[],
+        )
+        issues = validate_machine_model(broken)
+        self.assertIn("broken_lt.normal_hit_dist[0]: LT state transitions must set is_lt=True", issues)
+        self.assertIn("broken_lt: LT state transitions require lt_hit_dist", issues)
 
     def test_eva15_319_uses_practical_vst_outputs(self):
         eva15 = MACHINES["eva_15_roar"]

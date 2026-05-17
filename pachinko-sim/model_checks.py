@@ -405,6 +405,16 @@ def validate_machine_model(machine: Machine, tolerance: float = 0.001) -> List[s
                 issues.append(f"{path}: ball_variance must not be negative")
             if not isinstance(payout.counts_as_rush, bool):
                 issues.append(f"{path}: counts_as_rush must be a boolean")
+            if payout.next_state == "LT" and not payout.is_lt:
+                issues.append(f"{path}: LT state transitions must set is_lt=True")
+
+    has_lt_state = any(
+        payout.next_state == "LT"
+        for field_name in DISTRIBUTION_FIELDS
+        for payout in getattr(machine, field_name)
+    )
+    if has_lt_state and not machine.lt_hit_dist:
+        issues.append(f"{machine.id}: LT state transitions require lt_hit_dist")
 
     issues.extend(validate_known_spec_expectation(machine, tolerance))
     return issues
