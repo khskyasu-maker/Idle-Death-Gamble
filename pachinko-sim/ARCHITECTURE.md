@@ -269,6 +269,12 @@ Session accounting:
   保留(보류) full/effect waiting, right-side spins, and 大当り(대당첨) payout/effect time.
 - `cashless_play_minutes` estimates time continuing without new cash input,
   including right-side play, hit effects, and normal spins paid by reusable balls.
+- `stay_reach_rates` reports the share of sampled sessions reaching each hour
+  from 1 to 12 hours. The 12-hour value is a planning cap for normal store-day
+  limits, not a prediction that the hall will let a session continue unchanged.
+- `final_remaining_value` is unused cash plus exchangeable final balls converted
+  to yen. This is separate from `net_profit`, which remains final exchange money
+  minus cash spent.
 
 Statistical layers:
 

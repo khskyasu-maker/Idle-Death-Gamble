@@ -291,8 +291,13 @@ class SimulatorSpecTests(unittest.TestCase):
         )
         self.assertGreater(result["play_minutes"], 0)
         self.assertIn("cashless_play_minutes", result)
+        self.assertIn("unused_cash", result)
+        self.assertIn("final_remaining_value", result)
         self.assertIn("time_assumptions", result)
         self.assertEqual("sea_classic", result["time_assumptions"]["profile_name"])
+        metrics = calculate_metrics([result], 1)
+        self.assertIn(12, metrics["stay_reach_rates"])
+        self.assertIn("avg_final_remaining_value", metrics)
         self.assertEqual("타협", rotation_reality_label(65, None))
 
     def test_rotation_estimates_keep_input_basis_and_summary(self):

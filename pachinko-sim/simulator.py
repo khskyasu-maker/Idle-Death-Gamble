@@ -645,6 +645,8 @@ def simulate_single(
 
     final_balls = max(0.0, bank_balls + locked_balls)
     final_money = int(final_balls * exchange_rate)
+    unused_cash = max(0.0, float(budget) - cash_spent)
+    final_remaining_value = int(unused_cash + final_money)
     net_profit = int(final_money - cash_spent)
     exchange_loss = int(final_balls * lend_rate - final_money)
     play_seconds = (
@@ -677,6 +679,9 @@ def simulate_single(
         "final_balls": int(final_balls),
         "locked_balls": int(locked_balls),
         "final_money": final_money,
+        "unused_cash": int(unused_cash),
+        "final_remaining_value": final_remaining_value,
+        "final_remaining_balance": int(final_remaining_value - budget),
         "net_profit": net_profit,
         "cash_spent": int(cash_spent),
         "exchange_loss": exchange_loss,
