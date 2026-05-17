@@ -45,10 +45,13 @@ pachinko-sim/simulator.py
 pachinko-sim/store_comparison.py
         |
         v
+pachinko-sim/cli_modes.py + pachinko-sim/cli_inputs.py + pachinko-sim/cli_context.py + pachinko-sim/cli_export.py
+        |
+        v
 pachinko-sim/result.py
         |
         v
-pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_export.py
+pachinko-sim/result_metrics.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_export.py
         |
         v
 CLI output / optional latest-only local results.csv / optional latest-only public docs/latest-sim-results.*
@@ -63,7 +66,7 @@ Fixed real-world inputs and runtime outputs must remain separate:
 - source-to-model translation rules: `SPEC_MODELING_GUIDE.md`
 - runtime session assumptions: CLI inputs, strategy settings, `spins_per_1000y`, budget, exchange rate
 - runtime time assumptions: launch speed, display seconds per start, right-side seconds per spin, payout/effect time
-- runtime statistical output: `result.py` metrics, optional latest-only gitignored `results.csv`, and optional latest-only sanitized `docs/latest-sim-results.*`
+- runtime statistical output: `result_metrics.py` metrics, optional latest-only gitignored `results.csv`, and optional latest-only sanitized `docs/latest-sim-results.*`
 
 Do not copy Monte Carlo output, recommendation scores, or visit decisions back into fixed data files.
 
@@ -345,13 +348,17 @@ Important current limitation:
 - exchange lot size, leftover balls, time-of-day, closing-time, and exact stop-button
   technique are still outside the model
 
-### `result.py`
+### `result.py` and CLI helpers
 
-Calculates and prints risk metrics.
+`main.py` is a thin entry point. Interactive flow is split across `cli_modes.py`,
+`cli_inputs.py`, `cli_context.py`, and `cli_export.py`.
+
+`result.py` prints risk metrics and assembles user-facing tables.
 
 `result.py` should keep the user-facing report assembly while delegating reusable
 pure helpers to:
 
+- `result_metrics.py`: Monte Carlo aggregate metrics such as profit, hit, stay-time, cash exhaustion, and condition rows
 - `result_stats.py`: Monte Carlo uncertainty helpers, Wilson intervals, quantile intervals, tail means, and useful-profit condition rows
 - `result_formatting.py`: terminal table width handling, yen/percent/minute text, and ASCII bar/table helpers
 - `result_csv.py`: latest-only matrix CSV serialization used only after explicit user confirmation

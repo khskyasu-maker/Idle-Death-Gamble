@@ -46,7 +46,11 @@ python3 scripts/clean.py --apply
 
 ## 구조 안내
 추후 Streamlit 등의 웹 기반 UI로 확장이 용이하도록 모듈이 분리되어 있습니다.
-- `main.py`: CLI 인터페이스와 사용자 입력 로직
+- `main.py`: 얇은 CLI 진입점
+- `cli_context.py`: CLI 라인업/결과 문맥 부여 보조 로직
+- `cli_inputs.py`: 입력값 검증, 전략/세션/회전율 선택 UI
+- `cli_export.py`: 공개용 최신 시뮬 결과 저장 여부 확인
+- `cli_modes.py`: 단일/반복/매트릭스/전략/예산/프로파일/점포 비교 실행 흐름
 - `machines.py`: 파친코 기종별 스펙 데이터베이스
 - `machine_types.py`: `Machine`/`Payout` 공통 데이터 구조
 - `machine_templates.py`: 같은 구조의 기종을 값만 바꿔 생성하는 공통 팩토리
@@ -59,7 +63,8 @@ python3 scripts/clean.py --apply
 - `stores.py`: 라쿠엔/123/HIPS 매장별 보유 기종 매핑과 활성 시뮬 후보 제한
 - `store_comparison.py`: 같은 기종을 가게별 레이트, 헤소 입상 품질, 보더 마진 기준으로 비교하는 런타임 시나리오 로직
 - `simulator.py`: 순수 확률 기반 계산 및 시뮬레이션 코어 (UI 로직 없음)
-- `result.py`: 계산된 결과를 바탕으로 통계를 생성하고 화면에 출력
+- `result.py`: 계산된 결과를 화면에 출력하고 사용자용 표를 조립
+- `result_metrics.py`: 반복 결과에서 평균/분위수/체류 시간/조건부 플러스율 같은 집계 지표 계산
 - `result_stats.py`: Wilson 구간, t 기반 평균 구간, 분위수 구간, 조건부 플러스율 같은 순수 통계 보조 로직
 - `result_formatting.py`: ASCII 표, 금액, 퍼센트, 시간 표시 같은 터미널 포맷 보조 로직
 - `result_csv.py`: 사용자가 명시적으로 선택한 경우에만 gitignored `results.csv`에 최신 매트릭스 결과를 덮어쓰는 CSV 직렬화 로직

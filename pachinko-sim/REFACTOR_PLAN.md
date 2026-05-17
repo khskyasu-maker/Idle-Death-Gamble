@@ -93,11 +93,14 @@
 pachinko-sim/
 ├── rotation.py          # 회전율/보더/단위 환산
 ├── scenarios.py         # 단일/매트릭스/예산/전략 시나리오 빌더
-├── metrics.py           # calculate_metrics, 신뢰구간, 조건부 플러스 통계
+├── result_metrics.py    # calculate_metrics, 신뢰구간, 조건부 플러스 통계
 ├── output_tables.py     # ASCII 테이블 row 생성과 출력 텍스트
-├── csv_export.py        # results.csv 최신 결과 덮어쓰기 전용
-├── public_export.py     # docs/latest-sim-results.* 최신 공개 집계표 덮어쓰기 전용
-├── cli.py               # 입력/선택 UI
+├── result_csv.py        # results.csv 최신 결과 덮어쓰기 전용
+├── result_public_export.py # docs/latest-sim-results.* 최신 공개 집계표 덮어쓰기 전용
+├── cli_inputs.py        # 입력/선택 UI
+├── cli_context.py       # 라인업/결과 문맥 주입
+├── cli_export.py        # 공개 결과 저장 확인
+├── cli_modes.py         # 실행 모드 orchestration
 ├── main.py              # thin entry point
 ├── simulator.py         # 순수 세션 엔진 중심으로 축소
 ├── start_gate.py        # 구슬->헤소 입상 표본 유지
@@ -325,9 +328,10 @@ CLI에는 회전율 입력 모드를 추가한다.
 
 ### 6단계: 통계/출력 분리
 
-- `metrics.py`로 순수 통계 이동
-- `output_tables.py`로 표시 이동
-- `result.py`는 호환 래퍼로 잠시 유지한 뒤 축소
+- 완료: `result_metrics.py`로 순수 통계 이동
+- 진행 중: `output_tables.py` 또는 기존 `result_store_views.py` 계열로 표시 로직 추가 분리
+- 완료: `main.py`를 thin entry point로 축소하고 CLI 흐름을 `cli_*` 모듈로 분리
+- `result.py`는 호환 출력 조립 모듈로 유지하면서 계속 축소
 
 ### 7단계: 문서/테스트 정리
 

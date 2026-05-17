@@ -81,7 +81,11 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── ai-context.md             # Generated AI usage notes
 │   └── onsite-input-template.md  # Generated blank onsite observation template
 ├── pachinko-sim/
-│   ├── main.py                   # Local CLI simulator entry point
+│   ├── main.py                   # Thin local CLI simulator entry point
+│   ├── cli_context.py            # CLI lineup/result context helpers
+│   ├── cli_inputs.py             # Interactive CLI input and rotation selection helpers
+│   ├── cli_export.py             # Explicit public simulator export prompt
+│   ├── cli_modes.py              # Interactive simulator mode orchestration
 │   ├── machines.py               # Simulator machine models and payout distributions
 │   ├── machine_types.py           # Shared Machine/Payout dataclasses
 │   ├── machine_templates.py       # Reusable machine-family model factories
@@ -95,6 +99,7 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── store_comparison.py        # Same-machine store comparison scenario builder
 │   ├── simulator.py              # Monte Carlo session engine
 │   ├── result.py                 # CLI result assembly and user-facing output
+│   ├── result_metrics.py          # Monte Carlo metric aggregation
 │   ├── result_stats.py           # Pure statistical helper functions
 │   ├── result_formatting.py       # Terminal table, yen, percent, and time formatting helpers
 │   ├── result_csv.py              # Explicit opt-in latest-only local CSV serialization
@@ -107,7 +112,9 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── REFACTOR_PLAN.md           # Simulator refactor and border-input improvement plan
 │   └── ARCHITECTURE.md           # Simulator design and assumptions
 ├── tests/
-│   └── test_simulator_specs.py   # Deterministic simulator/spec regression tests
+│   ├── test_simulator_specs.py   # Deterministic simulator/spec regression tests
+│   ├── test_result_exports.py    # Latest-only CSV/public export tests
+│   └── test_clean.py             # Local generated artifact cleanup tests
 └── scripts/
     ├── collect.py                # External page collection
     ├── analyze.py                # Rule-based analysis and ranking
@@ -160,7 +167,7 @@ The normal data and report pipeline is:
 
 Current near-term development should keep improving correctness, maintainability, and explainability before adding more speculative features.
 
-- Keep `result.py` shrinking. New output tables, row builders, formatting helpers, and pure statistics should move into focused helper modules when they can be tested without running the interactive CLI.
+- Keep `main.py` and `result.py` shrinking. Interactive mode flow belongs in `cli_*` modules; new output tables, row builders, formatting helpers, and pure statistics should move into focused helper modules when they can be tested without running the interactive CLI.
 - Prefer deterministic unit tests for pure logic. For result/output helpers, use small fixed dictionaries and metric stubs rather than slow Monte Carlo runs.
 - Do not add a new simulator model just because a machine name appears in a store lineup. Add or promote a model only after the public spec structure is understood well enough to encode the state transitions.
 - If a model is useful but partially uncertain, mark it with conservative `confidence`, `is_estimated`, `spec_source`, and visible `notes`; do not hide uncertainty in output.
@@ -191,7 +198,7 @@ Do not invent missing specs. If a page does not confirm a mechanic, either leave
 - Keep code compatible with Python 3.11 because GitHub Actions uses Python 3.11.
 - Prefer dataclasses and typed helper functions for structured simulator data over untyped nested dictionaries when creating new core objects.
 - Runtime dictionaries are acceptable at CLI/output boundaries, but new shared contracts should be documented by names, tests, or small typed helpers.
-- Avoid circular imports between `result.py` and `result_*` helper modules. Helper modules should not import the interactive CLI.
+- Avoid circular imports between `result.py`, `result_*`, and `cli_*` helper modules. Result helpers should not import the interactive CLI.
 - Keep random Monte Carlo behavior out of deterministic tests unless a fixed seed and wide tolerance are intentionally part of the test.
 - Do not create local result files automatically. `results.csv` remains explicit opt-in, gitignored, and latest-only overwrite behavior.
 - Preserve UTF-8 Korean/Japanese text. This repository intentionally contains bilingual user-facing output.
@@ -362,7 +369,7 @@ python scripts/clean.py --apply
 Equivalent manual syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_metrics.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_result_exports.py tests/test_clean.py
 ```
 
 JSON validation:
