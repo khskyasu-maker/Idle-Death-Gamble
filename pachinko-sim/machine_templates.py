@@ -1,6 +1,80 @@
 from machine_types import Machine, Payout
 
 
+def sea_kakuhen_loop(
+    machine_id: str,
+    name_ja: str,
+    name_ko: str,
+    source: str,
+    normal_prob: float,
+    high_prob: float,
+    kakuhen_weight: float,
+    normal_weight: float,
+    balls: int,
+    risk_grade: str = "1/319",
+    normal_jitan_spins: int = 100,
+    jitan_normal_jitan_spins: int = None,
+    kakuben_normal_jitan_spins: int = None,
+    confidence: str = "medium",
+    simplification_notes: str = "",
+    notes: str = "",
+    ball_variance: float = 0.03,
+) -> Machine:
+    jitan_normal_jitan_spins = (
+        normal_jitan_spins if jitan_normal_jitan_spins is None else jitan_normal_jitan_spins
+    )
+    kakuben_normal_jitan_spins = (
+        normal_jitan_spins if kakuben_normal_jitan_spins is None else kakuben_normal_jitan_spins
+    )
+    return Machine(
+        id=machine_id,
+        name_ja=name_ja,
+        name_ko=name_ko,
+        spec_type="미들 / 확변 루프",
+        risk_grade=risk_grade,
+        normal_prob=normal_prob,
+        high_prob=high_prob,
+        normal_hit_dist=[
+            Payout(balls=balls, weight=kakuhen_weight, next_state="KAKUBEN", ball_variance=ball_variance),
+            Payout(
+                balls=balls,
+                weight=normal_weight,
+                next_state="JITAN",
+                jitan_spins=normal_jitan_spins,
+                counts_as_rush=False,
+                ball_variance=ball_variance,
+            ),
+        ],
+        st_hit_dist=[],
+        jitan_hit_dist=[
+            Payout(balls=balls, weight=kakuhen_weight, next_state="KAKUBEN", ball_variance=ball_variance),
+            Payout(
+                balls=balls,
+                weight=normal_weight,
+                next_state="JITAN",
+                jitan_spins=jitan_normal_jitan_spins,
+                ball_variance=ball_variance,
+            ),
+        ],
+        kakuben_hit_dist=[
+            Payout(balls=balls, weight=kakuhen_weight, next_state="KAKUBEN", ball_variance=ball_variance),
+            Payout(
+                balls=balls,
+                weight=normal_weight,
+                next_state="JITAN",
+                jitan_spins=kakuben_normal_jitan_spins,
+                ball_variance=ball_variance,
+            ),
+        ],
+        lt_hit_dist=[],
+        simplification_notes=simplification_notes,
+        spec_source=source,
+        confidence=confidence,
+        notes=notes,
+        is_estimated=confidence != "high",
+    )
+
+
 def sea_kakuhen_10r(
     machine_id: str,
     name_ja: str,
@@ -10,32 +84,67 @@ def sea_kakuhen_10r(
     high_prob: float = 31.9,
     confidence: str = "medium",
 ) -> Machine:
+    return sea_kakuhen_loop(
+        machine_id=machine_id,
+        name_ja=name_ja,
+        name_ko=name_ko,
+        source=source,
+        normal_prob=normal_prob,
+        high_prob=high_prob,
+        kakuhen_weight=0.60,
+        normal_weight=0.40,
+        balls=1500,
+        confidence=confidence,
+        simplification_notes="확변 60% / 통상 40% / 통상 후 시단 100회인 바다 미들 기본형. 전 당첨 10R 1500발 지급 모델.",
+        notes="DMM 스펙의 주요 확률/전サポ 구조를 반영. 보류연, 3000 보너스 일부 연출은 1500발 연속 당첨으로 근사.",
+    )
+
+
+def sea_st_jitan(
+    machine_id: str,
+    name_ja: str,
+    name_ko: str,
+    source: str,
+    normal_prob: float,
+    high_prob: float,
+    payout_rows: list[tuple[int, float, int, int]],
+    risk_grade: str,
+    spec_type: str = "감데지 / ST+時短",
+    confidence: str = "medium",
+    simplification_notes: str = "",
+    notes: str = "",
+    ball_variance: float = 0.03,
+) -> Machine:
+    def distribution():
+        return [
+            Payout(
+                balls=balls,
+                weight=weight,
+                next_state="ST",
+                st_spins=st_spins,
+                jitan_spins=jitan_spins,
+                ball_variance=ball_variance,
+            )
+            for balls, weight, st_spins, jitan_spins in payout_rows
+        ]
+
     return Machine(
         id=machine_id,
         name_ja=name_ja,
         name_ko=name_ko,
-        spec_type="미들 / 확변 루프",
-        risk_grade="1/319",
+        spec_type=spec_type,
+        risk_grade=risk_grade,
         normal_prob=normal_prob,
         high_prob=high_prob,
-        normal_hit_dist=[
-            Payout(balls=1500, weight=0.60, next_state="KAKUBEN"),
-            Payout(balls=1500, weight=0.40, next_state="JITAN", jitan_spins=100),
-        ],
-        st_hit_dist=[],
-        jitan_hit_dist=[
-            Payout(balls=1500, weight=0.60, next_state="KAKUBEN"),
-            Payout(balls=1500, weight=0.40, next_state="JITAN", jitan_spins=100),
-        ],
-        kakuben_hit_dist=[
-            Payout(balls=1500, weight=0.60, next_state="KAKUBEN"),
-            Payout(balls=1500, weight=0.40, next_state="JITAN", jitan_spins=100),
-        ],
+        normal_hit_dist=distribution(),
+        st_hit_dist=distribution(),
+        jitan_hit_dist=distribution(),
+        kakuben_hit_dist=[],
         lt_hit_dist=[],
-        simplification_notes="확변 60% / 통상 40% / 통상 후 시단 100회인 바다 미들 기본형. 전 당첨 10R 1500발 지급 모델.",
+        simplification_notes=simplification_notes,
         spec_source=source,
         confidence=confidence,
-        notes="DMM 스펙의 주요 확률/전サポ 구조를 반영. 보류연, 3000 보너스 일부 연출은 1500발 연속 당첨으로 근사.",
+        notes=notes,
         is_estimated=confidence != "high",
     )
 

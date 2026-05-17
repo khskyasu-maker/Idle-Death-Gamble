@@ -21,8 +21,19 @@ KNOWN_SPEC_EXPECTATIONS = {
         "normal_prob": 319.6,
         "high_prob": 31.9,
         "normal_weights": [0.54, 0.46],
+        "normal_states": ["KAKUBEN", "JITAN"],
+        "normal_counts_as_rush": [True, False],
         "jitan_weights": [0.54, 0.46],
         "kakuben_weights": [0.54, 0.46],
+    },
+    "sea_5": {
+        "normal_prob": 319.6,
+        "high_prob": 31.9,
+        "normal_weights": [0.60, 0.40],
+        "normal_states": ["KAKUBEN", "JITAN"],
+        "normal_counts_as_rush": [True, False],
+        "jitan_weights": [0.60, 0.40],
+        "kakuben_weights": [0.60, 0.40],
     },
     "sea_5_black_199": {
         "normal_prob": 199.8,
@@ -137,6 +148,8 @@ KNOWN_SPEC_EXPECTATIONS = {
         "high_prob": 19.5,
         "normal_weights": [0.04, 0.60, 0.06, 0.30],
         "normal_states": ["ST", "ST", "ST", "ST"],
+        "st_weights": [0.04, 0.60, 0.06, 0.30],
+        "jitan_weights": [0.04, 0.60, 0.06, 0.30],
     },
     "oki_sea_5_imarine": {
         "normal_prob": 99.9,

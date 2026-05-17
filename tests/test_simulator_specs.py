@@ -185,6 +185,25 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual([True, True, False], [p.counts_as_rush for p in shin_eva_lt.normal_hit_dist])
 
     def test_additional_sea_models_match_public_step_specs(self):
+        sea5 = MACHINES["sea_5"]
+        self.assertEqual(["KAKUBEN", "JITAN"], [p.next_state for p in sea5.normal_hit_dist])
+        self.assertEqual([True, False], [p.counts_as_rush for p in sea5.normal_hit_dist])
+        self.assertEqual({100}, {p.jitan_spins for p in sea5.normal_hit_dist if p.next_state == "JITAN"})
+
+        sea5_special = MACHINES["sea_5_special"]
+        self.assertEqual([0.54, 0.46], [p.weight for p in sea5_special.normal_hit_dist])
+        self.assertEqual({100}, {p.jitan_spins for p in sea5_special.normal_hit_dist if p.next_state == "JITAN"})
+        self.assertEqual({200}, {p.jitan_spins for p in sea5_special.jitan_hit_dist if p.next_state == "JITAN"})
+
+        sea5_agnes = MACHINES["sea_5_agnes"]
+        self.assertEqual([1080, 648, 432, 432], [p.balls for p in sea5_agnes.normal_hit_dist])
+        self.assertEqual([10], sorted({p.st_spins for p in sea5_agnes.normal_hit_dist}))
+        self.assertEqual([15, 40, 110], sorted({p.jitan_spins for p in sea5_agnes.normal_hit_dist}))
+        self.assertEqual(
+            [p.jitan_spins for p in sea5_agnes.normal_hit_dist],
+            [p.jitan_spins for p in sea5_agnes.jitan_hit_dist],
+        )
+
         black4 = MACHINES["sea_4_special_black"]
         self.assertEqual([1500, 750, 450], [p.balls for p in black4.normal_hit_dist])
         self.assertAlmostEqual(0.30, black4.normal_hit_dist[0].weight)
