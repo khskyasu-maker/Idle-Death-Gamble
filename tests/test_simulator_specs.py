@@ -20,6 +20,8 @@ from result import (  # noqa: E402
     fall_state_continue_chance,
     mean_interval,
 )
+from result_formatting import build_ascii_table, minutes_text, yen  # noqa: E402
+from result_stats import profit_condition_thresholds, wilson_interval  # noqa: E402
 from rotation import (  # noqa: E402
     border_case_rates,
     border_delta_text,
@@ -305,6 +307,24 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual(["arrow_namba_hips"], [context["store_id"] for context in installed])
         self.assertEqual([2], [context["count"] for context in installed])
         self.assertEqual(["1yen"], [context["rate"] for context in installed])
+
+    def test_result_formatting_helpers_handle_terminal_output(self):
+        table = build_ascii_table(["항목", "값"], [["기종", "e東京喰種"], ["메모", "A|B"]])
+
+        self.assertIn("e東京喰種", table)
+        self.assertIn("A/B", table)
+        self.assertNotIn("A|B", table)
+        self.assertEqual("+1,500yen", yen(1500, signed=True))
+        self.assertEqual("1시간 15분", minutes_text(75))
+
+    def test_result_stats_helpers_are_importable_without_result_output_layer(self):
+        low, high = wilson_interval(5, 10)
+
+        self.assertLess(low, 50.0)
+        self.assertGreater(high, 50.0)
+        self.assertEqual((0.0, 0.0), wilson_interval(0, 0))
+        self.assertEqual([1, 2, 3, 5, 7], profit_condition_thresholds(7, include_one=True))
+        self.assertEqual([2, 3, 5, 7], profit_condition_thresholds(7, include_one=False))
 
     def test_shinsea_support_time_is_not_counted_as_a_jackpot(self):
         shinsea = MACHINES["shinsea_99"]

@@ -48,6 +48,9 @@ pachinko-sim/store_comparison.py
 pachinko-sim/result.py
         |
         v
+pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py
+        |
+        v
 CLI output / optional append-only results.csv
 ```
 
@@ -345,6 +348,12 @@ Important current limitation:
 ### `result.py`
 
 Calculates and prints risk metrics.
+
+`result.py` should keep the user-facing report assembly while delegating reusable
+pure helpers to:
+
+- `result_stats.py`: Monte Carlo uncertainty helpers, Wilson intervals, quantile intervals, tail means, and useful-profit condition rows
+- `result_formatting.py`: terminal table width handling, yen/percent/minute text, and ASCII bar/table helpers
 
 Primary outputs:
 

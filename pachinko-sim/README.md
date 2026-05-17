@@ -45,7 +45,9 @@
 - `stores.py`: 라쿠엔/123/HIPS 매장별 보유 기종 매핑과 활성 시뮬 후보 제한
 - `store_comparison.py`: 같은 기종을 가게별 레이트, 헤소 입상 품질, 보더 마진 기준으로 비교하는 런타임 시나리오 로직
 - `simulator.py`: 순수 확률 기반 계산 및 시뮬레이션 코어 (UI 로직 없음)
-- `result.py`: 계산된 결과를 바탕으로 통계를 생성하고 화면에 포맷팅하여 출력
+- `result.py`: 계산된 결과를 바탕으로 통계를 생성하고 화면에 출력
+- `result_stats.py`: Wilson 구간, t 기반 평균 구간, 분위수 구간, 조건부 플러스율 같은 순수 통계 보조 로직
+- `result_formatting.py`: ASCII 표, 금액, 퍼센트, 시간 표시 같은 터미널 포맷 보조 로직
 - `model_checks.py`: 이론 무당첨률, ST/LT 확률, payout weight와 고정 스펙 메타데이터 검증용 보조 로직
 
 상세 설계 기준은 `ARCHITECTURE.md`를 기준으로 관리합니다.

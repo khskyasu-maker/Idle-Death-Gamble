@@ -20,11 +20,30 @@ from session_limits import (
     SESSION_TIME_LIMIT_MINUTES,
     STAY_HOUR_THRESHOLDS,
 )
+from result_formatting import (
+    build_ascii_bar,
+    build_ascii_table,
+    format_ci,
+    lend_rate_text,
+    minutes_text,
+    pct,
+    spins_text,
+    yen,
+)
+from result_stats import (
+    calculate_profit_condition_rows,
+    mean_interval,
+    percentile_float,
+    percentile_value,
+    profit_condition_summary_from_rows,
+    quantile_interval,
+    standard_error,
+    tail_mean,
+    wilson_interval,
+)
 import statistics
 import csv
-import math
 import os
-import unicodedata
 
 
 def confidence_weight(confidence: str) -> float:
@@ -222,129 +241,6 @@ def operating_warning(confidence: str, spins_per_1000y=None, border_spins_per_10
     return " / ".join(warnings)
 
 
-def wilson_interval(successes: int, total: int, z: float = 1.96) -> tuple[float, float]:
-    """Wilson score interval for a binomial proportion, returned as percentages."""
-    if total <= 0:
-        return 0.0, 0.0
-    p = successes / total
-    denominator = 1 + (z * z / total)
-    centre = p + (z * z / (2 * total))
-    margin = z * math.sqrt((p * (1 - p) / total) + (z * z / (4 * total * total)))
-    low = max(0.0, (centre - margin) / denominator)
-    high = min(1.0, (centre + margin) / denominator)
-    return low * 100.0, high * 100.0
-
-
-PROFIT_CONDITION_MIN_SAMPLES = 30
-PROFIT_CONDITION_TARGET_RATE = 50.0
-PROFIT_CONDITION_THRESHOLDS = [1, 2, 3, 5, 7, 10, 15, 20]
-
-
-def profit_condition_judgement(sample_count: int, ci_low: float, ci_high: float) -> str:
-    if sample_count < PROFIT_CONDITION_MIN_SAMPLES:
-        return "표본적음"
-    if ci_low > PROFIT_CONDITION_TARGET_RATE:
-        return "플러스우세"
-    if ci_high < PROFIT_CONDITION_TARGET_RATE:
-        return "플러스열세"
-    return "경계"
-
-
-def profit_condition_label(kind: str, threshold: int) -> str:
-    if kind == "hits":
-        return f"大当り(대당첨) {threshold}회+"
-    return f"최대연속 {threshold}연+"
-
-
-def profit_condition_short_label(kind: str, threshold: int) -> str:
-    if kind == "hits":
-        return f"{threshold}당+"
-    return f"{threshold}연+"
-
-
-def profit_condition_thresholds(max_value: int, include_one: bool) -> List[int]:
-    if max_value <= 0:
-        return []
-    thresholds = [
-        t for t in PROFIT_CONDITION_THRESHOLDS
-        if t <= max_value and (include_one or t > 1)
-    ]
-    if include_one and 1 not in thresholds:
-        thresholds.insert(0, 1)
-    if max_value not in thresholds and (include_one or max_value > 1):
-        thresholds.append(max_value)
-    return sorted(set(thresholds))
-
-
-def calculate_profit_condition_rows(results: List[Dict[str, Any]], iterations: int) -> List[Dict[str, Any]]:
-    """Conditioned profit rates for actual useful outcomes, not just first-hit exposure."""
-    if not results or iterations <= 0:
-        return []
-
-    definitions = [
-        ("hits", "total_hits", True),
-        ("streak", "max_streak", False),
-    ]
-    rows = []
-
-    for kind, field, include_one in definitions:
-        max_value = max(int(r.get(field, 0) or 0) for r in results)
-        for threshold in profit_condition_thresholds(max_value, include_one):
-            sample = [r for r in results if int(r.get(field, 0) or 0) >= threshold]
-            sample_count = len(sample)
-            if sample_count <= 0:
-                continue
-
-            positives = [r for r in sample if r["net_profit"] > 0]
-            positive_count = len(positives)
-            positive_rate = (positive_count / sample_count) * 100.0
-            ci_low, ci_high = wilson_interval(positive_count, sample_count)
-            profits = [r["net_profit"] for r in sample]
-            rows.append(
-                {
-                    "kind": kind,
-                    "threshold": threshold,
-                    "label": profit_condition_label(kind, threshold),
-                    "short_label": profit_condition_short_label(kind, threshold),
-                    "sample_count": sample_count,
-                    "occurrence_rate": (sample_count / iterations) * 100.0,
-                    "positive_count": positive_count,
-                    "positive_rate": positive_rate,
-                    "positive_rate_ci_low": ci_low,
-                    "positive_rate_ci_high": ci_high,
-                    "avg_profit": int(statistics.mean(profits)),
-                    "median_profit": int(statistics.median(profits)),
-                    "judgement": profit_condition_judgement(sample_count, ci_low, ci_high),
-                }
-            )
-
-    return rows
-
-
-def best_profit_condition(rows: List[Dict[str, Any]], kind: str = None) -> Dict[str, Any]:
-    candidates = [
-        row for row in rows
-        if (kind is None or row["kind"] == kind)
-        and row["sample_count"] >= PROFIT_CONDITION_MIN_SAMPLES
-        and row["positive_rate_ci_low"] > PROFIT_CONDITION_TARGET_RATE
-    ]
-    if not candidates:
-        return {}
-    return sorted(candidates, key=lambda row: (row["threshold"], -row["occurrence_rate"]))[0]
-
-
-def profit_condition_summary_from_rows(rows: List[Dict[str, Any]]) -> str:
-    parts = []
-    for kind in ["hits", "streak"]:
-        row = best_profit_condition(rows, kind)
-        if row:
-            parts.append(
-                f"{row['short_label']} {pct(row['positive_rate'])}"
-                f"(발생 {pct(row['occurrence_rate'])})"
-            )
-    return " / ".join(parts) if parts else "통계적으로 우세한 플러스 조건 없음"
-
-
 def profit_condition_table_rows(metrics: Dict[str, Any]) -> List[List[Any]]:
     rows = []
     for row in metrics.get("profit_condition_rows", []):
@@ -360,107 +256,6 @@ def profit_condition_table_rows(metrics: Dict[str, Any]) -> List[List[Any]]:
             ]
         )
     return rows
-
-
-T_CRITICAL_95 = {
-    1: 12.706,
-    2: 4.303,
-    3: 3.182,
-    4: 2.776,
-    5: 2.571,
-    6: 2.447,
-    7: 2.365,
-    8: 2.306,
-    9: 2.262,
-    10: 2.228,
-    11: 2.201,
-    12: 2.179,
-    13: 2.160,
-    14: 2.145,
-    15: 2.131,
-    16: 2.120,
-    17: 2.110,
-    18: 2.101,
-    19: 2.093,
-    20: 2.086,
-    21: 2.080,
-    22: 2.074,
-    23: 2.069,
-    24: 2.064,
-    25: 2.060,
-    26: 2.056,
-    27: 2.052,
-    28: 2.048,
-    29: 2.045,
-    30: 2.042,
-}
-
-
-def mean_critical_value(sample_size: int) -> float:
-    """95% two-sided critical value for mean Monte Carlo uncertainty."""
-    if sample_size < 2:
-        return 0.0
-    degrees_of_freedom = sample_size - 1
-    if degrees_of_freedom <= 30:
-        return T_CRITICAL_95[degrees_of_freedom]
-    if degrees_of_freedom <= 40:
-        return 2.021
-    if degrees_of_freedom <= 60:
-        return 2.000
-    if degrees_of_freedom <= 120:
-        return 1.980
-    return 1.960
-
-
-def mean_interval(values: List[int], critical_value: float = None) -> tuple[int, int]:
-    if not values:
-        return 0, 0
-    if len(values) < 2:
-        value = int(values[0])
-        return value, value
-    mean = statistics.mean(values)
-    stderr = statistics.stdev(values) / math.sqrt(len(values))
-    critical = mean_critical_value(len(values)) if critical_value is None else critical_value
-    return int(mean - (critical * stderr)), int(mean + (critical * stderr))
-
-
-def standard_error(values: List[int]) -> float:
-    if len(values) < 2:
-        return 0.0
-    return statistics.stdev(values) / math.sqrt(len(values))
-
-
-def quantile_interval(values: List[int], percentile: float, z: float = 1.96) -> tuple[int, int]:
-    """Approximate non-parametric CI for a quantile using binomial rank bounds."""
-    if not values:
-        return 0, 0
-    sorted_values = sorted(values)
-    n = len(sorted_values)
-    if n == 1:
-        value = int(sorted_values[0])
-        return value, value
-
-    p = max(0.0, min(1.0, percentile))
-    centre_rank = p * (n - 1)
-    rank_stderr = math.sqrt(max(0.0, n * p * (1.0 - p)))
-    low_index = max(0, int(math.floor(centre_rank - (z * rank_stderr))))
-    high_index = min(n - 1, int(math.ceil(centre_rank + (z * rank_stderr))))
-    return int(sorted_values[low_index]), int(sorted_values[high_index])
-
-
-def tail_mean(values: List[int], percentile: float, lower: bool = True) -> int:
-    if not values:
-        return 0
-    sorted_values = sorted(values)
-    count = max(1, int(math.ceil(len(sorted_values) * percentile)))
-    tail_values = sorted_values[:count] if lower else sorted_values[-count:]
-    return int(statistics.mean(tail_values))
-
-
-def format_ci(low: float, high: float, suffix: str = "%") -> str:
-    if suffix == "%":
-        return f"{low:.1f}~{high:.1f}%"
-    return f"{int(low)}~{int(high)}{suffix}"
 
 
 def theoretical_no_hit_rate_from_results(probability_denominator: float, results: List[Dict[str, Any]]) -> float:
@@ -500,108 +295,12 @@ def installed_name_ja_from_results(results: List[Dict[str, Any]]) -> str:
     return results[0].get("installed_full_name_ja") or ""
 
 
-def percentile_value(values: List[int], percentile: float) -> int:
-    if not values:
-        return 0
-    sorted_values = sorted(values)
-    index = min(len(sorted_values) - 1, max(0, int(len(sorted_values) * percentile)))
-    return int(sorted_values[index])
-
-
-def percentile_float(values: List[float], percentile: float) -> float:
-    if not values:
-        return 0.0
-    sorted_values = sorted(values)
-    index = min(len(sorted_values) - 1, max(0, int(len(sorted_values) * percentile)))
-    return float(sorted_values[index])
-
-
-def display_width(value: Any) -> int:
-    text = str(value)
-    width = 0
-    for char in text:
-        if unicodedata.combining(char):
-            continue
-        width += 2 if unicodedata.east_asian_width(char) in {"F", "W"} else 1
-    return width
-
-
-def clean_cell(value: Any) -> str:
-    return str(value).replace("\n", " ").replace("|", "/")
-
-
-def pad_cell(value: Any, width: int) -> str:
-    text = clean_cell(value)
-    return text + (" " * max(0, width - display_width(text)))
-
-
-def build_ascii_table(headers: List[str], rows: List[List[Any]]) -> str:
-    table_rows = [[clean_cell(cell) for cell in row] for row in rows]
-    widths = []
-    for col_index, header in enumerate(headers):
-        column_values = [row[col_index] for row in table_rows]
-        widths.append(max(display_width(header), *(display_width(value) for value in column_values)))
-
-    border = "+" + "+".join("-" * (width + 2) for width in widths) + "+"
-    header_line = "| " + " | ".join(pad_cell(header, width) for header, width in zip(headers, widths)) + " |"
-    body_lines = [
-        "| " + " | ".join(pad_cell(cell, width) for cell, width in zip(row, widths)) + " |"
-        for row in table_rows
-    ]
-    return "\n".join([border, header_line, border, *body_lines, border])
-
-
 def print_ascii_table(title: str, headers: List[str], rows: List[List[Any]]):
     print(f"\n[{title}]")
     if not rows:
         print("(표시할 데이터 없음)")
         return
     print(build_ascii_table(headers, rows))
-
-
-def build_ascii_bar(value: int, max_value: int, width: int = 32) -> str:
-    if max_value <= 0:
-        return ""
-    filled = int(round((value / max_value) * width))
-    return "#" * max(0, min(width, filled))
-
-
-def yen(value: int, signed: bool = False) -> str:
-    number = int(value)
-    if signed:
-        return f"{number:+,}yen"
-    return f"{number:,}yen"
-
-
-def pct(value: float) -> str:
-    return f"{value:.1f}%"
-
-
-def spins_text(value: float) -> str:
-    if value is None:
-        return "-"
-    if abs(float(value) - int(float(value))) < 0.05:
-        return f"{int(round(float(value)))}회"
-    return f"{float(value):.1f}회"
-
-
-def lend_rate_text(value: float) -> str:
-    text = f"{float(value):.3f}".rstrip("0").rstrip(".")
-    return f"{text}엔/발"
-
-
-def minutes_text(value: float) -> str:
-    if value is None:
-        return "-"
-    minutes_value = max(0.0, float(value))
-    if minutes_value < 60:
-        return f"{minutes_value:.1f}분"
-    hours = int(minutes_value // 60)
-    minutes_remainder = int(round(minutes_value % 60))
-    if minutes_remainder >= 60:
-        hours += 1
-        minutes_remainder = 0
-    return f"{hours}시간 {minutes_remainder}분"
 
 
 def cash_burn_text(metrics: Dict[str, Any]) -> str:
