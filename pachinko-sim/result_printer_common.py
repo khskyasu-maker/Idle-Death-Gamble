@@ -40,7 +40,7 @@ def print_machine_context(
     if installed_name_ja:
         print(f"실설치명(일본어): {installed_name_ja}")
     if placement_summary:
-        print(f"가게별 배치: {placement_summary}")
+        print(f"점포별 배치: {placement_summary}")
 
 
 def print_session_context(

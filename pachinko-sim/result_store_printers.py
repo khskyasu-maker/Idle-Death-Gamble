@@ -10,6 +10,7 @@ from result_output_helpers import (
     print_ascii_table,
     rotation_condition_text,
     stay_rate_text,
+    store_auxiliary_note,
     theoretical_no_hit_rate_from_results,
     upper_rate_text,
 )
@@ -23,8 +24,9 @@ def print_store_comparison_results(
     comparison_results: list[dict[str, Any]],
     iterations: int,
 ):
-    print_section_header(f"=== {machine.name_ko} 가게별 같은 기종 비교 ({iterations}회) ===", 86)
+    print_section_header(f"=== {machine.name_ko} 점포 보조 비교 ({iterations}회) ===", 86)
     print_machine_context(machine)
+    print(store_auxiliary_note())
 
     if not comparison_results:
         print("표시할 데이터가 없습니다.")
@@ -49,23 +51,23 @@ def print_store_comparison_results(
     print("비교 해석:", view["assumption_text"])
 
     if view["placement_summary"]:
-        print(f"가게별 배치: {view['placement_summary']}")
+        print(f"점포별 배치: {view['placement_summary']}")
 
     print_ascii_table(
-        "ASCII 가게별 실설치명",
-        ["가게", "한국어", "일본어"],
+        "ASCII 점포별 실설치명",
+        ["점포", "한국어", "일본어"],
         view["name_rows"],
     )
 
     print_ascii_table(
-        "ASCII 가게/레이트 조건표",
-        ["가게", "레이트", "설치", "입력회전", "헤소/발", "보더+/-", "판정/보더비", "당첨", "0회", "이론0회", "RUSH", "LT/상위"],
+        "ASCII 점포/레이트 조건표",
+        ["점포", "레이트", "설치", "입력회전", "헤소/발", "보더+/-", "판정/보더비", "당첨", "0회", "이론0회", "RUSH", "LT/상위"],
         view["condition_rows"],
     )
     print_ascii_table(
-        "ASCII 가게별 손익/체감표",
+        "ASCII 점포별 손익/체감표",
         [
-            "가게",
+            "점포",
             "플러스",
             "평균시간",
             f"{SESSION_TIME_LIMIT_HOURS}h+",
@@ -83,5 +85,5 @@ def print_store_comparison_results(
         view["money_rows"],
     )
 
-    print("주의: 가게 비교는 같은 기종과 입력 조건의 런타임 통계입니다. 실제 台番号(기기 번호)별 이력, 현장 못 상태, 시간 제약은 별도 확인 대상입니다.")
+    print("주의: 점포 보조 비교는 같은 기종과 입력 조건의 런타임 통계입니다. 실제 台番号(기기 번호)별 이력, 현장 못 상태, 시간 제약은 별도 확인 대상입니다.")
     print_result_footer(machine, 86)

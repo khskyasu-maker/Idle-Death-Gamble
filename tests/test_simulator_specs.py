@@ -18,6 +18,8 @@ from result_output_helpers import (  # noqa: E402
     benchmark_model_value,
     denominator_tail_rows,
     fall_state_continue_chance,
+    simulation_scope_note,
+    store_auxiliary_note,
 )
 from result_store_views import (  # noqa: E402
     build_store_comparison_view,
@@ -422,6 +424,13 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual("+500yen", view["money_rows"][0][5])
         self.assertEqual("주의문구", view["money_rows"][0][13])
         self.assertEqual("설치 없음", view["money_rows"][1][13])
+
+    def test_store_comparison_is_documented_as_auxiliary_context(self):
+        self.assertIn("기종 스펙", simulation_scope_note())
+        self.assertIn("보조 조건", simulation_scope_note())
+        self.assertIn("추천 순위가 아니라", store_auxiliary_note())
+        self.assertIn("보조 분석", store_auxiliary_note())
+        self.assertIn("점포 자체 평가가 아니라", store_comparison_assumption_text("border_margin"))
 
     def test_shinsea_support_time_is_not_counted_as_a_jackpot(self):
         shinsea = MACHINES["shinsea_99"]

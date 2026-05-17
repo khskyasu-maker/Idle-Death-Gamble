@@ -4,6 +4,8 @@
 
 `pachinko-sim` is a local risk comparison simulator for Osaka Namba low-rate pachinko candidates.
 It is not a jackpot predictor and does not publish visit rankings or personal travel decisions.
+The primary simulation surface is machine spec, observed or assumed rotation, budget, and stop rules.
+Store labels are auxiliary context for rate, installation count, and border conversion, not a store ranking.
 
 Public repository data must stay objective:
 
@@ -248,6 +250,7 @@ Responsibilities:
 - compare only the same simulator machine id across stores
 - keep installed and not-installed store rows visible in the output
 - preserve the selected store as the reference condition
+- present store comparison as auxiliary rate, count, and border context rather than a general store ranking
 - support three rate-aware assumptions:
   - `cash_rotation`: the same 1,000円(1000엔)당 observed rotation is used at each store
   - `ball_quality`: the same per-ball ヘソ(헤소) entry probability is preserved and

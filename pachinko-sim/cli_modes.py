@@ -25,7 +25,7 @@ from result_printers import (
     print_strategy_matrix_results,
     save_matrix_to_csv,
 )
-from result_output_helpers import border_label
+from result_output_helpers import border_label, simulation_scope_note, store_auxiliary_note
 from rotation import estimate_summary
 from simulator import (
     BUDGET_CASES,
@@ -44,15 +44,17 @@ from stores import STORE_INVENTORY, store_contexts_for_machine
 def run_cli():
     print("=== 오사카 난바 실제 설치기종 1엔 파친코 체감 모의 ===")
     print("본 프로그램은 수익 예측이 아닌, 여행지에서의 실질적인 체감 리스크와 만족도를 비교하기 위한 도구입니다.\n")
+    print(simulation_scope_note())
+    print()
 
-    # 1. 매장 선택
-    print("[1엔/저대여 파친코 매장 선택]")
+    # 1. 라인업 필터용 점포 선택
+    print("[1엔/저대여 파친코 라인업 필터용 점포 선택]")
     store_choices = sorted(STORE_INVENTORY.keys(), key=int)
     for choice in store_choices:
         info = STORE_INVENTORY[choice]
         print(f"{choice}: {info['name']} ({bilingual_rate_label(info['rental_rate_label'])})")
     store_choice = str(
-        get_int_input(f"매장을 선택하세요 (1-{len(store_choices)}): ", 1, len(store_choices))
+        get_int_input(f"라인업을 볼 점포를 선택하세요 (1-{len(store_choices)}): ", 1, len(store_choices))
     )
 
     store_info = STORE_INVENTORY[store_choice]
@@ -90,7 +92,7 @@ def run_cli():
             f"{idx}. {m_info.get('display_name_ko') or m.name_ko} | 대수: {m_info['count']}대 | "
             f"{m_info['status']} | 신뢰도: {m.confidence} | {format_border_summary(m_info)} | "
             f"일본어: {m_info['source_machine_name']} | "
-            f"배치: {m_info.get('placement_summary', '-')}"
+            f"배치 보조: {m_info.get('placement_summary', '-')}"
         )
 
     if store_info["unsupported_machines"]:
@@ -129,7 +131,7 @@ def run_cli():
     print("4: 전략 비교 (노룰/손절/이익잠금/공격형)")
     print("5: 예산·체류 시간 비교 (5000/10000/15000/20000엔)")
     print("6: 모델 프로파일/위화감 검증 (1000엔 체감 + 예산별 체류 시간 + 공개 일본값 비교)")
-    print("7: 가게별 같은 기종 비교 (라쿠엔/123/HIPS, 레이트 보정)")
+    print("7: 점포 보조 비교 (같은 기종, 라쿠엔/123/HIPS 레이트 보정)")
     mode = get_int_input("실행 모드를 선택하세요 (1-7): ", 1, 7)
 
     default_exchange_rate = 0.89
@@ -254,9 +256,10 @@ def run_cli():
         session_policy = choose_session_policy(default=1)
         comparison_mode = choose_store_comparison_mode(default=1)
         print(
-            f"\n[가게별 비교 실행 중...] {STORE_COMPARISON_MODES[comparison_mode]}, "
+            f"\n[점포 보조 비교 실행 중...] {STORE_COMPARISON_MODES[comparison_mode]}, "
             f"예산 {budget}엔, 기준 {estimate_summary(rotation_estimate, selected_border_spins)} 조건을 비교합니다."
         )
+        print(store_auxiliary_note())
         comparison_results = run_store_comparison(
             machine,
             store_contexts_for_machine(selected_machine_id, include_missing=True),
@@ -274,7 +277,7 @@ def run_cli():
             row["reference_rotation_label"] = rotation_estimate.source_label
             row["reference_rotation_basis"] = rotation_estimate.input_basis
         print_store_comparison_results(machine, comparison_results, iterations)
-        ask_public_sim_result_export(store_name, "가게별 같은 기종 비교", machine, comparison_results, iterations)
+        ask_public_sim_result_export(store_name, "점포 보조 비교", machine, comparison_results, iterations)
     else:
         budget = get_int_input("\n예산을 입력하세요 (예: 10000, 20000) [기본값: 10000]: ", 1000, 200000, 10000)
         rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)

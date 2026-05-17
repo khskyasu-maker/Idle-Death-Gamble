@@ -82,10 +82,10 @@ def choose_session_policy(default: int = 1) -> str:
 
 
 def choose_store_comparison_mode(default: int = 1) -> str:
-    print("\n[가게 비교 기준]")
-    print("1: 동일 1000엔 회전수 - 각 가게에서 같은 현금 회전수를 실측했다고 가정")
+    print("\n[점포 보조 비교 기준]")
+    print("1: 동일 1000엔 회전수 - 각 점포에서 같은 현금 회전수를 실측했다고 가정")
     print("2: 동일 헤소 입상 품질 - 구슬 1발당 입상 확률을 같게 두고 레이트별 회전수 환산")
-    print("3: 동일 보더 마진 - 각 가게의 보더 대비 같은 +/- 회전수로 비교")
+    print("3: 동일 보더 마진 - 각 점포의 보더 대비 같은 +/- 회전수로 비교")
     mode_choice = get_int_input(f"비교 기준을 선택하세요 (1-3) [기본값: {default}]: ", 1, 3, default)
     return {
         1: "cash_rotation",

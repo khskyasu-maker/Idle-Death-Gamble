@@ -162,6 +162,7 @@ The normal data and report pipeline is:
 - Use shared helpers such as `pachinko-sim/machine_traits.py` for LT and non-LT upper-RUSH detection instead of reimplementing those checks in output code.
 - Treat `spins_per_1000y` as an expected field observation. The simulator may sample realized start spins through `pachinko-sim/start_gate.py`; do not convert sampled outcomes back into fixed border or lineup data.
 - For same-machine store comparisons, keep `동일 1000엔 회전수`, `동일 헤소 입상 품질`, and `동일 보더 마진` as separate assumptions so 1円 and 1.111円 rates are not mixed accidentally.
+- Treat store comparison as auxiliary context only. The simulator's core decision surface is machine spec, observed or assumed rotation, budget, and stop rules; store labels only carry rate, installation count, and border-conversion context.
 - Do not store simulator scores, visit rankings, recommended machines, keep/quit decisions, or strategy outcomes in public `data/` files. In public `docs/`, only the explicit latest sanitized aggregate table is allowed.
 - Do not accumulate simulator result history. If the user explicitly chooses CSV save in the CLI, overwrite local gitignored `results.csv` with the latest run only.
 - If the user explicitly chooses public simulator sharing, overwrite only `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, and `docs/latest-sim-results.html` with sanitized aggregate metrics. Do not create timestamped result files.
@@ -183,7 +184,7 @@ Current near-term development should keep improving correctness, maintainability
 - Keep machine-family duplication low. Reuse `machine_templates.py` for repeated mechanics such as 海物語(바다이야기) loop/ST patterns, Eva V-ST patterns, or other verified shared structures.
 - Keep simulation mechanics separate from presentation. Probability/state transitions belong in `simulator.py` and machine definitions; store scenario assumptions belong in `store_comparison.py`; output shaping belongs in `result_*` helper modules.
 - Keep time and ball economics explicit. Net ball consumption, gross fired balls, ベース(반환), right-side spend, payout/effect time, soft stop, cash-input cutoff, and hard stop must remain separately inspectable.
-- Keep same-machine store comparison rate-aware. Do not collapse `동일 1000엔 회전수`, `동일 헤소 입상 품질`, and `동일 보더 마진` into one generic comparison.
+- Keep same-machine store comparison rate-aware and explicitly auxiliary. Do not collapse `동일 1000엔 회전수`, `동일 헤소 입상 품질`, and `동일 보더 마진` into one generic comparison, and do not present store comparison as a store ranking.
 - Use free, lightweight Python developer tools only when they add clear value. Optional tools belong in `requirements-dev.txt` and `pyproject.toml`; core runtime should remain standard-library-first unless there is a strong reason.
 - Avoid broad rewrites. Make small, reviewable patches that preserve existing CLI behavior unless the user explicitly asks for a behavior change.
 

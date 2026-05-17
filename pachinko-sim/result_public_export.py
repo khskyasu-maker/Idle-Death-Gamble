@@ -186,7 +186,7 @@ def markdown_row_text(row: Dict[str, Any]) -> List[str]:
 def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
     machine = payload["machine"]
     headers = [
-        "가게",
+        "점포",
         "조건",
         "예산",
         "회전",
@@ -217,7 +217,7 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
 def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
     markdown_rows = [markdown_row_text(row) for row in payload["rows"]]
     headers = [
-        "가게",
+        "점포",
         "조건",
         "예산",
         "회전",

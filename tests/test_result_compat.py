@@ -64,7 +64,7 @@ class ResultCompatTests(unittest.TestCase):
         self.assertIn("기종 일본어: P大海物語5", output)
         self.assertIn("실설치명(한국어): 테스트 한국어", output)
         self.assertIn("실설치명(일본어): テスト日本語", output)
-        self.assertIn("가게별 배치: 테스트 배치", output)
+        self.assertIn("점포별 배치: 테스트 배치", output)
 
     def test_matrix_sections_print_expected_table_titles(self):
         rows = {

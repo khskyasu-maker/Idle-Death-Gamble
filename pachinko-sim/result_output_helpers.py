@@ -242,6 +242,20 @@ def theoretical_no_hit_rate_from_results(probability_denominator: float, results
     return statistics.mean((miss_probability ** capacity) * 100.0 for capacity in capacities)
 
 
+def simulation_scope_note() -> str:
+    return (
+        "시뮬 기준: 기종 스펙 + 실제/가정 회전수 + 예산 + 중단 규칙. "
+        "점포 정보는 레이트, 설치 대수, 보더 환산을 위한 보조 조건입니다."
+    )
+
+
+def store_auxiliary_note() -> str:
+    return (
+        "점포 비교는 추천 순위가 아니라 같은 기종을 어느 레이트/설치/회전 가정에서 "
+        "먼저 확인할지 보는 보조 분석입니다."
+    )
+
+
 def session_policy_label_from_results(results: List[Dict[str, Any]]) -> str:
     if not results:
         return ""
