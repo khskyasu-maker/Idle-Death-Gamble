@@ -46,6 +46,26 @@ GitHub에 넣지 않는 데이터:
 
 ## 4. 로컬 실행
 
+기본 검증은 외부 사이트 수집 없이 실행됩니다.
+
+```bash
+python scripts/check.py
+```
+
+리포트 재생성까지 포함하려면:
+
+```bash
+python scripts/check.py --report
+```
+
+선택 개발 도구를 쓰려면 무료 도구인 Ruff, pytest, coverage.py를 설치합니다.
+
+```bash
+pip install -r requirements-dev.txt
+python scripts/check.py --dev-tools
+python scripts/check.py --coverage
+```
+
 ```bash
 python scripts/validate_data.py
 python scripts/collect.py

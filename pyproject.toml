@@ -1,0 +1,29 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+src = ["scripts", "tests", "pachinko-sim"]
+extend-exclude = [
+  ".git",
+  ".venv",
+  "__pycache__",
+  "data/collected.json",
+  "data/latest.json",
+]
+
+[tool.ruff.lint]
+# Start with rules that catch syntax-level and high-confidence runtime issues.
+# Broader style cleanup can be enabled after the large report/simulator modules
+# are split into smaller units.
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["pachinko-sim"]
+
+[tool.coverage.run]
+source = ["scripts", "pachinko-sim"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
