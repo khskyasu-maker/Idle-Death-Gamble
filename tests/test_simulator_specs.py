@@ -31,7 +31,13 @@ from simulator import sample_payout_balls, simulate_single, spins_until_hit  # n
 from spec_benchmarks import PUBLIC_BENCHMARKS  # noqa: E402
 from start_gate import estimate_rate_from_observed_spins, sample_session_spin_rate  # noqa: E402
 from store_comparison import store_spins_per_1000yen  # noqa: E402
-from time_model import DEFAULT_TIME_ASSUMPTIONS, hit_effect_seconds, normal_time_components, right_seconds  # noqa: E402
+from time_model import (  # noqa: E402
+    DEFAULT_TIME_ASSUMPTIONS,
+    hit_effect_seconds,
+    normal_time_components,
+    right_seconds,
+    time_assumptions_for_machine,
+)
 
 
 class SimulatorSpecTests(unittest.TestCase):
@@ -269,8 +275,11 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertAlmostEqual(600.0, parts["active_launch_seconds"])
         self.assertAlmostEqual(720.0, parts["display_seconds"])
         self.assertAlmostEqual(120.0, parts["reserve_wait_seconds"])
-        self.assertAlmostEqual(62.5, right_seconds("ST", 50))
+        self.assertAlmostEqual(67.5, right_seconds("ST", 50))
         self.assertAlmostEqual(118.0, hit_effect_seconds(1500, "NORMAL"))
+        self.assertEqual("sea_classic", time_assumptions_for_machine(MACHINES["sea_5_agnes"]).profile_name)
+        self.assertEqual("eva_vst", time_assumptions_for_machine(MACHINES["eva_15_roar"]).profile_name)
+        self.assertEqual("rezero_fast", time_assumptions_for_machine(MACHINES["re_zero_99"]).profile_name)
 
         result = simulate_single(
             MACHINES["sea_5_agnes"],
@@ -283,6 +292,7 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertGreater(result["play_minutes"], 0)
         self.assertIn("cashless_play_minutes", result)
         self.assertIn("time_assumptions", result)
+        self.assertEqual("sea_classic", result["time_assumptions"]["profile_name"])
         self.assertEqual("타협", rotation_reality_label(65, None))
 
     def test_rotation_estimates_keep_input_basis_and_summary(self):

@@ -123,8 +123,9 @@
       "time_model": {
         "launch_balls_per_minute": 100,
         "normal_seconds_per_start": 6.0,
-        "rush_seconds_per_spin": "1.10~1.60 by state",
-        "payout_balls_per_minute": 900,
+        "profile_selection": "machine family: sea_classic / eva_vst / rezero_fast / battle_fast / generic",
+        "right_seconds_per_spin": "0.85~3.20 by machine family and state",
+        "payout_balls_per_minute": "850~1600 by machine family",
         "reserve_wait": "normal display time beyond active launch time"
       }
     },

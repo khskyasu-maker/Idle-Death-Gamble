@@ -189,12 +189,15 @@ Responsibilities:
 - treat display time beyond active launch time as 保留(보류) full/effect waiting
 - estimate right-side/ST/LT/時短(시단) time by state-specific seconds per spin
 - estimate 大当り(대당첨) effect and payout time from payout balls
+- select a machine-family time profile for Umi/Sea, Eva, Re:Zero, and modern
+  battle/LT-style machines
 - keep these values as runtime assumptions, not fixed public lineup data
 
-Default assumptions are intentionally simple and visible: 100 balls/minute launch,
-6 seconds per normal start, right-side 1.10~2.20 seconds per spin by state, and
-900 payout balls/minute. These values are for visit-time budgeting, not machine
-performance prediction.
+Default assumptions are intentionally simple and visible: 100 balls/minute launch
+and 6 seconds per normal start. Right-side speed and payout/effect time then vary
+by family: Re:Zero uses a fast profile, Eva uses a medium-fast V-ST profile, and
+Umi/Sea uses a slower traditional-support profile. These values are for visit-time
+budgeting, not machine performance prediction.
 
 ### `store_comparison.py`
 

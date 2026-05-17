@@ -603,6 +603,15 @@ def cash_burn_text(metrics: Dict[str, Any]) -> str:
     return f"{yen(per_hour)}/h / 1000엔당 {per_1000:.1f}분"
 
 
+def time_profile_text(results: List[Dict[str, Any]]) -> str:
+    if not results:
+        return "-"
+    assumptions = results[0].get("time_assumptions", {})
+    profile = assumptions.get("profile_name", "generic")
+    note = assumptions.get("source_note", "")
+    return f"{profile} ({note})" if note else profile
+
+
 def ci_pct(metrics: Dict[str, Any], prefix: str) -> str:
     return format_ci(metrics[f"{prefix}_ci_low"], metrics[f"{prefix}_ci_high"])
 
@@ -731,6 +740,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     reserve_wait_minutes = [float(r.get('reserve_wait_minutes', 0.0) or 0.0) for r in results]
     cashless_play_minutes = [float(r.get('cashless_play_minutes', 0.0) or 0.0) for r in results]
     cashless_play_shares = [float(r.get('cashless_play_share', 0.0) or 0.0) for r in results]
+    time_assumption = results[0].get("time_assumptions", {}) if results else {}
     rush_entries = [r.get('rush_entries', 0) for r in results]
     lt_entries = [r.get('lt_entries', 0) for r in results]
     upper_entries = [r.get('upper_entries', 0) for r in results]
@@ -915,6 +925,8 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "avg_cashless_play_share": statistics.mean(cashless_play_shares) if cashless_play_shares else 0.0,
         "avg_cash_spend_per_hour": avg_cash_spend_per_hour,
         "avg_play_minutes_per_1000yen_cash": avg_play_minutes_per_1000yen_cash,
+        "time_profile": time_assumption.get("profile_name", "generic"),
+        "time_profile_note": time_assumption.get("source_note", ""),
         "avg_rush_entries": statistics.mean(rush_entries),
         "avg_lt_entries": statistics.mean(lt_entries),
         "avg_upper_entries": statistics.mean(upper_entries),
@@ -957,6 +969,7 @@ def print_single_result(store_name: str, machine: Machine, res: Dict[str, Any], 
             ["세션 방식", res.get("session_policy_label", res.get("session_policy", ""))],
             ["전략", res.get("strategy_label", "노룰")],
             ["현금 사용", yen(res.get("cash_spent", res["budget"]))],
+            ["시간 프로파일", res.get("time_assumptions", {}).get("profile_name", "generic")],
             ["예상 체류 시간", minutes_text(res.get("play_minutes", 0.0))],
             ["현금 없는 시간", f"{minutes_text(res.get('cashless_play_minutes', 0.0))} ({res.get('cashless_play_share', 0.0):.1f}%)"],
             ["시간 구성", f"통상 {minutes_text(res.get('normal_play_minutes', 0.0))} / 우타치 {minutes_text(res.get('right_play_minutes', 0.0))} / 당첨연출 {minutes_text(res.get('hit_effect_minutes', 0.0))}"],
@@ -1050,6 +1063,7 @@ def print_multiple_result(store_name: str, machine: Machine, results: List[Dict[
             ["당첨 0회", pct(m["ruin_rate"]), f"95% CI {ci_pct(m, 'ruin_rate')} / 회전변동 이론 {theory_no_hit:.1f}%"],
             ["다이 품질 분포", true_spin_rate_text(m), f"품질 표준편차 {m['spin_rate_quality_stddev']:.1f}회"],
             ["헤소 입상 표본", observed_spin_rate_text(m), f"입상 {m['start_probability'] * 100:.2f}%/발"],
+            ["시간 프로파일", m["time_profile"], m["time_profile_note"]],
             ["평균 체류 시간", minutes_text(m["avg_play_minutes"]), f"P50 {minutes_text(m['median_play_minutes'])} / P90 {minutes_text(m['p90_play_minutes'])}"],
             ["현금 없는 시간", f"{minutes_text(m['avg_cashless_play_minutes'])} ({m['avg_cashless_play_share']:.1f}%)", "당첨/우타치/보유구슬 재사용 시간"],
             ["현금 소모 속도", cash_burn_text(m), "시간은 발사/보류/연출 근사 포함"],
@@ -1182,6 +1196,7 @@ def print_budget_matrix_results(store_name: str, machine: Machine, matrix_result
         print(f"가게별 배치: {matrix_results[0]['placement_summary']}")
     if matrix_results:
         print(f"세션 방식: {session_policy_label_from_results(matrix_results[0]['results'])}")
+        print(f"시간 프로파일: {time_profile_text(matrix_results[0]['results'])}")
 
     money_rows = []
     risk_rows = []
@@ -1286,6 +1301,7 @@ def print_model_profile_results(
 
     first_row = matrix_results[0]
     first_result = first_row["results"][0] if first_row.get("results") else {}
+    print(f"시간 프로파일: {time_profile_text(first_row.get('results', []))}")
     lend_rate = first_result.get("lend_rate", 1.0)
     rented_balls = int(1000 / lend_rate) if lend_rate else 0
     spins_per_1000y = first_row["spins_per_1000y"]

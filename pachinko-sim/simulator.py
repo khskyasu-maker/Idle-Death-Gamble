@@ -12,13 +12,13 @@ from start_gate import (
 )
 from rotation import ABSOLUTE_SPIN_RATE_CASES, border_case_rates
 from time_model import (
-    DEFAULT_TIME_ASSUMPTIONS,
     TimeAssumptions,
     assumption_dict,
     hit_effect_seconds as hit_effect_time_seconds,
     minutes,
     normal_time_components,
     right_seconds,
+    time_assumptions_for_machine,
 )
 
 
@@ -176,12 +176,13 @@ def simulate_single(
     spin_rate_quality_stddev: float = 3.0,
     spin_rate_min: float = None,
     spin_rate_max: float = None,
-    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
+    time_assumptions: TimeAssumptions = None,
 ) -> Dict[str, Any]:
     """단일 시뮬레이션: 현금 투입, 보유 구슬, 우타치 소모, 전략을 함께 반영합니다."""
 
     strategy = normalize_strategy(strategy)
     session_policy = normalize_session_policy(session_policy)
+    time_assumptions = time_assumptions or time_assumptions_for_machine(machine)
 
     true_spins_per_1000y = float(spins_per_1000y)
     effective_quality_stddev = spin_rate_quality_stddev if start_variance else 0.0
@@ -743,7 +744,7 @@ def simulate_multiple(
     spin_rate_quality_stddev: float = 3.0,
     spin_rate_min: float = None,
     spin_rate_max: float = None,
-    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
+    time_assumptions: TimeAssumptions = None,
 ) -> List[Dict[str, Any]]:
     """반복 시뮬레이션을 수행하고 결과 리스트를 반환"""
     results = []
@@ -783,7 +784,7 @@ def run_matrix_simulation(
     start_variance: bool = True,
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
-    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
+    time_assumptions: TimeAssumptions = None,
 ) -> List[Dict[str, Any]]:
     """예산과 회전율에 따른 매트릭스 시뮬레이션을 수행합니다."""
     budgets = [budget]
@@ -847,7 +848,7 @@ def run_budget_matrix(
     start_variance: bool = True,
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
-    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
+    time_assumptions: TimeAssumptions = None,
 ) -> List[Dict[str, Any]]:
     budgets = budgets or BUDGET_CASES
     session_policy = normalize_session_policy(session_policy)
@@ -896,7 +897,7 @@ def run_strategy_matrix(
     start_variance: bool = True,
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
-    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
+    time_assumptions: TimeAssumptions = None,
 ) -> List[Dict[str, Any]]:
     spin_cases = (
         border_case_rates(border_spins_per_1000y)
