@@ -306,6 +306,7 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertIn(SESSION_TIME_LIMIT_HOURS, metrics["stay_reach_rates"])
         self.assertNotIn(SESSION_TIME_LIMIT_HOURS + 1, metrics["stay_reach_rates"])
         self.assertIn("avg_final_remaining_value", metrics)
+        self.assertIn("avg_post_budget_play_minutes", metrics)
         self.assertEqual("타협", rotation_reality_label(65, None))
 
         no_hit_machine = Machine(
@@ -336,6 +337,22 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertTrue(limited["time_limit_triggered"])
         self.assertLessEqual(limited["play_minutes"], 0.21)
 
+        soft_limited = simulate_single(
+            no_hit_machine,
+            budget=100000,
+            lend_rate=1.0,
+            spins_per_1000y=100,
+            exchange_rate=0.89,
+            session_policy="play_until_budget_and_balls_gone",
+            session_time_limit_minutes=10,
+            soft_stop_minutes=0.2,
+            cash_input_cutoff_minutes=None,
+            start_variance=False,
+        )
+        self.assertTrue(soft_limited["soft_stop_triggered"])
+        self.assertFalse(soft_limited["time_limit_triggered"])
+        self.assertLessEqual(soft_limited["play_minutes"], 0.21)
+
         cash_blocked = simulate_single(
             no_hit_machine,
             budget=1000,
@@ -350,6 +367,22 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertTrue(cash_blocked["cash_input_cutoff_triggered"])
         self.assertEqual(0, cash_blocked["cash_spent"])
         self.assertEqual(1000, cash_blocked["final_remaining_value"])
+
+        post_budget = simulate_single(
+            no_hit_machine,
+            budget=1000,
+            lend_rate=1.0,
+            spins_per_1000y=100,
+            exchange_rate=0.89,
+            session_policy="play_until_budget_and_balls_gone",
+            session_time_limit_minutes=30,
+            soft_stop_minutes=None,
+            cash_input_cutoff_minutes=None,
+            start_variance=False,
+        )
+        self.assertTrue(post_budget["cash_budget_exhausted"])
+        self.assertTrue(post_budget["funds_exhausted_triggered"])
+        self.assertEqual(0, post_budget["post_budget_play_minutes"])
 
     def test_rotation_estimates_keep_input_basis_and_summary(self):
         cash = estimate_from_yen_observation(14, 200)

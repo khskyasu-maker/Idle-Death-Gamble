@@ -51,10 +51,13 @@
 - `lt_entry_rate`: Sampled LT entry share; non-LT machines should be interpreted as not applicable.
 - `avg_play_minutes`: Estimated stay/play time, including ball firing, reserve waiting, right-side spins, and hit effects.
 - `avg_cashless_play_minutes`: Estimated time continuing without new cash input through right-side play, hit effects, and reusable held balls.
-- `stay_reach_rates`: Share of sampled sessions reaching each hour from 1 to 11 hours.
-- `time_limit_stop_rate`: Share of sampled sessions stopped by the 11-hour practical session cap.
+- `stay_reach_rates`: Share of sampled sessions reaching each hour from 1 to 9 hours.
+- `time_limit_stop_rate`: Share of sampled sessions stopped by the 9-hour after-RUSH cleanup rule.
+- `hard_time_limit_stop_rate`: Share of sampled sessions stopped by the 11-hour hard safety cap.
 - `cash_input_cutoff_rate`: Share of sampled sessions that reached the late-session no-new-cash cutoff.
 - `final_remaining_value`: Unused cash plus exchangeable final balls converted to yen.
+- `funds_exhausted_stop_rate`: Share of sessions that stopped because cash budget and held balls were both insufficient.
+- `avg_post_budget_play_minutes`: Average play time after the cash budget was fully spent, sustained by RUSH or won balls.
 
 ## AI 해석 규칙
 

@@ -11,7 +11,11 @@ from start_gate import (
     start_probability_from_rate,
 )
 from rotation import ABSOLUTE_SPIN_RATE_CASES, border_case_rates
-from session_limits import LAST_CASH_INPUT_CUTOFF_MINUTES, SESSION_TIME_LIMIT_MINUTES
+from session_limits import (
+    HARD_SESSION_TIME_LIMIT_MINUTES,
+    LAST_CASH_INPUT_CUTOFF_MINUTES,
+    SESSION_TIME_LIMIT_MINUTES,
+)
 from time_model import (
     TimeAssumptions,
     assumption_dict,
@@ -29,7 +33,7 @@ PROFILE_BUDGET_CASES = [1000, 5000, 10000, 15000, 20000]
 
 SESSION_POLICIES = {
     "fixed_spin_cap": "예산 고정 회전수",
-    "play_until_budget_and_balls_gone": f"현금+보유구슬 소진({SESSION_TIME_LIMIT_MINUTES // 60}시간 한도)",
+    "play_until_budget_and_balls_gone": f"현금+보유구슬 소진({SESSION_TIME_LIMIT_MINUTES // 60}시간 후 RUSH 종료 시 정리)",
 }
 
 STRATEGIES = {
@@ -178,8 +182,9 @@ def simulate_single(
     spin_rate_min: float = None,
     spin_rate_max: float = None,
     time_assumptions: TimeAssumptions = None,
-    session_time_limit_minutes: float = SESSION_TIME_LIMIT_MINUTES,
+    session_time_limit_minutes: float = HARD_SESSION_TIME_LIMIT_MINUTES,
     cash_input_cutoff_minutes: float = LAST_CASH_INPUT_CUTOFF_MINUTES,
+    soft_stop_minutes: float = SESSION_TIME_LIMIT_MINUTES,
 ) -> Dict[str, Any]:
     """단일 시뮬레이션: 현금 투입, 보유 구슬, 우타치 소모, 전략을 함께 반영합니다."""
 
@@ -269,7 +274,10 @@ def simulate_single(
         "aggressive_redeploy_triggered": False,
         "time_limit_triggered": False,
         "cash_input_cutoff_triggered": False,
+        "soft_stop_triggered": False,
+        "funds_exhausted_triggered": False,
     }
+    cash_budget_exhausted_seconds = None
 
     effective_spins_per_1000y = max(1.0, observed_spins_per_1000y)
     spin_cost_balls = rented_balls_1000 / effective_spins_per_1000y
@@ -284,10 +292,20 @@ def simulate_single(
         if cash_input_cutoff_minutes is not None and cash_input_cutoff_minutes >= 0
         else None
     )
+    soft_stop_seconds = (
+        max(0.0, float(soft_stop_minutes)) * 60.0
+        if soft_stop_minutes is not None and soft_stop_minutes > 0
+        else None
+    )
     safety_counter = 0
 
     def elapsed_seconds() -> float:
         return normal_play_seconds + right_play_seconds + hit_effect_seconds_total + support_event_seconds
+
+    def mark_cash_budget_exhausted():
+        nonlocal cash_budget_exhausted_seconds
+        if cash_budget_exhausted_seconds is None and cash_spent >= budget - spin_cost_yen:
+            cash_budget_exhausted_seconds = elapsed_seconds()
 
     def session_seconds_remaining() -> float | None:
         if session_time_limit_seconds is None:
@@ -298,6 +316,14 @@ def simulate_single(
         if cash_input_cutoff_seconds is None:
             return True
         return elapsed_seconds() < cash_input_cutoff_seconds
+
+    def soft_stop_reached() -> bool:
+        return soft_stop_seconds is not None and elapsed_seconds() >= soft_stop_seconds
+
+    def soft_stop_seconds_remaining() -> float | None:
+        if soft_stop_seconds is None:
+            return None
+        return soft_stop_seconds - elapsed_seconds()
 
     def normal_seconds_per_spin() -> float:
         active_per_spin = (
@@ -325,18 +351,29 @@ def simulate_single(
             return capped, True
         return spin_count, False
 
+    def cap_normal_spins_by_soft_stop(spin_count: int) -> tuple[int, bool]:
+        remaining_seconds = soft_stop_seconds_remaining()
+        if remaining_seconds is None:
+            return spin_count, False
+        if remaining_seconds <= 0:
+            flags["soft_stop_triggered"] = True
+            return 0, True
+        capped = int(remaining_seconds // normal_seconds_per_spin())
+        if capped < spin_count:
+            flags["soft_stop_triggered"] = True
+            return max(0, capped), True
+        return spin_count, False
+
     def cap_spins_by_time(spin_count: int, seconds_per_spin: float) -> tuple[int, bool]:
         remaining_seconds = session_seconds_remaining()
         if remaining_seconds is None:
             return spin_count, False
         if remaining_seconds <= 0:
-            flags["time_limit_triggered"] = True
             return 0, True
         if seconds_per_spin <= 0:
             return spin_count, False
         capped = int(remaining_seconds // seconds_per_spin)
         if capped < spin_count:
-            flags["time_limit_triggered"] = True
             return max(0, capped), True
         return spin_count, False
 
@@ -353,7 +390,11 @@ def simulate_single(
             right_seconds(state_name, 1, time_assumptions),
         )
         if capped_spins <= 0:
+            if limited_by_time:
+                flags["time_limit_triggered"] = True
             return 0, limited_by_time
+        if limited_by_time and capped_spins < spin_count:
+            flags["time_limit_triggered"] = True
         right_spins += capped_spins
         add_right_time(state_name, capped_spins)
         bank_balls = max(
@@ -387,6 +428,16 @@ def simulate_single(
 
         playable_spins = max(0, min(spin_count, max_affordable))
         if playable_spins <= 0:
+            remaining_cash_balls = max(0.0, (budget - cash_spent) / lend_rate) if card_reuse else 0.0
+            remaining_cash_yen = max(0.0, budget - cash_spent)
+            no_playable_cash_or_balls = (
+                (bank_balls + remaining_cash_balls) < spin_cost_balls
+                if card_reuse
+                else remaining_cash_yen < spin_cost_yen
+            )
+            if no_playable_cash_or_balls and cash_input_allowed():
+                flags["funds_exhausted_triggered"] = True
+                mark_cash_budget_exhausted()
             return 0
 
         ball_cost = 0.0
@@ -413,6 +464,18 @@ def simulate_single(
 
         if cash_spent > budget and cash_spent - budget < 0.000001:
             cash_spent = float(budget)
+        mark_cash_budget_exhausted()
+        if playable_spins < spin_count and cash_input_allowed():
+            remaining_cash_balls_after = max(0.0, (budget - cash_spent) / lend_rate) if card_reuse else 0.0
+            remaining_cash_yen_after = max(0.0, budget - cash_spent)
+            no_playable_cash_or_balls = (
+                (bank_balls + remaining_cash_balls_after) < spin_cost_balls
+                if card_reuse
+                else remaining_cash_yen_after < spin_cost_yen
+            )
+            if no_playable_cash_or_balls:
+                flags["funds_exhausted_triggered"] = True
+                mark_cash_budget_exhausted()
         return playable_spins
 
     def settle_stop_loss_probe_cost():
@@ -424,6 +487,7 @@ def simulate_single(
         if cash_spent < target_cash_spent:
             normal_balls_fired += (target_cash_spent - cash_spent) / lend_rate
             cash_spent = target_cash_spent
+            mark_cash_budget_exhausted()
 
     while True:
         safety_counter += 1
@@ -443,6 +507,9 @@ def simulate_single(
         current_prob = machine.normal_prob
 
         if state == 'NORMAL':
+            if soft_stop_reached():
+                flags["soft_stop_triggered"] = True
+                break
             if stop_requested:
                 break
 
@@ -483,6 +550,7 @@ def simulate_single(
                 spins_to_take,
                 normal_seconds_per_spin(),
             )
+            spins_to_take, limited_by_soft_stop = cap_normal_spins_by_soft_stop(spins_to_take)
             spins_to_take, limited_by_cash_cutoff = cap_normal_spins_by_cash_cutoff(spins_to_take)
             if spins_to_take <= 0:
                 break
@@ -493,7 +561,12 @@ def simulate_single(
                 break
 
             if played_spins < next_normal_event:
-                if limited_by_time:
+                if flags.get("funds_exhausted_triggered"):
+                    break
+                elif limited_by_soft_stop:
+                    flags["soft_stop_triggered"] = True
+                    break
+                elif limited_by_time:
                     flags["time_limit_triggered"] = True
                 elif limited_by_cash_cutoff:
                     flags["cash_input_cutoff_triggered"] = True
@@ -751,6 +824,11 @@ def simulate_single(
         + hit_effect_seconds_total
         + support_event_seconds
     )
+    post_budget_play_seconds = (
+        max(0.0, play_seconds - cash_budget_exhausted_seconds)
+        if cash_budget_exhausted_seconds is not None
+        else 0.0
+    )
     cashless_share = (
         (cashless_play_seconds / play_seconds) * 100.0
         if play_seconds > 0
@@ -783,6 +861,10 @@ def simulate_single(
         "exchange_loss": exchange_loss,
         "session_time_limit_minutes": session_time_limit_minutes,
         "cash_input_cutoff_minutes": cash_input_cutoff_minutes,
+        "soft_stop_minutes": soft_stop_minutes,
+        "cash_budget_exhausted": cash_budget_exhausted_seconds is not None,
+        "cash_budget_exhausted_minutes": minutes(cash_budget_exhausted_seconds or 0.0),
+        "post_budget_play_minutes": minutes(post_budget_play_seconds),
         "experienced_rush": rush_entries > 0 or lt_entries > 0,
         "rush_entries": rush_entries,
         "lt_entries": lt_entries,
@@ -848,8 +930,9 @@ def simulate_multiple(
     spin_rate_min: float = None,
     spin_rate_max: float = None,
     time_assumptions: TimeAssumptions = None,
-    session_time_limit_minutes: float = SESSION_TIME_LIMIT_MINUTES,
+    session_time_limit_minutes: float = HARD_SESSION_TIME_LIMIT_MINUTES,
     cash_input_cutoff_minutes: float = LAST_CASH_INPUT_CUTOFF_MINUTES,
+    soft_stop_minutes: float = SESSION_TIME_LIMIT_MINUTES,
 ) -> List[Dict[str, Any]]:
     """반복 시뮬레이션을 수행하고 결과 리스트를 반환"""
     results = []
@@ -875,6 +958,7 @@ def simulate_multiple(
             time_assumptions=time_assumptions,
             session_time_limit_minutes=session_time_limit_minutes,
             cash_input_cutoff_minutes=cash_input_cutoff_minutes,
+            soft_stop_minutes=soft_stop_minutes,
         )
         results.append(res)
     return results

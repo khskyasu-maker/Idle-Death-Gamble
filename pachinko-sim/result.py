@@ -13,7 +13,13 @@ from rotation import (
     border_ratio_text,
     rotation_reality_label,
 )
-from session_limits import SESSION_TIME_LIMIT_HOURS, SESSION_TIME_LIMIT_MINUTES, STAY_HOUR_THRESHOLDS
+from session_limits import (
+    HARD_SESSION_TIME_LIMIT_HOURS,
+    HARD_SESSION_TIME_LIMIT_MINUTES,
+    SESSION_TIME_LIMIT_HOURS,
+    SESSION_TIME_LIMIT_MINUTES,
+    STAY_HOUR_THRESHOLDS,
+)
 import statistics
 import csv
 import math
@@ -764,9 +770,14 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     reserve_wait_minutes = [float(r.get('reserve_wait_minutes', 0.0) or 0.0) for r in results]
     cashless_play_minutes = [float(r.get('cashless_play_minutes', 0.0) or 0.0) for r in results]
     cashless_play_shares = [float(r.get('cashless_play_share', 0.0) or 0.0) for r in results]
+    post_budget_play_minutes = [float(r.get('post_budget_play_minutes', 0.0) or 0.0) for r in results]
     time_assumption = results[0].get("time_assumptions", {}) if results else {}
     time_limit_stop_count = sum(1 for r in results if r.get("time_limit_triggered"))
+    soft_stop_count = sum(1 for r in results if r.get("soft_stop_triggered"))
     cash_input_cutoff_count = sum(1 for r in results if r.get("cash_input_cutoff_triggered"))
+    cash_budget_exhausted_count = sum(1 for r in results if r.get("cash_budget_exhausted"))
+    post_budget_continue_count = sum(1 for value in post_budget_play_minutes if value > 0)
+    funds_exhausted_count = sum(1 for r in results if r.get("funds_exhausted_triggered"))
     rush_entries = [r.get('rush_entries', 0) for r in results]
     lt_entries = [r.get('lt_entries', 0) for r in results]
     upper_entries = [r.get('upper_entries', 0) for r in results]
@@ -952,6 +963,15 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "avg_final_remaining_balance": int(statistics.mean(final_remaining_balance)) if final_remaining_balance else 0,
         "median_final_remaining_balance": percentile_value(final_remaining_balance, 0.5),
         "budget_exhausted_rate": (sum(1 for spent, budget in zip(cash_spent, budgets) if spent >= budget) / iterations) * 100.0,
+        "cash_budget_exhausted_rate": (cash_budget_exhausted_count / iterations) * 100.0,
+        "funds_exhausted_stop_rate": (funds_exhausted_count / iterations) * 100.0,
+        "post_budget_continue_rate": (post_budget_continue_count / iterations) * 100.0,
+        "avg_post_budget_play_minutes": statistics.mean(post_budget_play_minutes) if post_budget_play_minutes else 0.0,
+        "avg_post_budget_play_minutes_when_continued": (
+            statistics.mean(value for value in post_budget_play_minutes if value > 0)
+            if post_budget_continue_count
+            else 0.0
+        ),
         "avg_play_minutes": avg_play_minutes,
         "median_play_minutes": percentile_float(play_minutes, 0.5),
         "p10_play_minutes": percentile_float(play_minutes, 0.1),
@@ -960,9 +980,12 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "avg_capped_play_minutes": statistics.mean(capped_play_minutes) if capped_play_minutes else 0.0,
         "stay_reach_rates": stay_reach_rates,
         "time_limit_hours": SESSION_TIME_LIMIT_HOURS,
+        "hard_time_limit_hours": HARD_SESSION_TIME_LIMIT_HOURS,
         "time_limit_reached_rate": stay_reach_rates.get(SESSION_TIME_LIMIT_HOURS, 0.0),
         "time_limit_over_rate": (limit_hour_over_count / iterations) * 100.0,
-        "time_limit_stop_rate": (time_limit_stop_count / iterations) * 100.0,
+        "time_limit_stop_rate": (soft_stop_count / iterations) * 100.0,
+        "soft_stop_rate": (soft_stop_count / iterations) * 100.0,
+        "hard_time_limit_stop_rate": (time_limit_stop_count / iterations) * 100.0,
         "cash_input_cutoff_rate": (cash_input_cutoff_count / iterations) * 100.0,
         "avg_normal_play_minutes": statistics.mean(normal_play_minutes) if normal_play_minutes else 0.0,
         "avg_right_play_minutes": statistics.mean(right_play_minutes) if right_play_minutes else 0.0,
@@ -1017,7 +1040,8 @@ def print_single_result(store_name: str, machine: Machine, res: Dict[str, Any], 
             ["전략", res.get("strategy_label", "노룰")],
             ["현금 사용", yen(res.get("cash_spent", res["budget"]))],
             ["최종 잔류액", f"{yen(res.get('final_remaining_value', res.get('final_money', 0)))} (미사용 {yen(res.get('unused_cash', 0))} + 교환 {yen(res.get('final_money', 0))})"],
-            ["현실 시간 제한", f"{res.get('session_time_limit_minutes', SESSION_TIME_LIMIT_MINUTES):.0f}분 한도 / 현금마감 {res.get('cash_input_cutoff_minutes', 0):.0f}분", f"시간종료 {res.get('time_limit_triggered', False)} / 현금차단 {res.get('cash_input_cutoff_triggered', False)}"],
+            ["예산 소진 후", f"소진 {res.get('cash_budget_exhausted', False)} / 이후 {minutes_text(res.get('post_budget_play_minutes', 0.0))}", f"완전소진정지 {res.get('funds_exhausted_triggered', False)}"],
+            ["현실 시간 제한", f"소프트 {res.get('soft_stop_minutes', SESSION_TIME_LIMIT_MINUTES):.0f}분 / 하드 {res.get('session_time_limit_minutes', HARD_SESSION_TIME_LIMIT_MINUTES):.0f}분 / 현금마감 {res.get('cash_input_cutoff_minutes', 0):.0f}분", f"RUSH후정리 {res.get('soft_stop_triggered', False)} / 하드종료 {res.get('time_limit_triggered', False)} / 현금차단 {res.get('cash_input_cutoff_triggered', False)}"],
             ["시간 프로파일", res.get("time_assumptions", {}).get("profile_name", "generic")],
             ["예상 체류 시간", minutes_text(res.get("play_minutes", 0.0))],
             ["현금 없는 시간", f"{minutes_text(res.get('cashless_play_minutes', 0.0))} ({res.get('cashless_play_share', 0.0):.1f}%)"],
@@ -1114,8 +1138,9 @@ def print_multiple_result(store_name: str, machine: Machine, results: List[Dict[
             ["헤소 입상 표본", observed_spin_rate_text(m), f"입상 {m['start_probability'] * 100:.2f}%/발"],
             ["시간 프로파일", m["time_profile"], m["time_profile_note"]],
             ["평균 체류 시간", minutes_text(m["avg_play_minutes"]), f"P50 {minutes_text(m['median_play_minutes'])} / P90 {minutes_text(m['p90_play_minutes'])}"],
-            [f"{SESSION_TIME_LIMIT_HOURS}시간 한도", f"도달 {stay_rate_text(m, SESSION_TIME_LIMIT_HOURS)} / 종료 {pct(m['time_limit_stop_rate'])}", f"현금마감 작동 {pct(m['cash_input_cutoff_rate'])} / 캡 평균 {minutes_text(m['avg_capped_play_minutes'])}"],
+            [f"{SESSION_TIME_LIMIT_HOURS}시간 정리", f"도달 {stay_rate_text(m, SESSION_TIME_LIMIT_HOURS)} / RUSH후정리 {pct(m['soft_stop_rate'])}", f"하드종료 {pct(m['hard_time_limit_stop_rate'])} / 현금마감 {pct(m['cash_input_cutoff_rate'])}"],
             ["최종 잔류액", remaining_value_text(m), f"P10~P90 {yen(m['p10_final_remaining_value'])}~{yen(m['p90_final_remaining_value'])} / 예산소진 {pct(m['budget_exhausted_rate'])}"],
+            ["예산 소진 후", f"지속 {pct(m['post_budget_continue_rate'])} / 평균 {minutes_text(m['avg_post_budget_play_minutes'])}", f"지속된 경우 평균 {minutes_text(m['avg_post_budget_play_minutes_when_continued'])} / 완전소진정지 {pct(m['funds_exhausted_stop_rate'])}"],
             ["현금 없는 시간", f"{minutes_text(m['avg_cashless_play_minutes'])} ({m['avg_cashless_play_share']:.1f}%)", "당첨/우타치/보유구슬 재사용 시간"],
             ["현금 소모 속도", cash_burn_text(m), "시간은 발사/보류/연출 근사 포함"],
             ["플러스 마감", pct(m["positive_close_rate"]), f"95% CI {ci_pct(m, 'positive_close_rate')}"],
@@ -1291,6 +1316,7 @@ def print_budget_matrix_results(store_name: str, machine: Machine, matrix_result
             f"{minutes_text(m['median_play_minutes'])}/{minutes_text(m['p90_play_minutes'])}",
             minutes_text(m["avg_cashless_play_minutes"]),
             f"{m['avg_cashless_play_share']:.1f}%",
+            minutes_text(m["avg_post_budget_play_minutes"]),
             minutes_text(m["avg_normal_play_minutes"]),
             minutes_text(m["avg_right_play_minutes"]),
             minutes_text(m["avg_hit_effect_minutes"]),
@@ -1305,9 +1331,9 @@ def print_budget_matrix_results(store_name: str, machine: Machine, matrix_result
             stay_rate_text(m, 4),
             stay_rate_text(m, 6),
             stay_rate_text(m, 8),
-            stay_rate_text(m, 10),
             stay_rate_text(m, SESSION_TIME_LIMIT_HOURS),
             pct(m["time_limit_stop_rate"]),
+            pct(m["hard_time_limit_stop_rate"]),
             pct(m["cash_input_cutoff_rate"]),
         ])
         remaining_rows.append([
@@ -1318,6 +1344,7 @@ def print_budget_matrix_results(store_name: str, machine: Machine, matrix_result
             yen(m["avg_final_remaining_value"]),
             f"{yen(m['p10_final_remaining_value'])}/{yen(m['median_final_remaining_value'])}/{yen(m['p90_final_remaining_value'])}",
             yen(m["avg_final_remaining_balance"], signed=True),
+            pct(m["funds_exhausted_stop_rate"]),
         ])
         stats_rows.append([
             yen(budget),
@@ -1341,17 +1368,17 @@ def print_budget_matrix_results(store_name: str, machine: Machine, matrix_result
     )
     print_ascii_table(
         "ASCII 예산 체류 시간표",
-        ["예산", "평균시간", "P50/P90", "현금없는", "무현금비율", "통상", "우타치", "당첨연출", "보류대기", "현금속도"],
+        ["예산", "평균시간", "P50/P90", "현금없는", "무현금비율", "소진후", "통상", "우타치", "당첨연출", "보류대기", "현금속도"],
         time_rows,
     )
     print_ascii_table(
         "ASCII 체류 도달률표",
-        ["예산", "1h+", "2h+", "3h+", "4h+", "6h+", "8h+", "10h+", f"{SESSION_TIME_LIMIT_HOURS}h+", f"{SESSION_TIME_LIMIT_HOURS}h종료", "현금마감"],
+        ["예산", "1h+", "2h+", "3h+", "4h+", "6h+", "8h+", f"{SESSION_TIME_LIMIT_HOURS}h+", f"{SESSION_TIME_LIMIT_HOURS}h정리", f"{HARD_SESSION_TIME_LIMIT_HOURS}h하드", "현금마감"],
         stay_rows,
     )
     print_ascii_table(
         "ASCII 최종 잔류액표",
-        ["예산", "예산소진", "미사용현금", "교환가능", "최종잔류", "P10/P50/P90", "잔류손익"],
+        ["예산", "예산소진", "미사용현금", "교환가능", "최종잔류", "P10/P50/P90", "잔류손익", "완전소진"],
         remaining_rows,
     )
     print_ascii_table(
@@ -1453,6 +1480,7 @@ def print_model_profile_results(
                 f"{minutes_text(m['median_play_minutes'])}/{minutes_text(m['p90_play_minutes'])}",
                 minutes_text(m["avg_cashless_play_minutes"]),
                 f"{m['avg_cashless_play_share']:.1f}%",
+                minutes_text(m["avg_post_budget_play_minutes"]),
                 minutes_text(m["avg_normal_play_minutes"]),
                 minutes_text(m["avg_right_play_minutes"]),
                 minutes_text(m["avg_hit_effect_minutes"]),
@@ -1469,7 +1497,6 @@ def print_model_profile_results(
                 stay_rate_text(m, 4),
                 stay_rate_text(m, 6),
                 stay_rate_text(m, 8),
-                stay_rate_text(m, 10),
                 stay_rate_text(m, SESSION_TIME_LIMIT_HOURS),
                 remaining_value_text(m),
             ]
@@ -1482,12 +1509,12 @@ def print_model_profile_results(
     )
     print_ascii_table(
         "ASCII 예산별 체류 시간",
-        ["예산", "평균시간", "P50/P90", "현금없는", "무현금비율", "통상", "우타치", "당첨연출", "보류대기", "현금속도"],
+        ["예산", "평균시간", "P50/P90", "현금없는", "무현금비율", "소진후", "통상", "우타치", "당첨연출", "보류대기", "현금속도"],
         time_rows,
     )
     print_ascii_table(
         "ASCII 예산별 체류 도달률",
-        ["예산", "1h+", "2h+", "3h+", "4h+", "6h+", "8h+", "10h+", f"{SESSION_TIME_LIMIT_HOURS}h+", "최종잔류"],
+        ["예산", "1h+", "2h+", "3h+", "4h+", "6h+", "8h+", f"{SESSION_TIME_LIMIT_HOURS}h+", "최종잔류"],
         stay_rows,
     )
 
@@ -1748,7 +1775,7 @@ def save_matrix_to_csv(machine: Machine, matrix_results: List[Dict[str, Any]], i
         "중앙값차액", "중앙값95CI하한", "중앙값95CI상한",
         "하위10%차액", "하위10%95CI하한", "하위10%95CI상한", "CVaR10차액",
         "하위25%차액", "상위10%차액", "상위10%95CI하한", "상위10%95CI상한", "상위10%평균차액",
-        "최대손실", "최대이익", "실익조건", "평균당첨횟수", "초당첨평균회전", "초당첨중앙회전", "초당첨P90회전", "초당첨후평균당첨", "당첨세션평균대당첨", "평균RUSH진입", "평균LT진입", "LT진입성공률", "평균상위RUSH진입", "상위RUSH진입성공률", "평균체류분", "중앙체류분", "P90체류분", f"{SESSION_TIME_LIMIT_HOURS}시간도달률", f"{SESSION_TIME_LIMIT_HOURS}시간종료율", "현금마감작동률", "평균최종잔류액", "중앙최종잔류액", "최종잔류P10", "최종잔류P90", "예산소진률", "평균현금없는분", "평균무현금비율", "평균보류대기분", "평균현금소모엔시간", "1000엔당평균분", "익절발동률", "손절발동률", "평균최대연속", "평균플레이회전"
+        "최대손실", "최대이익", "실익조건", "평균당첨횟수", "초당첨평균회전", "초당첨중앙회전", "초당첨P90회전", "초당첨후평균당첨", "당첨세션평균대당첨", "평균RUSH진입", "평균LT진입", "LT진입성공률", "평균상위RUSH진입", "상위RUSH진입성공률", "평균체류분", "중앙체류분", "P90체류분", f"{SESSION_TIME_LIMIT_HOURS}시간도달률", f"{SESSION_TIME_LIMIT_HOURS}시간정리율", f"{HARD_SESSION_TIME_LIMIT_HOURS}시간하드종료율", "현금마감작동률", "평균최종잔류액", "중앙최종잔류액", "최종잔류P10", "최종잔류P90", "예산소진률", "완전소진정지율", "예산소진후지속률", "평균예산소진후체류분", "소진후지속시평균분", "평균현금없는분", "평균무현금비율", "평균보류대기분", "평균현금소모엔시간", "1000엔당평균분", "익절발동률", "손절발동률", "평균최대연속", "평균플레이회전"
     ]
     
     file_exists = os.path.isfile(filepath)
@@ -1778,9 +1805,11 @@ def save_matrix_to_csv(machine: Machine, matrix_results: List[Dict[str, Any]], i
                 round(m['avg_upper_entries'], 2) if machine_has_upper(machine) else "N/A",
                 round(m['upper_success_rate'], 1) if machine_has_upper(machine) else "N/A",
                 round(m['avg_play_minutes'], 2), round(m['median_play_minutes'], 2), round(m['p90_play_minutes'], 2),
-                round(m['time_limit_reached_rate'], 1), round(m['time_limit_stop_rate'], 1), round(m['cash_input_cutoff_rate'], 1),
+                round(m['time_limit_reached_rate'], 1), round(m['time_limit_stop_rate'], 1), round(m['hard_time_limit_stop_rate'], 1), round(m['cash_input_cutoff_rate'], 1),
                 m['avg_final_remaining_value'], m['median_final_remaining_value'], m['p10_final_remaining_value'], m['p90_final_remaining_value'],
                 round(m['budget_exhausted_rate'], 1),
+                round(m['funds_exhausted_stop_rate'], 1), round(m['post_budget_continue_rate'], 1),
+                round(m['avg_post_budget_play_minutes'], 2), round(m['avg_post_budget_play_minutes_when_continued'], 2),
                 round(m['avg_cashless_play_minutes'], 2), round(m['avg_cashless_play_share'], 1), round(m['avg_reserve_wait_minutes'], 2),
                 m['avg_cash_spend_per_hour'], round(m['avg_play_minutes_per_1000yen_cash'], 2),
                 round(m['profit_lock_trigger_rate'], 1), round(m['stop_loss_trigger_rate'], 1), round(m['avg_streak'], 1), m['avg_spins']

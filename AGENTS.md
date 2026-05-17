@@ -323,7 +323,7 @@ curl -I --max-time 15 <url>
 - Treat `data/namba-actual-1yen-lineup.json` as public objective lineup/spec data. Do not add simulator-derived fields such as `sim_supported`, `sim_model_key`, `risk_level`, `first_test_budget`, `keep_condition`, or `quit_condition`.
 - Keep 1円/1.111円 simulator candidates separate from 4円 machines. If a source page mixes rates, verify the row's rate before adding it to the low-rate lineup.
 - Keep simulator-derived guidance in `pachinko-sim/stores.py` or runtime CLI output, not in public JSON outputs.
-- Simulator verification output should expose practical inputs such as 1,000円당 회전수, 예산별 당첨률, 평균 大当り(아타리), 평균 연속, RUSH/LT, 평균 체류 시간, 1~11시간 도달률, 11시간 종료율, 최종 잔류액, 현금 없이 이어진 시간, and public Japanese spec benchmark differences.
+- Simulator verification output should expose practical inputs such as 1,000円당 회전수, 예산별 당첨률, 평균 大当り(아타리), 평균 연속, RUSH/LT, 평균 체류 시간, 1~9시간 도달률, 9시간 이후 RUSH 종료 정리율, 11시간 하드 종료율, 최종 잔류액, 예산 소진 후 지속 시간, 완전 소진 정지율, 현금 없이 이어진 시간, and public Japanese spec benchmark differences.
 - In simulator output, display LT as `해당없음` for non-LT machines. Use `0%` only when the model actually has an LT path and the simulated entry rate is zero. Keep non-LT upper RUSH metrics separate from LT.
 - Treat `docs/` as generated Pages output, not as a separate hand-maintained app.
 - AI helper files in `docs/` must stay generic and blank. Do not write actual onsite observations, personal movement, budget, or spending notes into generated public files.

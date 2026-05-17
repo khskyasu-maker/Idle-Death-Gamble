@@ -253,11 +253,13 @@ Session accounting:
   normal spins are capped at `budget / 1000 * spins_per_1000y`
 - `session_policy="play_until_budget_and_balls_gone"` allows reusable balls to
   extend normal play until cash budget and held balls are both insufficient
-- all session policies use an 11-hour practical stop cap. After the cap is
-  reached, the simulator stops instead of letting rare positive loops run
-  indefinitely.
-- new cash input is blocked after the 10-hour mark. Existing banked balls can
-  continue paying normal spins until the 11-hour stop cap or ball exhaustion.
+- all session policies use a 9-hour soft stop. In normal play, the simulator
+  stops around that mark; if the player is already in RUSH/時短(시단)/確変(확변),
+  play continues until the right-side state returns to normal.
+- an 11-hour hard cap remains as a safety bound so rare positive loops do not
+  run indefinitely.
+- new cash input is blocked after the 9-hour mark. Existing banked balls can
+  continue only when the player is still resolving the active right-side state.
 - budget comparison applies a practical normal-spin safety cap when using the
   play-until policy, so rare long positive sessions do not dominate runtime
 - miss streaks are sampled with an equivalent geometric distribution instead
@@ -275,15 +277,19 @@ Session accounting:
 - `cashless_play_minutes` estimates time continuing without new cash input,
   including right-side play, hit effects, and normal spins paid by reusable balls.
 - `stay_reach_rates` reports the share of sampled sessions reaching each hour
-  from 1 to 11 hours. The 11-hour value is a practical stop cap for leaving
-  before close and avoiding late cash input, not a prediction that the hall will
-  let a session continue unchanged.
+  from 1 to 9 hours. The 9-hour value is the practical travel-day stop point,
+  not a prediction that the hall will let a session continue unchanged.
 - `time_limit_triggered` and `cash_input_cutoff_triggered` distinguish sessions
-  stopped by the practical day cap from sessions that simply ran out of cash and
-  balls.
+  stopped by the hard cap or late cash-input rule from sessions that simply ran
+  out of cash and balls. `soft_stop_triggered` tracks the 9-hour RUSH-ended
+  cleanup rule.
 - `final_remaining_value` is unused cash plus exchangeable final balls converted
   to yen. This is separate from `net_profit`, which remains final exchange money
   minus cash spent.
+- `cash_budget_exhausted`, `funds_exhausted_triggered`, and
+  `post_budget_play_minutes` separate "cash budget spent" from "cash and balls
+  both gone". This keeps long sessions sustained by RUSH or won balls visible in
+  the output.
 
 Statistical layers:
 
