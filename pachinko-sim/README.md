@@ -49,6 +49,7 @@
 - `result_stats.py`: Wilson 구간, t 기반 평균 구간, 분위수 구간, 조건부 플러스율 같은 순수 통계 보조 로직
 - `result_formatting.py`: ASCII 표, 금액, 퍼센트, 시간 표시 같은 터미널 포맷 보조 로직
 - `result_csv.py`: 사용자가 명시적으로 선택한 경우에만 `results.csv`에 매트릭스 결과를 append하는 CSV 직렬화 로직
+- `result_store_views.py`: 가게별 같은 기종 비교 출력에 필요한 표 행과 설명문을 조립하는 뷰 보조 로직
 - `model_checks.py`: 이론 무당첨률, ST/LT 확률, payout weight와 고정 스펙 메타데이터 검증용 보조 로직
 
 상세 설계 기준은 `ARCHITECTURE.md`를 기준으로 관리합니다.

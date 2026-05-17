@@ -48,7 +48,7 @@ pachinko-sim/store_comparison.py
 pachinko-sim/result.py
         |
         v
-pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py
+pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py
         |
         v
 CLI output / optional append-only results.csv
@@ -355,6 +355,7 @@ pure helpers to:
 - `result_stats.py`: Monte Carlo uncertainty helpers, Wilson intervals, quantile intervals, tail means, and useful-profit condition rows
 - `result_formatting.py`: terminal table width handling, yen/percent/minute text, and ASCII bar/table helpers
 - `result_csv.py`: append-only matrix CSV serialization used only after explicit user confirmation
+- `result_store_views.py`: same-machine store comparison table rows and explanatory labels
 
 Primary outputs:
 

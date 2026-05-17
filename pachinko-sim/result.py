@@ -42,6 +42,7 @@ from result_stats import (
     wilson_interval,
 )
 from result_csv import save_matrix_to_csv as write_matrix_to_csv
+from result_store_views import build_store_comparison_view, store_comparison_assumption_text
 import statistics
 
 
@@ -1356,23 +1357,6 @@ def print_strategy_matrix_results(store_name: str, machine: Machine, matrix_resu
     print("="*80)
 
 
-def store_comparison_assumption_text(mode: str) -> str:
-    if mode == "ball_quality":
-        return (
-            "같은 구슬 1발당 헤소 입상 확률을 유지합니다. "
-            "1.111엔은 1000엔당 대여 구슬이 적으므로 같은 못 상태라면 입력 회전수가 낮게 보입니다."
-        )
-    if mode == "border_margin":
-        return (
-            "각 가게의 기종별 보더 대비 같은 +/- 회전수를 적용합니다. "
-            "레이트와 보더가 다른 점포를 손익분기 기준으로 맞춰 보는 비교입니다."
-        )
-    return (
-        "각 가게에서 실제로 1000엔당 같은 회전수를 확인했다고 보는 비교입니다. "
-        "1.111엔에서 같은 회전수가 나오면 구슬 1발당 헤소 입상 품질은 더 높은 조건입니다."
-    )
-
-
 def print_store_comparison_results(
     machine: Machine,
     comparison_results: List[Dict[str, Any]],
@@ -1386,101 +1370,42 @@ def print_store_comparison_results(
         print("표시할 데이터가 없습니다.")
         return
 
-    first_row = comparison_results[0]
-    print(f"비교 기준: {first_row.get('comparison_mode_label', '-')}")
-    reference_rotation = f"{spins_text(first_row.get('reference_spins_per_1000y'))}/1000엔"
-    if first_row.get("reference_rotation_label"):
-        reference_rotation = f"{first_row['reference_rotation_label']} -> {reference_rotation}"
-    print(f"기준 입력 회전수: {reference_rotation}")
-    print(f"예산/전략/세션: {yen(first_row.get('budget', 0))} / {first_row.get('strategy_label', '-')} / {first_row.get('session_policy_label', '-')}")
-    print("비교 해석:", store_comparison_assumption_text(first_row.get("comparison_mode", "")))
+    view = build_store_comparison_view(
+        machine,
+        comparison_results,
+        iterations,
+        calculate_metrics,
+        operating_warning,
+        theoretical_no_hit_rate_from_results,
+        border_delta,
+        rotation_condition_text,
+        lt_rate_text,
+        upper_rate_text,
+        stay_rate_text,
+    )
+    print(f"비교 기준: {view['comparison_mode_label']}")
+    print(f"기준 입력 회전수: {view['reference_rotation']}")
+    print(f"예산/전략/세션: {yen(view['budget'])} / {view['strategy_label']} / {view['session_policy_label']}")
+    print("비교 해석:", view["assumption_text"])
 
-    placement_summary = ""
-    for row in comparison_results:
-        placement_summary = row.get("placement_summary") or placement_summary
-    if placement_summary:
-        print(f"가게별 배치: {placement_summary}")
+    if view["placement_summary"]:
+        print(f"가게별 배치: {view['placement_summary']}")
 
-    name_rows = []
-    for row in comparison_results:
-        if not row.get("installed"):
-            name_rows.append([row.get("store_short_label", "-"), "설치 없음", "設置なし(설치 없음)"])
-            continue
-        name_rows.append(
-            [
-                row.get("store_short_label", "-"),
-                row.get("installed_full_name_ko", "-"),
-                row.get("installed_full_name_ja", "-"),
-            ]
-        )
     print_ascii_table(
         "ASCII 가게별 실설치명",
         ["가게", "한국어", "일본어"],
-        name_rows,
+        view["name_rows"],
     )
-
-    condition_rows = []
-    money_rows = []
-    for row in comparison_results:
-        store_label = row.get("store_short_label", row.get("store_name", "-"))
-        rate = lend_rate_text(row.get("rental_rate", 0.0))
-        count_text = f"{row.get('count', 0)}대" if row.get("installed") else "설치없음"
-
-        if not row.get("installed"):
-            condition_rows.append([store_label, rate, count_text, "-", "-", "-", "-", "-", "-", "-", "-", "설치 없음"])
-            money_rows.append([store_label, "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "설치 없음"])
-            continue
-
-        metrics = calculate_metrics(row["results"], iterations)
-        spins = row.get("spins_per_1000y")
-        border_spins = row.get("border_spins_per_1000yen")
-        warning = operating_warning(machine.confidence, spins, border_spins)
-        theory_no_hit = theoretical_no_hit_rate_from_results(machine.normal_prob, row["results"])
-
-        condition_rows.append(
-            [
-                store_label,
-                rate,
-                count_text,
-                f"{spins_text(spins)}/1000엔",
-                f"{row.get('start_probability', 0.0) * 100:.2f}%",
-                border_delta(spins, border_spins),
-                rotation_condition_text(spins, border_spins),
-                pct(metrics["hit_rate"]),
-                pct(metrics["ruin_rate"]),
-                f"{theory_no_hit:.1f}%",
-                pct(metrics["rush_rate"]),
-                f"{lt_rate_text(machine, metrics)} / {upper_rate_text(machine, metrics)}",
-            ]
-        )
-        money_rows.append(
-            [
-                store_label,
-                pct(metrics["positive_close_rate"]),
-                minutes_text(metrics["avg_play_minutes"]),
-                stay_rate_text(metrics, SESSION_TIME_LIMIT_HOURS),
-                yen(metrics["avg_final_remaining_value"]),
-                yen(metrics["avg_profit"], signed=True),
-                yen(metrics["median_profit"], signed=True),
-                yen(metrics["worst_10_profit"], signed=True),
-                yen(metrics["top_10_profit"], signed=True),
-                pct(metrics["recovery_80_rate"]),
-                f"{metrics['avg_first_hit']}회",
-                f"{metrics['avg_hits']:.2f}회/{metrics['avg_streak']:.2f}연",
-                metrics["profit_condition_summary"],
-                warning or "-",
-            ]
-        )
 
     print_ascii_table(
         "ASCII 가게/레이트 조건표",
         ["가게", "레이트", "설치", "입력회전", "헤소/발", "보더+/-", "판정/보더비", "당첨", "0회", "이론0회", "RUSH", "LT/상위"],
-        condition_rows,
+        view["condition_rows"],
     )
     print_ascii_table(
         "ASCII 가게별 손익/체감표",
         ["가게", "플러스", "평균시간", f"{SESSION_TIME_LIMIT_HOURS}h+", "잔류액", "평균", "중앙", "하위10", "상위10", "회수80", "평균초당첨", "평균아타리/연", "실익조건", "주의"],
-        money_rows,
+        view["money_rows"],
     )
 
     print("주의: 가게 비교는 같은 기종과 입력 조건의 런타임 통계입니다. 실제 台番号(기기 번호)별 이력, 현장 못 상태, 시간 제약은 별도 확인 대상입니다.")
