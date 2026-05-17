@@ -51,7 +51,7 @@ pachinko-sim/result.py
 pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py
         |
         v
-CLI output / optional append-only results.csv
+CLI output / optional latest-only local results.csv
 ```
 
 Fixed real-world inputs and runtime outputs must remain separate:
@@ -63,7 +63,7 @@ Fixed real-world inputs and runtime outputs must remain separate:
 - source-to-model translation rules: `SPEC_MODELING_GUIDE.md`
 - runtime session assumptions: CLI inputs, strategy settings, `spins_per_1000y`, budget, exchange rate
 - runtime time assumptions: launch speed, display seconds per start, right-side seconds per spin, payout/effect time
-- runtime statistical output: `result.py` metrics and optional append-only `results.csv`
+- runtime statistical output: `result.py` metrics and optional latest-only gitignored `results.csv`
 
 Do not copy Monte Carlo output, recommendation scores, or visit decisions back into fixed data files.
 
@@ -354,7 +354,7 @@ pure helpers to:
 
 - `result_stats.py`: Monte Carlo uncertainty helpers, Wilson intervals, quantile intervals, tail means, and useful-profit condition rows
 - `result_formatting.py`: terminal table width handling, yen/percent/minute text, and ASCII bar/table helpers
-- `result_csv.py`: append-only matrix CSV serialization used only after explicit user confirmation
+- `result_csv.py`: latest-only matrix CSV serialization used only after explicit user confirmation
 - `result_store_views.py`: same-machine store comparison table rows and explanatory labels
 
 Primary outputs:

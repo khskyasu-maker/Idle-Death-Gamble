@@ -30,6 +30,8 @@ Do not store or publish dynamic decision data in GitHub:
 - "Go here today" instructions
 - Jackpot likelihood
 - Win-rate expressions
+- Simulator run tables, CSV files, or accumulated local simulation history
+- Personal budget, actual spending, or profit/loss records
 - Personal travel schedule, lodging details, transport booking identifiers, passport identifiers, or other private trip records
 
 ## Data Sources
@@ -94,7 +96,7 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── result.py                 # CLI result assembly and user-facing output
 │   ├── result_stats.py           # Pure statistical helper functions
 │   ├── result_formatting.py       # Terminal table, yen, percent, and time formatting helpers
-│   ├── result_csv.py              # Explicit opt-in CSV append serialization
+│   ├── result_csv.py              # Explicit opt-in latest-only local CSV serialization
 │   ├── result_store_views.py      # Same-machine store comparison view row builders
 │   ├── stores.py                 # Local simulator lineup adapter from public JSON
 │   ├── model_checks.py           # Deterministic model consistency checks
@@ -142,7 +144,7 @@ The normal data and report pipeline is:
 - Treat `spins_per_1000y` as an expected field observation. The simulator may sample realized start spins through `pachinko-sim/start_gate.py`; do not convert sampled outcomes back into fixed border or lineup data.
 - For same-machine store comparisons, keep `동일 1000엔 회전수`, `동일 헤소 입상 품질`, and `동일 보더 마진` as separate assumptions so 1円 and 1.111円 rates are not mixed accidentally.
 - Do not store simulator scores, visit rankings, recommended machines, keep/quit decisions, or strategy outcomes in public `data/` or `docs/` files.
-- Do not auto-create or overwrite `results.csv`; append only when the user explicitly chooses CSV save in the CLI.
+- Do not accumulate simulator result history. If the user explicitly chooses CSV save in the CLI, overwrite local gitignored `results.csv` with the latest run only.
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
 - When changing simulator assumptions, update `pachinko-sim/ARCHITECTURE.md` and keep `pachinko-sim/README.md` aligned.
 - When adding or correcting a machine model from DMM/official/product pages, follow `pachinko-sim/SPEC_MODELING_GUIDE.md`.
@@ -186,7 +188,7 @@ Do not invent missing specs. If a page does not confirm a mechanic, either leave
 - Runtime dictionaries are acceptable at CLI/output boundaries, but new shared contracts should be documented by names, tests, or small typed helpers.
 - Avoid circular imports between `result.py` and `result_*` helper modules. Helper modules should not import the interactive CLI.
 - Keep random Monte Carlo behavior out of deterministic tests unless a fixed seed and wide tolerance are intentionally part of the test.
-- Do not create or overwrite local result files automatically. `results.csv` remains explicit opt-in append-only behavior.
+- Do not create local result files automatically. `results.csv` remains explicit opt-in, gitignored, and latest-only overwrite behavior.
 - Preserve UTF-8 Korean/Japanese text. This repository intentionally contains bilingual user-facing output.
 
 ## Local Development Commands

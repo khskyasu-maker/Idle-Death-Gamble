@@ -13,9 +13,14 @@
 ## 공개 금지
 
 - per-run Monte Carlo result tables or CSV files
+- accumulated simulator result history
 - visit rankings, go-here-today instructions, or final decisions
 - personal movement, lodging, booking, passport, or spending records
 - screenshots or app/member-only 台番号별 data
+
+## 로컬 결과 저장 정책
+
+- If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten with the latest run only; simulator result history must not be accumulated or committed.
 
 ## 기본 가정
 

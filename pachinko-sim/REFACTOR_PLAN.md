@@ -33,7 +33,7 @@
 |---|---|---|
 | `main.py` | CLI 입력, 모드 선택, 시나리오 생성, 결과 출력 호출 | 입력 파싱과 실행 오케스트레이션이 결합됨 |
 | `simulator.py` | 세션 상태머신, 전략, 매트릭스 실행, 상수 | 엔진과 시나리오 빌더가 같이 있음 |
-| `result.py` | 통계 계산, 보더 판정, ASCII 테이블, CSV 저장 | 계산/표시/저장이 한 파일에 집중됨 |
+| `result.py` | 통계 계산, 보더 판정, ASCII 테이블, 최신 CSV 저장 | 계산/표시/저장이 한 파일에 집중됨 |
 | `start_gate.py` | 구슬->헤소 입상, 회전율 표본 | 좋은 분리지만 단위 환산 책임은 부족함 |
 | `store_comparison.py` | 점포별 같은 기종 비교, 레이트 환산 | 동일 보더 마진 비교가 없음 |
 | `stores.py` | 라인업 로딩, 보더 환산, 미지원 후보 표시 | 보더 환산과 관찰 후보 정책이 결합됨 |
@@ -95,7 +95,7 @@ pachinko-sim/
 ├── scenarios.py         # 단일/매트릭스/예산/전략 시나리오 빌더
 ├── metrics.py           # calculate_metrics, 신뢰구간, 조건부 플러스 통계
 ├── output_tables.py     # ASCII 테이블 row 생성과 출력 텍스트
-├── csv_export.py        # results.csv append 전용
+├── csv_export.py        # results.csv 최신 결과 덮어쓰기 전용
 ├── cli.py               # 입력/선택 UI
 ├── main.py              # thin entry point
 ├── simulator.py         # 순수 세션 엔진 중심으로 축소
@@ -192,7 +192,7 @@ def border_rotation_rows(scenario, metrics): ...
 
 ### `csv_export.py`
 
-CSV 저장은 사용자가 명시적으로 선택할 때만 append한다는 정책을 유지한다. `result.py`에서 분리해 테스트하기 쉽게 만든다.
+CSV 저장은 사용자가 명시적으로 선택할 때만 실행하고, 누적하지 않고 최신 결과만 덮어쓴다는 정책을 유지한다. `result.py`에서 분리해 테스트하기 쉽게 만든다.
 
 ### `cli.py`와 `main.py`
 
@@ -361,7 +361,7 @@ python3 scripts/build_report.py
 - 보더는 고정 스펙/교환율/출옥 기준에 따라 달라질 수 있다. `border_confidence`와 `border_source`를 계속 출력해야 한다.
 - 1.111円 환산은 반드시 900玉/1000엔 기준을 유지한다.
 - 회전율 표본 변동은 실제 못 상태가 아니라 현장 관측 불확실성을 근사한 것이다.
-- `results.csv`는 자동 생성/덮어쓰기를 하지 않는다.
+- `results.csv`는 자동 생성하지 않는다. 사용자가 명시적으로 저장할 때만 gitignored 로컬 파일로 최신 결과를 덮어쓴다.
 - 공개 `data/`와 `docs/`에 시뮬 결과, 추천, 방문 순위, 개인 예산 판단을 쓰지 않는다.
 
 ## 완료 기준

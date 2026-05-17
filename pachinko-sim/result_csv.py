@@ -1,5 +1,4 @@
 import csv
-import os
 from typing import Any, Callable, Dict, List
 
 from machine_traits import machine_has_lt, machine_has_upper
@@ -111,12 +110,14 @@ def save_matrix_to_csv(
     calculate_metrics_fn: Callable[[List[Dict[str, Any]], int], Dict[str, Any]],
     filepath: str = "results.csv",
 ) -> None:
-    file_exists = os.path.isfile(filepath)
+    """Write the latest explicitly requested matrix result only.
 
-    with open(filepath, "a", newline="", encoding="utf-8-sig") as handle:
+    The simulator must not accumulate a local play-result history in GitHub.
+    `results.csv` is gitignored and overwritten on each explicit save.
+    """
+    with open(filepath, "w", newline="", encoding="utf-8-sig") as handle:
         writer = csv.writer(handle)
-        if not file_exists:
-            writer.writerow(CSV_HEADERS)
+        writer.writerow(CSV_HEADERS)
 
         for matrix_result in matrix_results:
             writer.writerow(matrix_result_csv_row(machine, matrix_result, iterations, calculate_metrics_fn))

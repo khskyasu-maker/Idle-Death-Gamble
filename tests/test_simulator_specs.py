@@ -334,7 +334,7 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual([1, 2, 3, 5, 7], profit_condition_thresholds(7, include_one=True))
         self.assertEqual([2, 3, 5, 7], profit_condition_thresholds(7, include_one=False))
 
-    def test_result_csv_writer_keeps_legacy_columns_and_non_lt_markers(self):
+    def test_result_csv_writer_keeps_latest_only_and_non_lt_markers(self):
         def metrics_stub(results, iterations):
             self.assertEqual([{"marker": True}], results)
             self.assertEqual(3, iterations)
@@ -425,10 +425,13 @@ class SimulatorSpecTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             csv_path = Path(tmpdir) / "results.csv"
+            csv_path.write_text("old,accumulated,row\n", encoding="utf-8")
             save_matrix_to_csv(machine, [matrix_result], 3, metrics_stub, str(csv_path))
             rows = csv_path.read_text(encoding="utf-8-sig").splitlines()
 
         self.assertEqual(CSV_HEADERS[0], rows[0].split(",")[0])
+        self.assertEqual(2, len(rows))
+        self.assertNotIn("old,accumulated,row", "\n".join(rows))
         self.assertIn("P 대해물어5", rows[1])
 
     def test_store_comparison_view_builds_installed_and_missing_rows(self):

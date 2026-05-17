@@ -711,10 +711,15 @@ def build_simulator_context():
         ],
         "do_not_commit": [
             "per-run Monte Carlo result tables or CSV files",
+            "accumulated simulator result history",
             "visit rankings, go-here-today instructions, or final decisions",
             "personal movement, lodging, booking, passport, or spending records",
             "screenshots or app/member-only 台番号별 data",
         ],
+        "local_result_storage_policy": (
+            "If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten "
+            "with the latest run only; simulator result history must not be accumulated or committed."
+        ),
         "default_assumptions": {
             "exchange_rate_yen_per_ball": 0.89,
             "spin_rate_cases_per_1000yen": [50, 60, 70, 80, 90, 100],
@@ -812,6 +817,9 @@ def build_simulator_context_markdown():
     md += "\n## 공개 금지\n\n"
     for item in context["do_not_commit"]:
         md += f"- {item}\n"
+
+    md += "\n## 로컬 결과 저장 정책\n\n"
+    md += f"- {context['local_result_storage_policy']}\n"
 
     md += "\n## 기본 가정\n\n"
     md += f"- 교환율 기본값: `{assumptions['exchange_rate_yen_per_ball']}`엔/발\n"

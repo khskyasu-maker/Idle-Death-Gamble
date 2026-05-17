@@ -379,7 +379,7 @@ def main():
         )
         add_lineup_context(matrix_results, selected_machine_info)
         print_matrix_results(machine, matrix_results, iterations)
-        save_csv = get_int_input("CSV에 추가 저장할까요? 1=예, 0=아니오 [기본값: 0]: ", 0, 1, 0)
+        save_csv = get_int_input("CSV에 최신 결과만 저장할까요? 기존 results.csv는 덮어씁니다. 1=예, 0=아니오 [기본값: 0]: ", 0, 1, 0)
         if save_csv:
             save_matrix_to_csv(machine, matrix_results, iterations, filepath="results.csv")
     elif mode == 4:
