@@ -8,12 +8,12 @@ from result_output_helpers import (
     lt_rate_text,
     operating_warning,
     print_ascii_table,
-    print_travel_satisfaction_grade,
     rotation_condition_text,
     stay_rate_text,
     theoretical_no_hit_rate_from_results,
     upper_rate_text,
 )
+from result_printer_common import print_machine_context, print_result_footer, print_section_header
 from result_store_views import build_store_comparison_view
 from session_limits import SESSION_TIME_LIMIT_HOURS
 
@@ -23,9 +23,8 @@ def print_store_comparison_results(
     comparison_results: list[dict[str, Any]],
     iterations: int,
 ):
-    print("\n" + "=" * 86)
-    print(f"=== {machine.name_ko} 가게별 같은 기종 비교 ({iterations}회) ===")
-    print(f"기종 일본어: {machine.name_ja}")
+    print_section_header(f"=== {machine.name_ko} 가게별 같은 기종 비교 ({iterations}회) ===", 86)
+    print_machine_context(machine)
 
     if not comparison_results:
         print("표시할 데이터가 없습니다.")
@@ -85,5 +84,4 @@ def print_store_comparison_results(
     )
 
     print("주의: 가게 비교는 같은 기종과 입력 조건의 런타임 통계입니다. 실제 台番号(기기 번호)별 이력, 현장 못 상태, 시간 제약은 별도 확인 대상입니다.")
-    print_travel_satisfaction_grade(machine)
-    print("=" * 86)
+    print_result_footer(machine, 86)

@@ -4,12 +4,13 @@ from machines import Machine
 from result_metrics import calculate_metrics
 from result_output_helpers import (
     denominator_tail_rows,
-    installed_name_ja_from_results,
-    installed_name_ko_from_results,
     print_ascii_table,
-    print_travel_satisfaction_grade,
-    session_policy_label_from_results,
-    time_profile_text,
+)
+from result_printer_common import (
+    print_machine_context,
+    print_result_footer,
+    print_section_header,
+    print_session_context,
 )
 from result_table_builders import (
     benchmark_rows,
@@ -26,15 +27,8 @@ from session_limits import (
 
 
 def print_matrix_results(machine: Machine, matrix_results: list[dict[str, Any]], iterations: int):
-    print("\n" + "=" * 60)
-    print(f"=== {machine.name_ko} 매트릭스 리스크 분석 ({iterations}회) ===")
-    print(f"기종 일본어: {machine.name_ja}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ko"):
-        print(f"실설치명(한국어): {installed_name_ko_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ja"):
-        print(f"실설치명(일본어): {installed_name_ja_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("placement_summary"):
-        print(f"가게별 배치: {matrix_results[0]['placement_summary']}")
+    print_section_header(f"=== {machine.name_ko} 매트릭스 리스크 분석 ({iterations}회) ===", 60)
+    print_machine_context(machine, matrix_results)
 
     rows = matrix_result_rows(machine, matrix_results, iterations)
 
@@ -62,8 +56,7 @@ def print_matrix_results(machine: Machine, matrix_results: list[dict[str, Any]],
         rows["risk"],
     )
 
-    print_travel_satisfaction_grade(machine)
-    print("=" * 60)
+    print_result_footer(machine, 60)
 
 
 def print_budget_matrix_results(
@@ -72,18 +65,10 @@ def print_budget_matrix_results(
     matrix_results: list[dict[str, Any]],
     iterations: int,
 ):
-    print("\n" + "=" * 70)
-    print(f"=== {store_name} / {machine.name_ko} 예산별 리스크 분석 ({iterations}회) ===")
-    print(f"기종 일본어: {machine.name_ja}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ko"):
-        print(f"실설치명(한국어): {installed_name_ko_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ja"):
-        print(f"실설치명(일본어): {installed_name_ja_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("placement_summary"):
-        print(f"가게별 배치: {matrix_results[0]['placement_summary']}")
+    print_section_header(f"=== {store_name} / {machine.name_ko} 예산별 리스크 분석 ({iterations}회) ===", 70)
+    print_machine_context(machine, matrix_results)
     if matrix_results:
-        print(f"세션 방식: {session_policy_label_from_results(matrix_results[0]['results'])}")
-        print(f"시간 프로파일: {time_profile_text(matrix_results[0]['results'])}")
+        print_session_context(matrix_results[0]["results"], include_time_profile=True)
 
     tables = budget_result_tables(machine, matrix_results, iterations)
 
@@ -130,8 +115,7 @@ def print_budget_matrix_results(
         tables["stats"],
     )
 
-    print_travel_satisfaction_grade(machine)
-    print("=" * 70)
+    print_result_footer(machine, 70)
 
 
 def print_model_profile_results(
@@ -140,22 +124,19 @@ def print_model_profile_results(
     matrix_results: list[dict[str, Any]],
     iterations: int,
 ):
-    print("\n" + "=" * 86)
-    print(f"=== {store_name} / {machine.name_ko} 모델 프로파일·위화감 검증 ({iterations}회) ===")
-    print(f"기종 일본어: {machine.name_ja}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ko"):
-        print(f"실설치명(한국어): {installed_name_ko_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ja"):
-        print(f"실설치명(일본어): {installed_name_ja_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("placement_summary"):
-        print(f"가게별 배치: {matrix_results[0]['placement_summary']}")
+    print_section_header(f"=== {store_name} / {machine.name_ko} 모델 프로파일·위화감 검증 ({iterations}회) ===", 86)
+    print_machine_context(machine, matrix_results)
 
     if not matrix_results:
         print("표시할 데이터가 없습니다.")
         return
 
     first_row = matrix_results[0]
-    print(f"시간 프로파일: {time_profile_text(first_row.get('results', []))}")
+    print_session_context(
+        first_row.get("results", []),
+        include_session_policy=False,
+        include_time_profile=True,
+    )
     first_metrics = calculate_metrics(first_row["results"], iterations)
 
     print_ascii_table(
@@ -213,8 +194,7 @@ def print_model_profile_results(
     )
     print("판정 기준: OK는 모델값과 공개값 차이가 작다는 뜻이고, 실제 수익 보장을 의미하지 않습니다.")
 
-    print_travel_satisfaction_grade(machine)
-    print("=" * 86)
+    print_result_footer(machine, 86)
 
 
 def print_strategy_matrix_results(
@@ -223,16 +203,8 @@ def print_strategy_matrix_results(
     matrix_results: list[dict[str, Any]],
     iterations: int,
 ):
-    print("\n" + "=" * 80)
-    print(f"=== {store_name} / {machine.name_ko} 회전율·전략 비교 ({iterations}회) ===")
-    print(f"모델 신뢰도: {machine.confidence} | 추정 여부: {'예' if machine.is_estimated else '아니오'}")
-    print(f"기종 일본어: {machine.name_ja}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ko"):
-        print(f"실설치명(한국어): {installed_name_ko_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("installed_full_name_ja"):
-        print(f"실설치명(일본어): {installed_name_ja_from_results(matrix_results)}")
-    if matrix_results and matrix_results[0].get("placement_summary"):
-        print(f"가게별 배치: {matrix_results[0]['placement_summary']}")
+    print_section_header(f"=== {store_name} / {machine.name_ko} 회전율·전략 비교 ({iterations}회) ===", 80)
+    print_machine_context(machine, matrix_results, include_confidence=True)
 
     tables = strategy_result_tables(machine, matrix_results, iterations)
 
@@ -253,5 +225,4 @@ def print_strategy_matrix_results(
         tables["top"],
     )
 
-    print_travel_satisfaction_grade(machine)
-    print("=" * 80)
+    print_result_footer(machine, 80)

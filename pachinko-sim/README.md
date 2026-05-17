@@ -68,6 +68,7 @@ python3 scripts/clean.py --apply
 - `result_basic_printers.py`: 단일 실행/반복 실행 결과 출력
 - `result_matrix_printers.py`: 회전율/예산/프로파일/전략 매트릭스 결과 출력
 - `result_store_printers.py`: 가게별 같은 기종 비교 결과 출력
+- `result_printer_common.py`: 프린터 공통 헤더/기종 문맥/세션 문맥/footer 출력
 - `result_metrics.py`: 반복 결과에서 평균/분위수/체류 시간/조건부 플러스율 같은 집계 지표 계산
 - `result_output_helpers.py`: 출력 문구, 보더/스펙 비교, LT/상위RUSH 표시, 표 행 보조 로직
 - `result_table_builders.py`: 단일/반복/매트릭스/예산/프로파일/전략 출력에 쓰는 표 행 생성 로직
