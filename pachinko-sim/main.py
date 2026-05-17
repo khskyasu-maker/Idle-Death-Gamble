@@ -22,6 +22,7 @@ from rotation import (
     estimate_summary,
     rented_balls_per_1000yen,
 )
+from session_limits import LAST_CASH_INPUT_CUTOFF_HOURS, SESSION_TIME_LIMIT_HOURS
 from result import (
     border_label,
     print_single_result,
@@ -144,7 +145,10 @@ def choose_strategy() -> str:
 def choose_session_policy(default: int = 1) -> str:
     print("\n[세션 방식]")
     print("1: 예산 고정 회전수 (예산/1000엔 × 회전율까지만 비교)")
-    print("2: 현금+보유구슬 소진 (예산을 쓰고, 당첨 구슬도 재사용)")
+    print(
+        "2: 현금+보유구슬 소진 "
+        f"({SESSION_TIME_LIMIT_HOURS}시간 한도, {LAST_CASH_INPUT_CUTOFF_HOURS}시간 이후 추가 현금 없음)"
+    )
     policy_choice = get_int_input(f"세션 방식을 선택하세요 (1-2) [기본값: {default}]: ", 1, 2, default)
     return {
         1: "fixed_spin_cap",

@@ -308,6 +308,49 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertIn("avg_final_remaining_value", metrics)
         self.assertEqual("타협", rotation_reality_label(65, None))
 
+        no_hit_machine = Machine(
+            id="test_no_hit",
+            name_ja="テスト",
+            name_ko="테스트",
+            spec_type="test",
+            risk_grade="test",
+            normal_prob=1_000_000_000.0,
+            high_prob=1.0,
+            normal_hit_dist=[Payout(balls=0, weight=1.0, next_state="NORMAL")],
+            st_hit_dist=[],
+            jitan_hit_dist=[],
+            kakuben_hit_dist=[],
+            lt_hit_dist=[],
+        )
+        limited = simulate_single(
+            no_hit_machine,
+            budget=100000,
+            lend_rate=1.0,
+            spins_per_1000y=100,
+            exchange_rate=0.89,
+            session_policy="play_until_budget_and_balls_gone",
+            session_time_limit_minutes=0.2,
+            cash_input_cutoff_minutes=None,
+            start_variance=False,
+        )
+        self.assertTrue(limited["time_limit_triggered"])
+        self.assertLessEqual(limited["play_minutes"], 0.21)
+
+        cash_blocked = simulate_single(
+            no_hit_machine,
+            budget=1000,
+            lend_rate=1.0,
+            spins_per_1000y=100,
+            exchange_rate=0.89,
+            session_policy="play_until_budget_and_balls_gone",
+            session_time_limit_minutes=10,
+            cash_input_cutoff_minutes=0,
+            start_variance=False,
+        )
+        self.assertTrue(cash_blocked["cash_input_cutoff_triggered"])
+        self.assertEqual(0, cash_blocked["cash_spent"])
+        self.assertEqual(1000, cash_blocked["final_remaining_value"])
+
     def test_rotation_estimates_keep_input_basis_and_summary(self):
         cash = estimate_from_yen_observation(14, 200)
         self.assertEqual("cash_observation", cash.input_basis)
