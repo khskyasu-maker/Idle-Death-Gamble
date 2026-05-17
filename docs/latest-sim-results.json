@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "generated_at": "",
+  "publication_scope": "latest sanitized aggregate simulator result only",
+  "status": "not_exported",
+  "privacy_policy": {
+    "latest_only": true,
+    "raw_sample_sessions_included": false,
+    "personal_trip_data_included": false,
+    "actual_spending_or_profit_included": false
+  },
+  "rows": []
+}

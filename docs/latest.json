@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17 22:29:14 KST",
+  "generated_at": "2026-05-17 22:45:46 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
@@ -23,7 +23,7 @@
       "checked_at": "Manual/public-source check date. Re-check onsite if stale."
     },
     "data_freshness": {
-      "generated_at": "2026-05-17 22:29:14 KST",
+      "generated_at": "2026-05-17 22:45:46 KST",
       "earliest_checked_at": "2026-05-10",
       "latest_checked_at": "2026-05-17",
       "checked_dates": [
@@ -86,16 +86,17 @@
       "simulator purpose, assumptions, and metric definitions",
       "reproducible local commands",
       "fixed public machine specs and store/rate lineup context",
+      "latest sanitized aggregate simulator result table in docs/latest-sim-results.*",
       "blank result-sharing template for conversation use"
     ],
     "do_not_commit": [
-      "per-run Monte Carlo result tables or CSV files",
+      "raw per-sample Monte Carlo sessions or local results.csv files",
       "accumulated simulator result history",
       "visit rankings, go-here-today instructions, or final decisions",
       "personal movement, lodging, booking, passport, or spending records",
       "screenshots or app/member-only 台番号별 data"
     ],
-    "local_result_storage_policy": "If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten with the latest run only; simulator result history must not be accumulated or committed.",
+    "local_result_storage_policy": "If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten with the latest run only. Public sharing, when explicitly selected, overwrites docs/latest-sim-results.json, docs/latest-sim-results.md, and docs/latest-sim-results.html with sanitized aggregate metrics only.",
     "default_assumptions": {
       "exchange_rate_yen_per_ball": 0.89,
       "spin_rate_cases_per_1000yen": [

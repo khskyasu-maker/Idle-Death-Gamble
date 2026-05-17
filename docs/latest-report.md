@@ -1,6 +1,6 @@
 # 난바 1엔/저대여 기종 정보
 
-**생성 시각:** 2026-05-17 22:29:14 KST
+**생성 시각:** 2026-05-17 22:45:46 KST
 
 **기종 정보 원본:** `data/namba-actual-1yen-lineup.json`
 
@@ -15,6 +15,7 @@
 - [보더 미입력 기종 보기](#missing-border-table)
 - [AI 컨텍스트](ai-context.md)
 - [시뮬레이터 AI 컨텍스트](simulator-ai-context.md)
+- [최신 공개 시뮬 결과](latest-sim-results.html)
 - [현장 입력 템플릿](onsite-input-template.md)
 
 ## 1. 점포별 전체 1엔 후보 총합

@@ -2063,7 +2063,7 @@
       "Other manually checked low-rate candidates"
     ],
     "known_gap_policy": "DMM total low-rate count is stored; non-target machines may remain unlisted until full manual entry.",
-    "results_csv_policy": "Do not commit simulator result CSV files. If explicitly saved locally, overwrite gitignored results.csv with the latest run only.",
+    "results_csv_policy": "Do not commit local simulator result CSV files. If explicitly saved locally, overwrite gitignored results.csv with the latest run only. If explicitly shared publicly, overwrite docs/latest-sim-results.* with sanitized aggregate metrics only.",
     "border_policy": {
       "unit": "spins_per_1000yen",
       "1yen_conversion": "border_1yen_per_200 * 5",

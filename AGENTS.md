@@ -30,7 +30,7 @@ Do not store or publish dynamic decision data in GitHub:
 - "Go here today" instructions
 - Jackpot likelihood
 - Win-rate expressions
-- Simulator run tables, CSV files, or accumulated local simulation history
+- Raw simulator sample sessions, local `results.csv`, or accumulated simulation history
 - Personal budget, actual spending, or profit/loss records
 - Personal travel schedule, lodging details, transport booking identifiers, passport identifiers, or other private trip records
 
@@ -77,6 +77,7 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── index.html                # GitHub Pages HTML output
 │   ├── latest.json               # GitHub Pages JSON output
 │   ├── latest-report.md          # GitHub Pages Markdown output
+│   ├── latest-sim-results.*       # Optional latest-only public simulator aggregate table
 │   ├── ai-context.md             # Generated AI usage notes
 │   └── onsite-input-template.md  # Generated blank onsite observation template
 ├── pachinko-sim/
@@ -97,6 +98,7 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── result_stats.py           # Pure statistical helper functions
 │   ├── result_formatting.py       # Terminal table, yen, percent, and time formatting helpers
 │   ├── result_csv.py              # Explicit opt-in latest-only local CSV serialization
+│   ├── result_public_export.py    # Explicit opt-in latest-only public simulator table export
 │   ├── result_store_views.py      # Same-machine store comparison view row builders
 │   ├── stores.py                 # Local simulator lineup adapter from public JSON
 │   ├── model_checks.py           # Deterministic model consistency checks
@@ -143,8 +145,9 @@ The normal data and report pipeline is:
 - Use shared helpers such as `pachinko-sim/machine_traits.py` for LT and non-LT upper-RUSH detection instead of reimplementing those checks in output code.
 - Treat `spins_per_1000y` as an expected field observation. The simulator may sample realized start spins through `pachinko-sim/start_gate.py`; do not convert sampled outcomes back into fixed border or lineup data.
 - For same-machine store comparisons, keep `동일 1000엔 회전수`, `동일 헤소 입상 품질`, and `동일 보더 마진` as separate assumptions so 1円 and 1.111円 rates are not mixed accidentally.
-- Do not store simulator scores, visit rankings, recommended machines, keep/quit decisions, or strategy outcomes in public `data/` or `docs/` files.
+- Do not store simulator scores, visit rankings, recommended machines, keep/quit decisions, or strategy outcomes in public `data/` files. In public `docs/`, only the explicit latest sanitized aggregate table is allowed.
 - Do not accumulate simulator result history. If the user explicitly chooses CSV save in the CLI, overwrite local gitignored `results.csv` with the latest run only.
+- If the user explicitly chooses public simulator sharing, overwrite only `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, and `docs/latest-sim-results.html` with sanitized aggregate metrics. Do not create timestamped result files.
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
 - When changing simulator assumptions, update `pachinko-sim/ARCHITECTURE.md` and keep `pachinko-sim/README.md` aligned.
 - When adding or correcting a machine model from DMM/official/product pages, follow `pachinko-sim/SPEC_MODELING_GUIDE.md`.
@@ -345,7 +348,7 @@ python scripts/check.py --dev-tools --coverage
 Equivalent manual syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py
 ```
 
 JSON validation:
@@ -354,6 +357,7 @@ JSON validation:
 python -m json.tool data/stores.json > /dev/null
 python -m json.tool data/namba-actual-1yen-lineup.json > /dev/null
 python -m json.tool data/latest.json > /dev/null
+python -m json.tool docs/latest-sim-results.json > /dev/null
 ```
 
 Unit tests:

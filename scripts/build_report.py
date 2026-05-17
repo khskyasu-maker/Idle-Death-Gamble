@@ -212,6 +212,7 @@ def build_markdown(latest):
     md += "- [보더 미입력 기종 보기](#missing-border-table)\n"
     md += "- [AI 컨텍스트](ai-context.md)\n"
     md += "- [시뮬레이터 AI 컨텍스트](simulator-ai-context.md)\n"
+    md += "- [최신 공개 시뮬 결과](latest-sim-results.html)\n"
     md += "- [현장 입력 템플릿](onsite-input-template.md)\n\n"
 
     # 1. 점포별 전체 1엔 후보 총합
@@ -707,10 +708,11 @@ def build_simulator_context():
             "simulator purpose, assumptions, and metric definitions",
             "reproducible local commands",
             "fixed public machine specs and store/rate lineup context",
+            "latest sanitized aggregate simulator result table in docs/latest-sim-results.*",
             "blank result-sharing template for conversation use",
         ],
         "do_not_commit": [
-            "per-run Monte Carlo result tables or CSV files",
+            "raw per-sample Monte Carlo sessions or local results.csv files",
             "accumulated simulator result history",
             "visit rankings, go-here-today instructions, or final decisions",
             "personal movement, lodging, booking, passport, or spending records",
@@ -718,7 +720,9 @@ def build_simulator_context():
         ],
         "local_result_storage_policy": (
             "If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten "
-            "with the latest run only; simulator result history must not be accumulated or committed."
+            "with the latest run only. Public sharing, when explicitly selected, overwrites "
+            "docs/latest-sim-results.json, docs/latest-sim-results.md, and docs/latest-sim-results.html "
+            "with sanitized aggregate metrics only."
         ),
         "default_assumptions": {
             "exchange_rate_yen_per_ball": 0.89,
@@ -960,6 +964,7 @@ def build_html(latest, md_content):
             <a href="#missing-border-table">보더 미입력 기종 보기</a>
             <a href="ai-context.md">AI 컨텍스트</a>
             <a href="simulator-ai-context.md">시뮬레이터 AI 컨텍스트</a>
+            <a href="latest-sim-results.html">최신 공개 시뮬 결과</a>
             <a href="onsite-input-template.md">현장 입력 템플릿</a>
         </p>
     </div>

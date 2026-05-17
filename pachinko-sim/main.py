@@ -29,6 +29,7 @@ from session_limits import (
 )
 from result import (
     border_label,
+    calculate_metrics,
     print_single_result,
     print_multiple_result,
     print_matrix_results,
@@ -38,6 +39,7 @@ from result import (
     print_store_comparison_results,
     save_matrix_to_csv,
 )
+from result_public_export import save_public_sim_results
 
 RATE_LABEL_KO = {
     "1.111パチ (100円/90玉)": "1.111엔 파칭코 (100엔/90발)",
@@ -259,6 +261,25 @@ def add_rotation_estimate_context(matrix_results, estimate):
         row["border_margin"] = estimate.border_margin
 
 
+def ask_public_sim_result_export(store_name: str, mode_label: str, machine, result_rows, iterations: int):
+    print("\n[공개용 최신 시뮬 결과 공유]")
+    print("저장하면 docs/latest-sim-results.* 파일이 최신 집계표로 덮어써집니다.")
+    print("공개되는 값: 점포/기종/가정 예산/회전수/집계 지표. 포함하지 않는 값: 원시 표본, 개인 일정, 실제 지출/손익.")
+    share = get_int_input("GitHub Pages 공유용 최신 표로 저장할까요? 1=예, 0=아니오 [기본값: 0]: ", 0, 1, 0)
+    if not share:
+        return
+
+    paths = save_public_sim_results(
+        store_name,
+        mode_label,
+        machine,
+        result_rows,
+        iterations,
+        calculate_metrics,
+    )
+    print(f"[안내] 공개용 최신 시뮬 결과를 저장했습니다: {paths['html']}")
+
+
 def main():
     print("=== 오사카 난바 실제 설치기종 1엔 파친코 체감 모의 ===")
     print("본 프로그램은 수익 예측이 아닌, 여행지에서의 실질적인 체감 리스크와 만족도를 비교하기 위한 도구입니다.\n")
@@ -382,6 +403,7 @@ def main():
         save_csv = get_int_input("CSV에 최신 결과만 저장할까요? 기존 results.csv는 덮어씁니다. 1=예, 0=아니오 [기본값: 0]: ", 0, 1, 0)
         if save_csv:
             save_matrix_to_csv(machine, matrix_results, iterations, filepath="results.csv")
+        ask_public_sim_result_export(store_name, "회전율 매트릭스", machine, matrix_results, iterations)
     elif mode == 4:
         budget = get_int_input("\n예산을 입력하세요 [기본값: 10000]: ", 1000, 200000, 10000)
         iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 5000]: ", 100, 100000, 5000)
@@ -401,6 +423,7 @@ def main():
         )
         add_lineup_context(matrix_results, selected_machine_info)
         print_strategy_matrix_results(store_name, machine, matrix_results, iterations)
+        ask_public_sim_result_export(store_name, "전략 비교", machine, matrix_results, iterations)
     elif mode == 5:
         rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
         spins_per_1000y = rotation_estimate.spins_per_1000y
@@ -425,6 +448,7 @@ def main():
         add_rotation_estimate_context(matrix_results, rotation_estimate)
         add_lineup_context(matrix_results, selected_machine_info)
         print_budget_matrix_results(store_name, machine, matrix_results, iterations)
+        ask_public_sim_result_export(store_name, "예산·체류 시간 비교", machine, matrix_results, iterations)
     elif mode == 6:
         rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
         spins_per_1000y = rotation_estimate.spins_per_1000y
@@ -459,6 +483,7 @@ def main():
             )
         add_lineup_context(matrix_results, selected_machine_info)
         print_model_profile_results(store_name, machine, matrix_results, iterations)
+        ask_public_sim_result_export(store_name, "모델 프로파일/위화감 검증", machine, matrix_results, iterations)
     elif mode == 7:
         budget = get_int_input("\n예산을 입력하세요 [기본값: 10000]: ", 1000, 200000, 10000)
         rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
@@ -488,6 +513,7 @@ def main():
             row["reference_rotation_label"] = rotation_estimate.source_label
             row["reference_rotation_basis"] = rotation_estimate.input_basis
         print_store_comparison_results(machine, comparison_results, iterations)
+        ask_public_sim_result_export(store_name, "가게별 같은 기종 비교", machine, comparison_results, iterations)
     else:
         budget = get_int_input("\n예산을 입력하세요 (예: 10000, 20000) [기본값: 10000]: ", 1000, 200000, 10000)
         rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
@@ -535,6 +561,19 @@ def main():
             )
             print(f"[입력 환산] {estimate_summary(rotation_estimate, selected_border_spins)}")
             print_multiple_result(store_name, machine, results, iterations)
+            summary_rows = [
+                {
+                    "budget": budget,
+                    "spins_per_1000y": spins_per_1000y,
+                    "rotation_basis": rotation_estimate.input_basis,
+                    "rotation_label": rotation_estimate.source_label,
+                    "strategy": strategy,
+                    "session_policy": session_policy,
+                    "results": results,
+                }
+            ]
+            add_lineup_context(summary_rows, selected_machine_info)
+            ask_public_sim_result_export(store_name, "리스크 평가 테스트", machine, summary_rows, iterations)
 
 if __name__ == "__main__":
     try:

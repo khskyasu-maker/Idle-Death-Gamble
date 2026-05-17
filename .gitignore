@@ -33,3 +33,7 @@ data/latest-report.md
 data/machine-snapshots/
 data/manual-notes.md
 results.csv
+
+# Public simulator result exports are latest-only. Do not create timestamped history.
+docs/sim-results-*
+docs/simulator-results-*

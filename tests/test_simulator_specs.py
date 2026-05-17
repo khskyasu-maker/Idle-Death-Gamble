@@ -1,3 +1,4 @@
+import json
 import random
 import sys
 import tempfile
@@ -23,6 +24,11 @@ from result import (  # noqa: E402
 )
 from result_formatting import build_ascii_table, minutes_text, yen  # noqa: E402
 from result_csv import CSV_HEADERS, matrix_result_csv_row, save_matrix_to_csv  # noqa: E402
+from result_public_export import (  # noqa: E402
+    build_public_sim_result_markdown,
+    build_public_sim_result_payload,
+    save_public_sim_results,
+)
 from result_store_views import (  # noqa: E402
     build_store_comparison_view,
     store_comparison_assumption_text,
@@ -433,6 +439,76 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual(2, len(rows))
         self.assertNotIn("old,accumulated,row", "\n".join(rows))
         self.assertIn("P 대해물어5", rows[1])
+
+    def test_public_sim_result_export_is_latest_only_and_sanitized(self):
+        def metrics_stub(results, iterations):
+            self.assertEqual([{"marker": True}], results)
+            self.assertEqual(5, iterations)
+            return {
+                "hit_rate": 50.0,
+                "ruin_rate": 50.0,
+                "rush_rate": 25.0,
+                "positive_close_rate": 20.0,
+                "avg_play_minutes": 90.0,
+                "stay_reach_rates": {SESSION_TIME_LIMIT_HOURS: 10.0},
+                "avg_final_remaining_value": 8000,
+                "avg_profit": -2000,
+                "median_profit": -3000,
+                "worst_10_profit": -9000,
+                "top_10_profit": 12000,
+                "funds_exhausted_stop_rate": 40.0,
+                "avg_first_hit": 150,
+                "avg_hits": 1.2,
+                "avg_streak": 1.1,
+                "profit_condition_summary": "테스트 조건",
+            }
+
+        rows = [
+            {
+                "store_name": "123難波店",
+                "rotation_label": "보더+5",
+                "budget": 10000,
+                "spins_per_1000y": 70,
+                "border_spins_per_1000yen": 65,
+                "strategy": "no_rule",
+                "session_policy": "fixed_spin_cap",
+                "results": [{"marker": True}],
+            }
+        ]
+        payload = build_public_sim_result_payload(
+            "123難波店",
+            "테스트 모드",
+            MACHINES["sea_5"],
+            rows,
+            5,
+            metrics_stub,
+            generated_at="2026-05-17 12:00:00 KST",
+        )
+        markdown = build_public_sim_result_markdown(payload)
+
+        self.assertFalse(payload["privacy_policy"]["raw_sample_sessions_included"])
+        self.assertNotIn("results", payload["rows"][0])
+        self.assertIn("최신 공개 시뮬 결과", markdown)
+        self.assertIn("보더+5", markdown)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            docs_dir = Path(tmpdir)
+            (docs_dir / "sim-results-old.md").write_text("old", encoding="utf-8")
+            paths = save_public_sim_results(
+                "123難波店",
+                "테스트 모드",
+                MACHINES["sea_5"],
+                rows,
+                5,
+                metrics_stub,
+                docs_dir=docs_dir,
+                generated_at="2026-05-17 12:00:00 KST",
+            )
+            saved_payload = json.loads(paths["json"].read_text(encoding="utf-8"))
+
+        self.assertEqual("테스트 모드", saved_payload["mode"])
+        self.assertFalse((docs_dir / "sim-results-old.md").exists())
+        self.assertTrue(paths["html"].name.endswith(".html"))
 
     def test_store_comparison_view_builds_installed_and_missing_rows(self):
         def metrics_stub(results, iterations):

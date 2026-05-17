@@ -8,11 +8,12 @@
 - simulator purpose, assumptions, and metric definitions
 - reproducible local commands
 - fixed public machine specs and store/rate lineup context
+- latest sanitized aggregate simulator result table in docs/latest-sim-results.*
 - blank result-sharing template for conversation use
 
 ## 공개 금지
 
-- per-run Monte Carlo result tables or CSV files
+- raw per-sample Monte Carlo sessions or local results.csv files
 - accumulated simulator result history
 - visit rankings, go-here-today instructions, or final decisions
 - personal movement, lodging, booking, passport, or spending records
@@ -20,7 +21,7 @@
 
 ## 로컬 결과 저장 정책
 
-- If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten with the latest run only; simulator result history must not be accumulated or committed.
+- If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten with the latest run only. Public sharing, when explicitly selected, overwrites docs/latest-sim-results.json, docs/latest-sim-results.md, and docs/latest-sim-results.html with sanitized aggregate metrics only.
 
 ## 기본 가정
 
