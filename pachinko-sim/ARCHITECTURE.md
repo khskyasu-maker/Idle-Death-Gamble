@@ -159,13 +159,13 @@ Responsibilities:
 
 ### `start_gate.py`
 
-Models the first pachinko gate: fired balls becoming start spins through ヘソ(헤소) entry.
+Models the first pachinko gate: gross fired balls becoming start spins through ヘソ(헤소) entry.
 
 Responsibilities:
 
-- convert `spins_per_1000y` and `lend_rate` into a per-ball start-entry probability
+- sample realized start spins with a binomial model after the simulator converts
+  net budget balls to gross fired balls with `time_model.py`
 - sample hidden table quality with a truncated normal distribution around the field/reference rotation rate
-- sample realized start spins with a binomial model
 - keep the expected rotation input separate from observed session rotation
 
 This is intentionally separate from jackpot probability. A session first samples
@@ -198,7 +198,9 @@ Converts simulated play into stay/play time.
 
 Responsibilities:
 
-- estimate active launch time from fired balls and a fixed balls-per-minute assumption
+- estimate active launch time from gross fired balls and a fixed balls-per-minute assumption
+- convert net consumed balls back to gross fired balls with a visible
+  ベース(반환 구슬) assumption
 - estimate normal display time from start spins
 - treat display time beyond active launch time as 保留(보류) full/effect waiting
 - estimate right-side/ST/LT/時短(시단) time by state-specific seconds per spin
@@ -207,10 +209,13 @@ Responsibilities:
   battle/LT-style machines
 - keep these values as runtime assumptions, not fixed public lineup data
 
-Default assumptions are intentionally simple and visible: 100 balls/minute launch
-and 6 seconds per normal start. Right-side speed and payout/effect time then vary
-by family: Re:Zero uses a fast profile, Eva uses a medium-fast V-ST profile, and
-Umi/Sea uses a slower traditional-support profile. These values are for visit-time
+Default assumptions are intentionally simple and visible: 100 balls/minute launch,
+6 seconds per normal start, and a normal-time base return rate. The base return
+rate is 25% for Umi/Sea and 20% for generic/Eva/Re:Zero/battle profiles. It does
+not change cash or ball balance; it only increases the gross fired balls used for
+active launch time. Right-side speed and payout/effect time then vary by family:
+Re:Zero uses a fast profile, Eva uses a medium-fast V-ST profile, and Umi/Sea
+uses a slower traditional-support profile. These values are for visit-time
 budgeting, not machine performance prediction.
 
 ### `store_comparison.py`
@@ -259,6 +264,9 @@ Session accounting:
 - `exchange_rate` converts final balls to yen
 - `card_reuse=True` allows banked balls to pay normal-spin cost
 - right-side states subtract average balls per spin
+- normal-spin cash and held-ball balance use net consumed balls from the observed
+  `spins_per_1000y`; active launch time uses gross fired balls after adding back
+  ベース(반환 구슬)
 - nominal payout balls are sampled with a bounded normal distribution, so round
   distribution remains fixed by spec while small over入賞(오버입상)/round-loss
   variation stays centred on the public payout value

@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass
 class TimeAssumptions:
     profile_name: str = "generic"
     launch_balls_per_minute: float = 100.0
+    normal_base_return_rate: float = 0.20
     normal_seconds_per_start: float = 6.0
     st_seconds_per_spin: float = 1.35
     lt_seconds_per_spin: float = 1.10
@@ -23,6 +24,7 @@ class TimeAssumptions:
 DEFAULT_TIME_ASSUMPTIONS = TimeAssumptions()
 SEA_TIME_ASSUMPTIONS = TimeAssumptions(
     profile_name="sea_classic",
+    normal_base_return_rate=0.25,
     st_seconds_per_spin=1.85,
     lt_seconds_per_spin=1.35,
     upper_seconds_per_spin=1.45,
@@ -36,6 +38,7 @@ SEA_TIME_ASSUMPTIONS = TimeAssumptions(
 )
 EVA_TIME_ASSUMPTIONS = TimeAssumptions(
     profile_name="eva_vst",
+    normal_base_return_rate=0.20,
     st_seconds_per_spin=1.30,
     lt_seconds_per_spin=1.15,
     upper_seconds_per_spin=1.20,
@@ -49,6 +52,7 @@ EVA_TIME_ASSUMPTIONS = TimeAssumptions(
 )
 REZERO_TIME_ASSUMPTIONS = TimeAssumptions(
     profile_name="rezero_fast",
+    normal_base_return_rate=0.20,
     st_seconds_per_spin=0.85,
     lt_seconds_per_spin=0.85,
     upper_seconds_per_spin=0.85,
@@ -63,6 +67,7 @@ REZERO_TIME_ASSUMPTIONS = TimeAssumptions(
 )
 BATTLE_TIME_ASSUMPTIONS = TimeAssumptions(
     profile_name="battle_fast",
+    normal_base_return_rate=0.20,
     st_seconds_per_spin=1.00,
     lt_seconds_per_spin=0.90,
     upper_seconds_per_spin=0.95,
@@ -115,19 +120,38 @@ def launch_seconds(ball_count: float, assumptions: TimeAssumptions = DEFAULT_TIM
     return (ball_count / assumptions.launch_balls_per_minute) * 60.0
 
 
+def gross_launch_balls(
+    net_consumed_balls: float,
+    assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
+) -> float:
+    """Return fired balls needed to create the observed net ball consumption.
+
+    Field rotation such as 70回/1000円 already reflects the net loss after
+    ヘソ(헤소) and general-pocket returns. Time spent launching balls should use
+    gross fired balls, so a 25% base means 1000 net balls took about 1333 fired
+    balls.
+    """
+    if net_consumed_balls <= 0:
+        return 0.0
+    base = max(0.0, min(0.90, assumptions.normal_base_return_rate))
+    return net_consumed_balls / max(0.10, 1.0 - base)
+
+
 def normal_time_components(
     start_spins: int,
-    fired_balls: float,
+    net_consumed_balls: float,
     assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
 ) -> dict:
     """Return elapsed normal-play time and the part caused by reserve waiting.
 
-    Active launch time is the time to fire the required balls. Display time is
-    the time for the sampled starts to resolve on screen. If display time is
-    longer, the extra part approximates pauses when 保留(보류) is full or the
-    machine is busy with effects.
+    Net consumed balls are the cash/card balance reduction implied by field
+    rotation. Gross launched balls add back ベース(반환 구슬) before converting to
+    active launch time. Display time is the time for sampled starts to resolve
+    on screen. If display time is longer, the extra part approximates pauses
+    when 保留(보류) is full or the machine is busy with effects.
     """
-    active_launch = launch_seconds(fired_balls, assumptions)
+    gross_balls = gross_launch_balls(net_consumed_balls, assumptions)
+    active_launch = launch_seconds(gross_balls, assumptions)
     display = max(0, start_spins) * assumptions.normal_seconds_per_start
     elapsed = max(active_launch, display)
     return {
@@ -135,6 +159,8 @@ def normal_time_components(
         "active_launch_seconds": active_launch,
         "display_seconds": display,
         "reserve_wait_seconds": max(0.0, display - active_launch),
+        "net_consumed_balls": net_consumed_balls,
+        "gross_launched_balls": gross_balls,
     }
 
 

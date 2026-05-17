@@ -8,7 +8,6 @@ from start_gate import (
     sample_start_spins,
     sample_session_spin_rate,
     sample_truncated_normal,
-    start_probability_from_rate,
 )
 from rotation import ABSOLUTE_SPIN_RATE_CASES, border_case_rates
 from session_limits import (
@@ -19,6 +18,7 @@ from session_limits import (
 from time_model import (
     TimeAssumptions,
     assumption_dict,
+    gross_launch_balls,
     hit_effect_seconds as hit_effect_time_seconds,
     minutes,
     normal_time_components,
@@ -203,16 +203,24 @@ def simulate_single(
             max_spins_per_1000y=spin_rate_max,
         )
 
-    start_probability = start_probability_from_rate(lend_rate, true_spins_per_1000y)
     rented_balls_1000 = rented_balls_per_1000yen(lend_rate)
+    gross_rented_balls_1000 = gross_launch_balls(rented_balls_1000, time_assumptions)
+    start_probability = (
+        max(0.0, min(1.0, true_spins_per_1000y / gross_rented_balls_1000))
+        if gross_rented_balls_1000 > 0
+        else 0.0
+    )
     expected_total_spins_possible = int((budget / 1000) * true_spins_per_1000y)
 
     if start_variance and session_policy == "fixed_spin_cap":
         total_budget_balls = budget / lend_rate
-        total_spins_possible = sample_start_spins(total_budget_balls, start_probability)
+        total_spins_possible = sample_start_spins(
+            gross_launch_balls(total_budget_balls, time_assumptions),
+            start_probability,
+        )
         observed_spins_per_1000y = observed_rate_per_1000yen(total_spins_possible, budget)
     elif start_variance:
-        sampled_1000y_spins = sample_start_spins(rented_balls_1000, start_probability)
+        sampled_1000y_spins = sample_start_spins(gross_rented_balls_1000, start_probability)
         observed_spins_per_1000y = float(sampled_1000y_spins)
         total_spins_possible = int((budget / 1000) * observed_spins_per_1000y)
     else:
@@ -222,7 +230,10 @@ def simulate_single(
     stop_loss_probe_budget = max(0, min(int(stop_loss_probe_yen), int(budget)))
     if stop_loss_probe_budget > 0:
         if start_variance:
-            stop_loss_probe_spins = sample_start_spins(stop_loss_probe_budget / lend_rate, start_probability)
+            stop_loss_probe_spins = sample_start_spins(
+                gross_launch_balls(stop_loss_probe_budget / lend_rate, time_assumptions),
+                start_probability,
+            )
         else:
             stop_loss_probe_spins = int(round((stop_loss_probe_budget / 1000.0) * spins_per_1000y))
         stop_loss_probe_rate = observed_rate_per_1000yen(stop_loss_probe_spins, stop_loss_probe_budget)
@@ -238,6 +249,7 @@ def simulate_single(
     spins_used = 0
     right_spins = 0
     total_out_balls = 0.0
+    normal_net_balls_consumed = 0.0
     normal_balls_fired = 0.0
     bank_balls = 0.0
     locked_balls = 0.0
@@ -326,8 +338,9 @@ def simulate_single(
         return soft_stop_seconds - elapsed_seconds()
 
     def normal_seconds_per_spin() -> float:
+        gross_spin_balls = gross_launch_balls(spin_cost_balls, time_assumptions)
         active_per_spin = (
-            (spin_cost_balls / time_assumptions.launch_balls_per_minute) * 60.0
+            (gross_spin_balls / time_assumptions.launch_balls_per_minute) * 60.0
             if time_assumptions.launch_balls_per_minute > 0
             else 0.0
         )
@@ -404,7 +417,7 @@ def simulate_single(
         return capped_spins, limited_by_time
 
     def pay_normal_spins(spin_count: int) -> int:
-        nonlocal bank_balls, cash_spent, normal_balls_fired
+        nonlocal bank_balls, cash_spent, normal_net_balls_consumed, normal_balls_fired
         nonlocal normal_play_seconds, active_launch_seconds, normal_display_seconds
         nonlocal reserve_wait_seconds, cashless_play_seconds
         if spin_count <= 0:
@@ -447,14 +460,15 @@ def simulate_single(
             reusable_balls = min(bank_balls, ball_cost)
             bank_balls -= reusable_balls
             cash_spent += (ball_cost - reusable_balls) * lend_rate
-            normal_balls_fired += ball_cost
+            normal_net_balls_consumed += ball_cost
         else:
             cash_cost = spin_cost_yen * playable_spins
             cash_spent += cash_cost
             ball_cost = cash_cost / lend_rate
-            normal_balls_fired += ball_cost
+            normal_net_balls_consumed += ball_cost
 
         time_parts = normal_time_components(playable_spins, ball_cost, time_assumptions)
+        normal_balls_fired += time_parts["gross_launched_balls"]
         normal_play_seconds += time_parts["elapsed_seconds"]
         active_launch_seconds += time_parts["active_launch_seconds"]
         normal_display_seconds += time_parts["display_seconds"]
@@ -480,12 +494,14 @@ def simulate_single(
 
     def settle_stop_loss_probe_cost():
         """If a bad first-1000yen probe produced no hit, charge that spent probe."""
-        nonlocal cash_spent, normal_balls_fired
+        nonlocal cash_spent, normal_net_balls_consumed, normal_balls_fired
         if total_hits > 0 or stop_loss_probe_budget <= 0:
             return
         target_cash_spent = min(float(budget), float(stop_loss_probe_budget))
         if cash_spent < target_cash_spent:
-            normal_balls_fired += (target_cash_spent - cash_spent) / lend_rate
+            net_balls = (target_cash_spent - cash_spent) / lend_rate
+            normal_net_balls_consumed += net_balls
+            normal_balls_fired += gross_launch_balls(net_balls, time_assumptions)
             cash_spent = target_cash_spent
             mark_cash_budget_exhausted()
 
@@ -873,6 +889,7 @@ def simulate_single(
         "spins_used": spins_used,
         "right_spins": right_spins,
         "normal_balls_fired": int(normal_balls_fired),
+        "normal_net_balls_consumed": int(normal_net_balls_consumed),
         "play_seconds": play_seconds,
         "play_minutes": minutes(play_seconds),
         "normal_play_seconds": normal_play_seconds,

@@ -747,6 +747,10 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     start_probabilities = [float(r.get("start_probability", 0.0) or 0.0) for r in results]
     right_spins = [r.get('right_spins', 0) for r in results]
     normal_balls_fired = [r.get('normal_balls_fired', 0) for r in results]
+    normal_net_balls_consumed = [
+        r.get('normal_net_balls_consumed', r.get('normal_balls_fired', 0))
+        for r in results
+    ]
     total_out_balls = [r.get('total_out_balls', 0) for r in results]
     cash_spent = [r.get('cash_spent', r['budget']) for r in results]
     budgets = [r.get('budget', 0) for r in results]
@@ -943,6 +947,9 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "start_probability": statistics.mean(start_probabilities) if start_probabilities else 0.0,
         "spin_rate_quality_stddev": float(results[0].get("spin_rate_quality_stddev", 0.0) or 0.0) if results else 0.0,
         "avg_normal_balls_fired": int(statistics.mean(normal_balls_fired)) if normal_balls_fired else 0,
+        "avg_normal_net_balls_consumed": (
+            int(statistics.mean(normal_net_balls_consumed)) if normal_net_balls_consumed else 0
+        ),
         "avg_right_spins": int(statistics.mean(right_spins)),
         "avg_total_out_balls": int(statistics.mean(total_out_balls)),
         "avg_first_hit": int(avg_first_hit),
@@ -1413,9 +1420,15 @@ def print_model_profile_results(
 
     first_row = matrix_results[0]
     first_result = first_row["results"][0] if first_row.get("results") else {}
-    print(f"시간 프로파일: {time_profile_text(first_row.get('results', []))}")
+    time_assumptions = first_result.get("time_assumptions", {})
     lend_rate = first_result.get("lend_rate", 1.0)
     rented_balls = int(1000 / lend_rate) if lend_rate else 0
+    base_return_rate = max(
+        0.0,
+        min(0.90, float(time_assumptions.get("normal_base_return_rate", 0.0) or 0.0)),
+    )
+    gross_balls_per_1000y = rented_balls / max(0.10, 1.0 - base_return_rate) if lend_rate else 0.0
+    print(f"시간 프로파일: {time_profile_text(first_row.get('results', []))}")
     spins_per_1000y = first_row["spins_per_1000y"]
     border_spins = first_row.get("border_spins_per_1000yen")
     first_metrics = calculate_metrics(first_row["results"], iterations)
@@ -1428,6 +1441,16 @@ def print_model_profile_results(
         ["항목", "값", "해석"],
         [
             ["대여 구슬", f"{rented_balls:,}발", f"{lend_rate:.3f}엔/발 기준"],
+            [
+                "ベース(반환)",
+                f"{base_return_rate * 100:.0f}%",
+                "통상시 반환구슬을 감안한 체류시간 보정값",
+            ],
+            [
+                "총 발사 추정",
+                f"{gross_balls_per_1000y:.0f}발",
+                "표시 회전수의 순소모 구슬을 실제 발사구슬로 환산",
+            ],
             ["입력 회전수", f"{spins_per_1000y}회/1000엔", "현장 1000엔 테스트 입력값"],
             ["헤소 입상", f"{first_metrics['start_probability'] * 100:.2f}%/발", "구슬 1발이 헤소에 들어가 회전이 생기는 확률"],
             ["다이 품질", true_spin_rate_text(first_metrics), "釘(못)/風車(풍차)/ステージ(스테이지) 등을 회전율 분포로 근사"],

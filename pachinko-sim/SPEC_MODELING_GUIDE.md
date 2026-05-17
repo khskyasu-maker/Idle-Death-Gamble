@@ -325,9 +325,15 @@ duration examples. Map them to `time_model.py`, not `machines.py`.
 Use family profiles first:
 
 - Eva V-ST: medium-fast right side and medium payout speed
-- Umi/Sea: slower traditional support and payout
+- Umi/Sea: slower traditional support and payout; default normal-time
+  ベース(반환 구슬) is 25% for stay-time gross launch conversion
 - Re:Zero and high-speed LT machines: faster right side and faster payout
 - Modern battle/LT machines: fast but usually not as fast as Re:Zero
+
+The simulator treats field rotation such as `70回/1000円` as net ball
+consumption. For stay time, `time_model.py` converts that net consumption back
+to gross launched balls with `net / (1 - base_return_rate)`. Do not change
+jackpot probability or border conversion with this value.
 
 Only add a new time profile when a machine family clearly behaves differently
 and affects stay-time output materially.

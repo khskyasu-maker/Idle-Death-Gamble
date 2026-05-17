@@ -41,6 +41,7 @@ from start_gate import estimate_rate_from_observed_spins, sample_session_spin_ra
 from store_comparison import store_spins_per_1000yen  # noqa: E402
 from time_model import (  # noqa: E402
     DEFAULT_TIME_ASSUMPTIONS,
+    gross_launch_balls,
     hit_effect_seconds,
     normal_time_components,
     right_seconds,
@@ -354,12 +355,18 @@ class SimulatorSpecTests(unittest.TestCase):
     def test_time_model_counts_launch_display_and_cashless_play(self):
         parts = normal_time_components(
             start_spins=120,
-            fired_balls=1000,
+            net_consumed_balls=1000,
             assumptions=DEFAULT_TIME_ASSUMPTIONS,
         )
-        self.assertAlmostEqual(600.0, parts["active_launch_seconds"])
+        self.assertAlmostEqual(1250.0, parts["gross_launched_balls"])
+        self.assertAlmostEqual(750.0, parts["active_launch_seconds"])
         self.assertAlmostEqual(720.0, parts["display_seconds"])
-        self.assertAlmostEqual(120.0, parts["reserve_wait_seconds"])
+        self.assertAlmostEqual(0.0, parts["reserve_wait_seconds"])
+        self.assertAlmostEqual(
+            1333.333,
+            gross_launch_balls(1000, time_assumptions_for_machine(MACHINES["sea_5_agnes"])),
+            delta=0.01,
+        )
         self.assertAlmostEqual(67.5, right_seconds("ST", 50))
         self.assertAlmostEqual(118.0, hit_effect_seconds(1500, "NORMAL"))
         self.assertEqual("sea_classic", time_assumptions_for_machine(MACHINES["sea_5_agnes"]).profile_name)
@@ -380,6 +387,8 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertIn("final_remaining_value", result)
         self.assertIn("time_assumptions", result)
         self.assertEqual("sea_classic", result["time_assumptions"]["profile_name"])
+        self.assertGreater(result["normal_balls_fired"], result["normal_net_balls_consumed"])
+        self.assertAlmostEqual(0.0525, result["start_probability"], delta=0.0001)
         metrics = calculate_metrics([result], 1)
         self.assertIn(SESSION_TIME_LIMIT_HOURS, metrics["stay_reach_rates"])
         self.assertNotIn(SESSION_TIME_LIMIT_HOURS + 1, metrics["stay_reach_rates"])
