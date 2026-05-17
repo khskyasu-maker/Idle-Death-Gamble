@@ -41,9 +41,8 @@ from result_stats import (
     tail_mean,
     wilson_interval,
 )
+from result_csv import save_matrix_to_csv as write_matrix_to_csv
 import statistics
-import csv
-import os
 
 
 def confidence_weight(confidence: str) -> float:
@@ -1490,50 +1489,5 @@ def print_store_comparison_results(
 
 
 def save_matrix_to_csv(machine: Machine, matrix_results: List[Dict[str, Any]], iterations: int, filepath="results.csv"):
-    headers = [
-        "기종", "예산(엔)", "입력1000엔당회전율", "평균다이품질회전율", "평균관측1000엔당회전율", "가능회전평균", "가능회전P10", "가능회전P90",
-        "당첨체험률(%)", "RUSH체험률(%)", "당첨0회확률(%)", "단발종료율(%)", "500발이하종료율(%)", "투자금50%회수율(%)", "투자금80%회수율(%)", "투자금100%회수율(%)", "플러스마감비율(%)",
-        "평균차액", "평균차액표준오차", "평균차액표준오차예산비(%)", "평균차액CI방식", "평균차액95CI하한", "평균차액95CI상한",
-        "중앙값차액", "중앙값95CI하한", "중앙값95CI상한",
-        "하위10%차액", "하위10%95CI하한", "하위10%95CI상한", "CVaR10차액",
-        "하위25%차액", "상위10%차액", "상위10%95CI하한", "상위10%95CI상한", "상위10%평균차액",
-        "최대손실", "최대이익", "실익조건", "평균당첨횟수", "초당첨평균회전", "초당첨중앙회전", "초당첨P90회전", "초당첨후평균당첨", "당첨세션평균대당첨", "평균RUSH진입", "평균LT진입", "LT진입성공률", "평균상위RUSH진입", "상위RUSH진입성공률", "평균체류분", "중앙체류분", "P90체류분", f"{SESSION_TIME_LIMIT_HOURS}시간도달률", f"{SESSION_TIME_LIMIT_HOURS}시간정리율", f"{HARD_SESSION_TIME_LIMIT_HOURS}시간하드종료율", "현금마감작동률", "평균최종잔류액", "중앙최종잔류액", "최종잔류P10", "최종잔류P90", "예산소진률", "완전소진정지율", "예산소진후지속률", "평균예산소진후체류분", "소진후지속시평균분", "평균현금없는분", "평균무현금비율", "평균보류대기분", "평균현금소모엔시간", "1000엔당평균분", "익절발동률", "손절발동률", "평균최대연속", "평균플레이회전"
-    ]
-
-    file_exists = os.path.isfile(filepath)
-
-    with open(filepath, 'a', newline='', encoding='utf-8-sig') as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(headers)
-
-        for mr in matrix_results:
-            b = mr['budget']
-            s = mr['spins_per_1000y']
-            m = calculate_metrics(mr['results'], iterations)
-
-            writer.writerow([
-                machine.name_ko, b, s, round(m["avg_true_spins_per_1000y"], 1), round(m["avg_observed_spins_per_1000y"], 1), m["avg_spin_capacity"], m["p10_spin_capacity"], m["p90_spin_capacity"],
-                round(m['hit_rate'], 1), round(m['rush_rate'], 1), round(m['ruin_rate'], 1),
-                round(m['single_hit_finish_rate'], 1), round(m['under_500_finish_rate'], 1),
-                round(m['recovery_50_rate'], 1), round(m['recovery_80_rate'], 1), round(m['recovery_100_rate'], 1), round(m['positive_close_rate'], 1),
-                m['avg_profit'], m['avg_profit_standard_error'], round(m['avg_profit_se_budget_pct'], 3), m['mean_ci_method'], m['avg_profit_ci_low'], m['avg_profit_ci_high'],
-                m['median_profit'], m['median_profit_ci_low'], m['median_profit_ci_high'],
-                m['worst_10_profit'], m['worst_10_profit_ci_low'], m['worst_10_profit_ci_high'], m['cvar_10_profit'],
-                m['worst_25_profit'], m['top_10_profit'], m['top_10_profit_ci_low'], m['top_10_profit_ci_high'], m['upper_tail_10_profit'],
-                m['min_profit'], m['max_profit'], m["profit_condition_summary"], round(m['avg_hits'], 1), m["avg_first_hit"], m["median_first_hit"], m["p90_first_hit"], round(m["avg_after_first_hits"], 2), round(m["avg_hits_when_hit"], 2), round(m['avg_rush_entries'], 2),
-                round(m['avg_lt_entries'], 2) if machine_has_lt(machine) else "N/A",
-                round(m['lt_success_rate'], 1) if machine_has_lt(machine) else "N/A",
-                round(m['avg_upper_entries'], 2) if machine_has_upper(machine) else "N/A",
-                round(m['upper_success_rate'], 1) if machine_has_upper(machine) else "N/A",
-                round(m['avg_play_minutes'], 2), round(m['median_play_minutes'], 2), round(m['p90_play_minutes'], 2),
-                round(m['time_limit_reached_rate'], 1), round(m['time_limit_stop_rate'], 1), round(m['hard_time_limit_stop_rate'], 1), round(m['cash_input_cutoff_rate'], 1),
-                m['avg_final_remaining_value'], m['median_final_remaining_value'], m['p10_final_remaining_value'], m['p90_final_remaining_value'],
-                round(m['budget_exhausted_rate'], 1),
-                round(m['funds_exhausted_stop_rate'], 1), round(m['post_budget_continue_rate'], 1),
-                round(m['avg_post_budget_play_minutes'], 2), round(m['avg_post_budget_play_minutes_when_continued'], 2),
-                round(m['avg_cashless_play_minutes'], 2), round(m['avg_cashless_play_share'], 1), round(m['avg_reserve_wait_minutes'], 2),
-                m['avg_cash_spend_per_hour'], round(m['avg_play_minutes_per_1000yen_cash'], 2),
-                round(m['profit_lock_trigger_rate'], 1), round(m['stop_loss_trigger_rate'], 1), round(m['avg_streak'], 1), m['avg_spins']
-            ])
+    write_matrix_to_csv(machine, matrix_results, iterations, calculate_metrics, filepath)
     print(f"\n[안내] 매트릭스 분석 결과가 {filepath} 에 추가 저장되었습니다.")

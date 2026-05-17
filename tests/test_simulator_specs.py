@@ -1,5 +1,6 @@
 import random
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -21,6 +22,7 @@ from result import (  # noqa: E402
     mean_interval,
 )
 from result_formatting import build_ascii_table, minutes_text, yen  # noqa: E402
+from result_csv import CSV_HEADERS, matrix_result_csv_row, save_matrix_to_csv  # noqa: E402
 from result_stats import profit_condition_thresholds, wilson_interval  # noqa: E402
 from rotation import (  # noqa: E402
     border_case_rates,
@@ -325,6 +327,103 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual((0.0, 0.0), wilson_interval(0, 0))
         self.assertEqual([1, 2, 3, 5, 7], profit_condition_thresholds(7, include_one=True))
         self.assertEqual([2, 3, 5, 7], profit_condition_thresholds(7, include_one=False))
+
+    def test_result_csv_writer_keeps_legacy_columns_and_non_lt_markers(self):
+        def metrics_stub(results, iterations):
+            self.assertEqual([{"marker": True}], results)
+            self.assertEqual(3, iterations)
+            return {
+                "avg_true_spins_per_1000y": 70.4,
+                "avg_observed_spins_per_1000y": 69.6,
+                "avg_spin_capacity": 700,
+                "p10_spin_capacity": 620,
+                "p90_spin_capacity": 780,
+                "hit_rate": 55.55,
+                "rush_rate": 44.44,
+                "ruin_rate": 45.45,
+                "single_hit_finish_rate": 11.11,
+                "under_500_finish_rate": 2.22,
+                "recovery_50_rate": 66.66,
+                "recovery_80_rate": 33.33,
+                "recovery_100_rate": 22.22,
+                "positive_close_rate": 12.34,
+                "avg_profit": -100,
+                "avg_profit_standard_error": 12,
+                "avg_profit_se_budget_pct": 0.1234,
+                "mean_ci_method": "t",
+                "avg_profit_ci_low": -200,
+                "avg_profit_ci_high": 50,
+                "median_profit": -80,
+                "median_profit_ci_low": -150,
+                "median_profit_ci_high": 20,
+                "worst_10_profit": -1000,
+                "worst_10_profit_ci_low": -1200,
+                "worst_10_profit_ci_high": -800,
+                "cvar_10_profit": -1100,
+                "worst_25_profit": -500,
+                "top_10_profit": 1500,
+                "top_10_profit_ci_low": 1200,
+                "top_10_profit_ci_high": 1800,
+                "upper_tail_10_profit": 1600,
+                "min_profit": -2000,
+                "max_profit": 3000,
+                "profit_condition_summary": "통계적으로 우세한 플러스 조건 없음",
+                "avg_hits": 1.4,
+                "avg_first_hit": 120,
+                "median_first_hit": 100,
+                "p90_first_hit": 250,
+                "avg_after_first_hits": 0.4,
+                "avg_hits_when_hit": 2.0,
+                "avg_rush_entries": 0.6,
+                "avg_lt_entries": 0.0,
+                "lt_success_rate": 0.0,
+                "avg_upper_entries": 0.0,
+                "upper_success_rate": 0.0,
+                "avg_play_minutes": 80.12,
+                "median_play_minutes": 70.0,
+                "p90_play_minutes": 150.0,
+                "time_limit_reached_rate": 1.0,
+                "time_limit_stop_rate": 0.5,
+                "hard_time_limit_stop_rate": 0.0,
+                "cash_input_cutoff_rate": 0.0,
+                "avg_final_remaining_value": 9000,
+                "median_final_remaining_value": 8500,
+                "p10_final_remaining_value": 3000,
+                "p90_final_remaining_value": 15000,
+                "budget_exhausted_rate": 40.0,
+                "funds_exhausted_stop_rate": 35.0,
+                "post_budget_continue_rate": 10.0,
+                "avg_post_budget_play_minutes": 5.5,
+                "avg_post_budget_play_minutes_when_continued": 20.0,
+                "avg_cashless_play_minutes": 15.5,
+                "avg_cashless_play_share": 12.0,
+                "avg_reserve_wait_minutes": 1.25,
+                "avg_cash_spend_per_hour": 4500,
+                "avg_play_minutes_per_1000yen_cash": 9.5,
+                "profit_lock_trigger_rate": 3.0,
+                "stop_loss_trigger_rate": 4.0,
+                "avg_streak": 1.2,
+                "avg_spins": 345,
+            }
+
+        machine = MACHINES["sea_5"]
+        matrix_result = {"budget": 10000, "spins_per_1000y": 70, "results": [{"marker": True}]}
+        row = matrix_result_csv_row(machine, matrix_result, 3, metrics_stub)
+        row_by_header = dict(zip(CSV_HEADERS, row))
+
+        self.assertEqual(len(CSV_HEADERS), len(row))
+        self.assertEqual("P 대해물어5", row_by_header["기종"])
+        self.assertEqual(10000, row_by_header["예산(엔)"])
+        self.assertEqual("N/A", row_by_header["평균LT진입"])
+        self.assertEqual("N/A", row_by_header["상위RUSH진입성공률"])
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            csv_path = Path(tmpdir) / "results.csv"
+            save_matrix_to_csv(machine, [matrix_result], 3, metrics_stub, str(csv_path))
+            rows = csv_path.read_text(encoding="utf-8-sig").splitlines()
+
+        self.assertEqual(CSV_HEADERS[0], rows[0].split(",")[0])
+        self.assertIn("P 대해물어5", rows[1])
 
     def test_shinsea_support_time_is_not_counted_as_a_jackpot(self):
         shinsea = MACHINES["shinsea_99"]
