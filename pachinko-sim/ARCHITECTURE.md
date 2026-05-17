@@ -51,6 +51,9 @@ pachinko-sim/cli_modes.py + pachinko-sim/cli_inputs.py + pachinko-sim/cli_contex
 pachinko-sim/result_printers.py
         |
         v
+pachinko-sim/result_basic_printers.py + pachinko-sim/result_matrix_printers.py + pachinko-sim/result_store_printers.py
+        |
+        v
 pachinko-sim/result_metrics.py + pachinko-sim/result_output_helpers.py + pachinko-sim/result_table_builders.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_export.py
         |
         v
@@ -355,12 +358,14 @@ Important current limitation:
 `main.py` is a thin entry point. Interactive flow is split across `cli_modes.py`,
 `cli_inputs.py`, `cli_context.py`, and `cli_export.py`.
 
-`result_printers.py` prints risk metrics and assembles user-facing tables.
+`result_printers.py` reexports the public printer API used by the CLI. The actual
+printer implementations live in `result_basic_printers.py`,
+`result_matrix_printers.py`, and `result_store_printers.py`.
 `result.py` is a compatibility export wrapper for older `from result import ...`
 callers.
 
-`result_printers.py` should keep the user-facing report assembly while delegating
-reusable pure helpers to:
+Focused printer modules should keep the user-facing report assembly while
+delegating reusable pure helpers to:
 
 - `result_metrics.py`: Monte Carlo aggregate metrics such as profit, hit, stay-time, cash exhaustion, and condition rows
 - `result_output_helpers.py`: output text helpers, benchmark comparison values, LT/upper-RUSH labels, and reusable table rows

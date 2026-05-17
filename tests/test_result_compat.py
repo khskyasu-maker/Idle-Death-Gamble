@@ -8,7 +8,10 @@ SIM_DIR = ROOT / "pachinko-sim"
 sys.path.insert(0, str(SIM_DIR))
 
 import result  # noqa: E402
+import result_basic_printers  # noqa: E402
+import result_matrix_printers  # noqa: E402
 import result_printers  # noqa: E402
+import result_store_printers  # noqa: E402
 from result_metrics import calculate_metrics  # noqa: E402
 from result_output_helpers import border_label  # noqa: E402
 
@@ -19,6 +22,19 @@ class ResultCompatTests(unittest.TestCase):
         self.assertIs(result.print_multiple_result, result_printers.print_multiple_result)
         self.assertIs(result.print_matrix_results, result_printers.print_matrix_results)
         self.assertIs(result.save_matrix_to_csv, result_printers.save_matrix_to_csv)
+
+    def test_result_printers_reexports_focused_printer_modules(self):
+        self.assertIs(result_printers.print_single_result, result_basic_printers.print_single_result)
+        self.assertIs(result_printers.print_multiple_result, result_basic_printers.print_multiple_result)
+        self.assertIs(result_printers.print_matrix_results, result_matrix_printers.print_matrix_results)
+        self.assertIs(
+            result_printers.print_budget_matrix_results,
+            result_matrix_printers.print_budget_matrix_results,
+        )
+        self.assertIs(
+            result_printers.print_store_comparison_results,
+            result_store_printers.print_store_comparison_results,
+        )
 
     def test_result_keeps_legacy_helper_exports(self):
         self.assertIs(result.calculate_metrics, calculate_metrics)
