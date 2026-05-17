@@ -82,12 +82,14 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── sim_terms.py               # Shared Japanese/Korean simulator terminology
 │   ├── spec_benchmarks.py         # Fixed public spec benchmark values for profile checks
 │   ├── start_gate.py              # Ball-to-start-spin stochastic first gate model
+│   ├── rotation.py                # Rotation-rate, border, and rate-unit conversion helpers
 │   ├── store_comparison.py        # Same-machine store comparison scenario builder
 │   ├── simulator.py              # Monte Carlo session engine
 │   ├── result.py                 # ASCII output, metrics, and CSV append helper
 │   ├── stores.py                 # Local simulator lineup adapter from public JSON
 │   ├── model_checks.py           # Deterministic model consistency checks
 │   ├── README.md                 # Simulator usage notes
+│   ├── REFACTOR_PLAN.md           # Simulator refactor and border-input improvement plan
 │   └── ARCHITECTURE.md           # Simulator design and assumptions
 ├── tests/
 │   └── test_simulator_specs.py   # Deterministic simulator/spec regression tests
@@ -126,7 +128,7 @@ The normal data and report pipeline is:
 - Keep fixed real-world data separate from simulation assumptions and results. Machine counts, public specs, rates, and borderlines are constants; CLI inputs, strategy settings, sampled outcomes, and comparison scores are runtime data.
 - Use shared helpers such as `pachinko-sim/machine_traits.py` for LT and non-LT upper-RUSH detection instead of reimplementing those checks in output code.
 - Treat `spins_per_1000y` as an expected field observation. The simulator may sample realized start spins through `pachinko-sim/start_gate.py`; do not convert sampled outcomes back into fixed border or lineup data.
-- For same-machine store comparisons, keep `동일 1000엔 회전수` and `동일 헤소 입상 품질` as separate assumptions so 1円 and 1.111円 rates are not mixed accidentally.
+- For same-machine store comparisons, keep `동일 1000엔 회전수`, `동일 헤소 입상 품질`, and `동일 보더 마진` as separate assumptions so 1円 and 1.111円 rates are not mixed accidentally.
 - Do not store simulator scores, visit rankings, recommended machines, keep/quit decisions, or strategy outcomes in public `data/` or `docs/` files.
 - Do not auto-create or overwrite `results.csv`; append only when the user explicitly chooses CSV save in the CLI.
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
@@ -275,7 +277,7 @@ Before finishing changes, run the checks that match the change scope.
 Syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
 ```
 
 JSON validation:

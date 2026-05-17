@@ -13,9 +13,24 @@ from machines import MACHINES  # noqa: E402
 from machines import Machine, Payout  # noqa: E402
 from model_checks import theoretical_no_hit_rate, validate_all_machine_models  # noqa: E402
 from result import benchmark_model_value, calculate_metrics, denominator_tail_rows, fall_state_continue_chance, mean_interval  # noqa: E402
+from rotation import (  # noqa: E402
+    border_case_rates,
+    border_delta_text,
+    border_ratio_text,
+    estimate_from_absolute_spins,
+    estimate_from_ball_unit,
+    estimate_from_border_margin,
+    estimate_from_yen_observation,
+    estimate_summary,
+    rotation_reality_label,
+    spins_from_ball_unit,
+    spins_from_border_margin,
+    spins_from_yen_observation,
+)
 from simulator import sample_payout_balls, simulate_single, spins_until_hit  # noqa: E402
 from spec_benchmarks import PUBLIC_BENCHMARKS  # noqa: E402
 from start_gate import estimate_rate_from_observed_spins, sample_session_spin_rate  # noqa: E402
+from store_comparison import store_spins_per_1000yen  # noqa: E402
 
 
 class SimulatorSpecTests(unittest.TestCase):
@@ -228,6 +243,66 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual(63, result["border_spins_per_1000yen"])
         self.assertEqual(4, result["spin_rate_quality_stddev"])
 
+    def test_rotation_unit_conversions_handle_1yen_and_1111yen(self):
+        self.assertAlmostEqual(70.0, spins_from_yen_observation(14, 200))
+        self.assertAlmostEqual(70.0, spins_from_ball_unit(17.5, 250, 1.0))
+        self.assertAlmostEqual(70.0, spins_from_ball_unit(14, 200, 1.0))
+        self.assertAlmostEqual(70.0, spins_from_ball_unit(14, 180, 1.111), delta=0.1)
+        self.assertAlmostEqual(63.0, spins_from_ball_unit(17.5, 250, 1.111), delta=0.1)
+        self.assertEqual(72.5, spins_from_border_margin(67.5, 5))
+
+    def test_border_case_rates_and_labels_are_border_relative(self):
+        cases = border_case_rates(67.5)
+        self.assertEqual(["보더-10.0", "보더-5.0", "보더±0", "보더+5.0", "보더+10.0"], [row["rotation_label"] for row in cases])
+        self.assertEqual([57.5, 62.5, 67.5, 72.5, 77.5], [row["spins_per_1000y"] for row in cases])
+        self.assertEqual("+5.0", border_delta_text(72.5, 67.5))
+        self.assertEqual("1.07x", border_ratio_text(72.5, 67.5))
+        self.assertEqual("좋음", rotation_reality_label(72.5, 67.5))
+        self.assertEqual("타협", rotation_reality_label(65, None))
+
+    def test_rotation_estimates_keep_input_basis_and_summary(self):
+        cash = estimate_from_yen_observation(14, 200)
+        self.assertEqual("cash_observation", cash.input_basis)
+        self.assertAlmostEqual(70.0, cash.spins_per_1000y)
+        self.assertIn("200엔당 14.0회", cash.source_label)
+        self.assertIn("보더비 1.04x", estimate_summary(cash, 67.5))
+
+        balls = estimate_from_ball_unit(17.5, 250, 1.111)
+        self.assertEqual("ball_unit", balls.input_basis)
+        self.assertAlmostEqual(63.0, balls.spins_per_1000y, delta=0.1)
+
+        margin = estimate_from_border_margin(67.5, 5)
+        self.assertEqual("border_margin", margin.input_basis)
+        self.assertEqual("보더+5.0", margin.source_label)
+        self.assertAlmostEqual(72.5, margin.spins_per_1000y)
+
+        absolute = estimate_from_absolute_spins(70)
+        self.assertIn("보더 미확정", estimate_summary(absolute, None))
+
+    def test_store_comparison_can_keep_same_border_margin(self):
+        self.assertAlmostEqual(
+            66.0,
+            store_spins_per_1000yen(
+                "border_margin",
+                reference_lend_rate=1.111,
+                target_lend_rate=1.0,
+                reference_spins_per_1000y=60.0,
+                reference_border_spins_per_1000y=55.0,
+                target_border_spins_per_1000y=61.0,
+            ),
+        )
+        self.assertAlmostEqual(
+            60.0,
+            store_spins_per_1000yen(
+                "border_margin",
+                reference_lend_rate=1.111,
+                target_lend_rate=1.0,
+                reference_spins_per_1000y=60.0,
+                reference_border_spins_per_1000y=None,
+                target_border_spins_per_1000y=61.0,
+            ),
+        )
+
     def test_payout_variance_uses_bounded_centered_distribution(self):
         fixed = Payout(balls=1000, weight=1.0, next_state="NORMAL", ball_variance=0.0)
         self.assertEqual(1000, sample_payout_balls(fixed))
@@ -281,6 +356,48 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertLessEqual(metrics["cvar_10_profit"], metrics["worst_10_profit"])
         self.assertLessEqual(metrics["worst_10_profit_ci_low"], metrics["worst_10_profit"])
         self.assertGreaterEqual(metrics["top_10_profit_ci_high"], metrics["top_10_profit"])
+
+    def test_profit_condition_metrics_are_conditioned_on_useful_outcomes(self):
+        def result_row(net_profit, total_hits, max_streak):
+            return {
+                "budget": 10000,
+                "net_profit": net_profit,
+                "total_hits": total_hits,
+                "max_streak": max_streak,
+                "spins_used": 80,
+                "total_spins_possible": 800,
+                "observed_spins_per_1000y": 80.0,
+                "right_spins": 0,
+                "normal_balls_fired": 1000,
+                "total_out_balls": 1000,
+                "cash_spent": 10000,
+                "final_money": 10000 + net_profit,
+                "rush_entries": 0,
+                "lt_entries": 0,
+                "upper_entries": 0,
+                "first_hit_spin": 80 if total_hits else None,
+                "first_hit_total_spins": 95 if total_hits else None,
+                "experienced_rush": total_hits >= 2,
+                "start_variance": False,
+                "start_probability": 0.08,
+            }
+
+        results = (
+            [result_row(-10000, 0, 0) for _ in range(40)]
+            + [result_row(-3000, 1, 1) for _ in range(30)]
+            + [result_row(5000, 2, 2) for _ in range(30)]
+        )
+        metrics = calculate_metrics(results, len(results))
+
+        hit_two = next(
+            row for row in metrics["profit_condition_rows"]
+            if row["kind"] == "hits" and row["threshold"] == 2
+        )
+        self.assertEqual(30, hit_two["sample_count"])
+        self.assertEqual(30.0, hit_two["occurrence_rate"])
+        self.assertEqual(100.0, hit_two["positive_rate"])
+        self.assertEqual("플러스우세", hit_two["judgement"])
+        self.assertIn("2당+", metrics["profit_condition_summary"])
 
     def test_mean_interval_uses_small_sample_t_critical_value(self):
         low, high = mean_interval([0, 10])

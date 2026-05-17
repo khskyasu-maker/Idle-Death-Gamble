@@ -8,12 +8,14 @@ from simulator import (
     normalize_strategy,
     simulate_multiple,
 )
-from start_gate import rented_balls_per_1000yen, start_probability_from_rate
+from rotation import border_margin, rented_balls_per_1000yen, spins_from_border_margin
+from start_gate import start_probability_from_rate
 
 
 STORE_COMPARISON_MODES = {
     "cash_rotation": "동일 1000엔 회전수",
     "ball_quality": "동일 헤소 입상 품질",
+    "border_margin": "동일 보더 마진",
 }
 
 
@@ -39,6 +41,8 @@ def store_spins_per_1000yen(
     reference_lend_rate: float,
     target_lend_rate: float,
     reference_spins_per_1000y: float,
+    reference_border_spins_per_1000y: float = None,
+    target_border_spins_per_1000y: float = None,
 ) -> float:
     mode = normalize_store_comparison_mode(mode)
     if mode == "ball_quality":
@@ -47,6 +51,13 @@ def store_spins_per_1000yen(
             target_lend_rate,
             reference_spins_per_1000y,
         )
+    if mode == "border_margin":
+        margin = border_margin(reference_spins_per_1000y, reference_border_spins_per_1000y)
+        if margin is None:
+            return float(reference_spins_per_1000y)
+        target_spins = spins_from_border_margin(target_border_spins_per_1000y, margin or 0.0)
+        if target_spins is not None:
+            return target_spins
     return float(reference_spins_per_1000y)
 
 
@@ -73,6 +84,7 @@ def run_store_comparison(
     strategy: str = "no_rule",
     session_policy: str = "fixed_spin_cap",
     comparison_mode: str = "cash_rotation",
+    reference_border_spins_per_1000y: float = None,
     start_variance: bool = True,
     spin_rate_quality_stddev: float = 3.0,
 ) -> List[Dict[str, Any]]:
@@ -88,7 +100,10 @@ def run_store_comparison(
             reference_lend_rate,
             target_lend_rate,
             reference_spins_per_1000y,
+            reference_border_spins_per_1000y=reference_border_spins_per_1000y,
+            target_border_spins_per_1000y=context.get("border_spins_per_1000yen"),
         )
+        target_border_margin = border_margin(target_spins, context.get("border_spins_per_1000yen"))
 
         results = []
         if context.get("installed"):
@@ -112,7 +127,9 @@ def run_store_comparison(
                 **context,
                 "budget": budget,
                 "reference_spins_per_1000y": reference_spins_per_1000y,
+                "reference_border_spins_per_1000yen": reference_border_spins_per_1000y,
                 "spins_per_1000y": target_spins,
+                "border_margin": target_border_margin,
                 "reference_lend_rate": reference_lend_rate,
                 "comparison_mode": comparison_mode,
                 "comparison_mode_label": STORE_COMPARISON_MODES[comparison_mode],

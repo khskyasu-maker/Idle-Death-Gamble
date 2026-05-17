@@ -10,9 +10,10 @@ from start_gate import (
     sample_truncated_normal,
     start_probability_from_rate,
 )
+from rotation import ABSOLUTE_SPIN_RATE_CASES, border_case_rates
 
 
-SPIN_RATE_CASES = [50, 60, 70, 80, 90, 100]
+SPIN_RATE_CASES = ABSOLUTE_SPIN_RATE_CASES
 BUDGET_CASES = [10000, 20000, 30000, 40000, 50000]
 PROFILE_BUDGET_CASES = [1000, 10000, 20000, 30000, 40000, 50000]
 
@@ -706,11 +707,24 @@ def run_matrix_simulation(
 ) -> List[Dict[str, Any]]:
     """예산과 회전율에 따른 매트릭스 시뮬레이션을 수행합니다."""
     budgets = [budget]
-    spin_rates = spin_rates or SPIN_RATE_CASES
+    spin_cases = (
+        border_case_rates(border_spins_per_1000y)
+        if spin_rates is None
+        else [
+            {
+                "rotation_basis": "absolute",
+                "rotation_label": f"{spins}회",
+                "spins_per_1000y": float(spins),
+                "border_margin": None,
+            }
+            for spins in spin_rates
+        ]
+    )
     matrix_results = []
     
     for budget in budgets:
-        for spins in spin_rates:
+        for spin_case in spin_cases:
+            spins = spin_case["spins_per_1000y"]
             results = simulate_multiple(
                 machine,
                 budget,
@@ -728,6 +742,9 @@ def run_matrix_simulation(
                 "budget": budget,
                 "spins_per_1000y": spins,
                 "border_spins_per_1000yen": border_spins_per_1000y,
+                "rotation_basis": spin_case["rotation_basis"],
+                "rotation_label": spin_case["rotation_label"],
+                "border_margin": spin_case["border_margin"],
                 "strategy": strategy,
                 "session_policy": session_policy,
                 "start_variance": start_variance,
@@ -797,16 +814,32 @@ def run_strategy_matrix(
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
 ) -> List[Dict[str, Any]]:
-    spin_rates = spin_rates or SPIN_RATE_CASES
+    spin_cases = (
+        border_case_rates(border_spins_per_1000y)
+        if spin_rates is None
+        else [
+            {
+                "rotation_basis": "absolute",
+                "rotation_label": f"{spins}회",
+                "spins_per_1000y": float(spins),
+                "border_margin": None,
+            }
+            for spins in spin_rates
+        ]
+    )
     strategies = strategies or list(STRATEGIES.keys())
     rows = []
     for strategy in strategies:
-        for spins in spin_rates:
+        for spin_case in spin_cases:
+            spins = spin_case["spins_per_1000y"]
             rows.append(
                 {
                     "budget": budget,
                     "spins_per_1000y": spins,
                     "border_spins_per_1000yen": border_spins_per_1000y,
+                    "rotation_basis": spin_case["rotation_basis"],
+                    "rotation_label": spin_case["rotation_label"],
+                    "border_margin": spin_case["border_margin"],
                     "strategy": strategy,
                     "strategy_label": STRATEGIES[strategy],
                     "session_policy": session_policy,

@@ -4,6 +4,15 @@ from model_checks import theoretical_hit_rate, theoretical_no_hit_rate
 from machine_traits import machine_has_lt, machine_has_upper
 from sim_terms import annotate_japanese_terms, state_transition_label
 from spec_benchmarks import PUBLIC_BENCHMARKS
+from rotation import (
+    LOW_ABSOLUTE_SPIN_WARNING,
+    border_adjustment as rotation_border_adjustment,
+    border_delta_text,
+    border_label as rotation_border_label,
+    border_margin,
+    border_ratio_text,
+    rotation_reality_label,
+)
 import statistics
 import csv
 import math
@@ -20,30 +29,11 @@ def confidence_weight(confidence: str) -> float:
 
 
 def border_adjustment(spins_per_1000y=None, border_spins_per_1000y=None) -> float:
-    if spins_per_1000y is None or border_spins_per_1000y is None:
-        return 0.0
-    if spins_per_1000y < 70:
-        return -35.0
-    margin = spins_per_1000y - border_spins_per_1000y
-    return max(-30.0, min(12.0, margin * 0.9))
+    return rotation_border_adjustment(spins_per_1000y, border_spins_per_1000y)
 
 
 def border_label(spins_per_1000y=None, border_spins_per_1000y=None) -> str:
-    if border_spins_per_1000y is None:
-        return "보더 미확정"
-    margin = spins_per_1000y - border_spins_per_1000y if spins_per_1000y is not None else 0
-    sign = "+" if margin >= 0 else ""
-    if margin < -5:
-        judgement = "보더 미만"
-    elif margin < 0:
-        judgement = "보더 근처이나 부족"
-    elif margin < 5:
-        judgement = "보더 근처"
-    elif margin < 15:
-        judgement = "보더 상회"
-    else:
-        judgement = "보더 크게 상회"
-    return f"보더 {border_spins_per_1000y:.1f}회/1000엔, {sign}{margin:.1f}회 ({judgement})"
+    return rotation_border_label(spins_per_1000y, border_spins_per_1000y)
 
 
 def bilingual_ja_ko(label_ja: str, label_ko: str) -> str:
@@ -194,7 +184,11 @@ def relative_score(metrics: Dict[str, Any], budget: int, confidence: str, spins_
     conf = confidence_weight(confidence)
     score = (plus * 35) + (avg_component * 25) + (defense * 20) + (hit * 10) + (conf * 10)
     score += border_adjustment(spins_per_1000y, border_spins_per_1000y)
-    if spins_per_1000y is not None and spins_per_1000y < 70:
+    if (
+        border_spins_per_1000y is None
+        and spins_per_1000y is not None
+        and spins_per_1000y < LOW_ABSOLUTE_SPIN_WARNING
+    ):
         score = min(score, 35.0)
     if border_spins_per_1000y is not None and spins_per_1000y is not None and spins_per_1000y < border_spins_per_1000y:
         score = min(score, 45.0)
@@ -211,14 +205,13 @@ def operating_warning(confidence: str, spins_per_1000y=None, border_spins_per_10
         warnings.append("참고용")
     elif confidence == "medium":
         warnings.append("스펙검증")
-    if spins_per_1000y is not None and spins_per_1000y < 70:
+    margin = border_margin(spins_per_1000y, border_spins_per_1000y)
+    if border_spins_per_1000y is None and spins_per_1000y is not None and spins_per_1000y < LOW_ABSOLUTE_SPIN_WARNING:
         warnings.append("70회미만 제외")
-    if (
-        spins_per_1000y is not None
-        and border_spins_per_1000y is not None
-        and spins_per_1000y < border_spins_per_1000y
-    ):
+    if margin is not None and margin < -5:
         warnings.append("보더미만")
+    elif margin is not None and margin < 0:
+        warnings.append("보더부족")
     return " / ".join(warnings)
 
 
@@ -233,6 +226,133 @@ def wilson_interval(successes: int, total: int, z: float = 1.96) -> tuple[float,
     low = max(0.0, (centre - margin) / denominator)
     high = min(1.0, (centre + margin) / denominator)
     return low * 100.0, high * 100.0
+
+
+PROFIT_CONDITION_MIN_SAMPLES = 30
+PROFIT_CONDITION_TARGET_RATE = 50.0
+PROFIT_CONDITION_THRESHOLDS = [1, 2, 3, 5, 7, 10, 15, 20]
+
+
+def profit_condition_judgement(sample_count: int, ci_low: float, ci_high: float) -> str:
+    if sample_count < PROFIT_CONDITION_MIN_SAMPLES:
+        return "표본적음"
+    if ci_low > PROFIT_CONDITION_TARGET_RATE:
+        return "플러스우세"
+    if ci_high < PROFIT_CONDITION_TARGET_RATE:
+        return "플러스열세"
+    return "경계"
+
+
+def profit_condition_label(kind: str, threshold: int) -> str:
+    if kind == "hits":
+        return f"大当り(대당첨) {threshold}회+"
+    return f"최대연속 {threshold}연+"
+
+
+def profit_condition_short_label(kind: str, threshold: int) -> str:
+    if kind == "hits":
+        return f"{threshold}당+"
+    return f"{threshold}연+"
+
+
+def profit_condition_thresholds(max_value: int, include_one: bool) -> List[int]:
+    if max_value <= 0:
+        return []
+    thresholds = [
+        t for t in PROFIT_CONDITION_THRESHOLDS
+        if t <= max_value and (include_one or t > 1)
+    ]
+    if include_one and 1 not in thresholds:
+        thresholds.insert(0, 1)
+    if max_value not in thresholds and (include_one or max_value > 1):
+        thresholds.append(max_value)
+    return sorted(set(thresholds))
+
+
+def calculate_profit_condition_rows(results: List[Dict[str, Any]], iterations: int) -> List[Dict[str, Any]]:
+    """Conditioned profit rates for actual useful outcomes, not just first-hit exposure."""
+    if not results or iterations <= 0:
+        return []
+
+    definitions = [
+        ("hits", "total_hits", True),
+        ("streak", "max_streak", False),
+    ]
+    rows = []
+
+    for kind, field, include_one in definitions:
+        max_value = max(int(r.get(field, 0) or 0) for r in results)
+        for threshold in profit_condition_thresholds(max_value, include_one):
+            sample = [r for r in results if int(r.get(field, 0) or 0) >= threshold]
+            sample_count = len(sample)
+            if sample_count <= 0:
+                continue
+
+            positives = [r for r in sample if r["net_profit"] > 0]
+            positive_count = len(positives)
+            positive_rate = (positive_count / sample_count) * 100.0
+            ci_low, ci_high = wilson_interval(positive_count, sample_count)
+            profits = [r["net_profit"] for r in sample]
+            rows.append(
+                {
+                    "kind": kind,
+                    "threshold": threshold,
+                    "label": profit_condition_label(kind, threshold),
+                    "short_label": profit_condition_short_label(kind, threshold),
+                    "sample_count": sample_count,
+                    "occurrence_rate": (sample_count / iterations) * 100.0,
+                    "positive_count": positive_count,
+                    "positive_rate": positive_rate,
+                    "positive_rate_ci_low": ci_low,
+                    "positive_rate_ci_high": ci_high,
+                    "avg_profit": int(statistics.mean(profits)),
+                    "median_profit": int(statistics.median(profits)),
+                    "judgement": profit_condition_judgement(sample_count, ci_low, ci_high),
+                }
+            )
+
+    return rows
+
+
+def best_profit_condition(rows: List[Dict[str, Any]], kind: str = None) -> Dict[str, Any]:
+    candidates = [
+        row for row in rows
+        if (kind is None or row["kind"] == kind)
+        and row["sample_count"] >= PROFIT_CONDITION_MIN_SAMPLES
+        and row["positive_rate_ci_low"] > PROFIT_CONDITION_TARGET_RATE
+    ]
+    if not candidates:
+        return {}
+    return sorted(candidates, key=lambda row: (row["threshold"], -row["occurrence_rate"]))[0]
+
+
+def profit_condition_summary_from_rows(rows: List[Dict[str, Any]]) -> str:
+    parts = []
+    for kind in ["hits", "streak"]:
+        row = best_profit_condition(rows, kind)
+        if row:
+            parts.append(
+                f"{row['short_label']} {pct(row['positive_rate'])}"
+                f"(발생 {pct(row['occurrence_rate'])})"
+            )
+    return " / ".join(parts) if parts else "통계적으로 우세한 플러스 조건 없음"
+
+
+def profit_condition_table_rows(metrics: Dict[str, Any]) -> List[List[Any]]:
+    rows = []
+    for row in metrics.get("profit_condition_rows", []):
+        rows.append(
+            [
+                row["label"],
+                f"{row['sample_count']}회 / {pct(row['occurrence_rate'])}",
+                pct(row["positive_rate"]),
+                format_ci(row["positive_rate_ci_low"], row["positive_rate_ci_high"]),
+                yen(row["median_profit"], signed=True),
+                yen(row["avg_profit"], signed=True),
+                row["judgement"],
+            ]
+        )
+    return rows
 
 
 T_CRITICAL_95 = {
@@ -468,9 +588,22 @@ def ci_pct(metrics: Dict[str, Any], prefix: str) -> str:
 
 
 def border_delta(spins_per_1000y=None, border_spins_per_1000y=None) -> str:
-    if spins_per_1000y is None or border_spins_per_1000y is None:
-        return "N/A"
-    return f"{spins_per_1000y - border_spins_per_1000y:+.1f}"
+    return border_delta_text(spins_per_1000y, border_spins_per_1000y)
+
+
+def rotation_condition_text(spins_per_1000y=None, border_spins_per_1000y=None) -> str:
+    return (
+        f"{rotation_reality_label(spins_per_1000y, border_spins_per_1000y)} / "
+        f"{border_ratio_text(spins_per_1000y, border_spins_per_1000y)}"
+    )
+
+
+def rotation_display_text(row: Dict[str, Any]) -> str:
+    spins = row.get("spins_per_1000y")
+    label = row.get("rotation_label")
+    if label:
+        return f"{label}({spins_text(spins)})"
+    return spins_text(spins)
 
 
 def spin_capacity_text(metrics: Dict[str, Any]) -> str:
@@ -653,6 +786,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     rush_ci_low, rush_ci_high = wilson_interval(rush_count, iterations)
     lt_ci_low, lt_ci_high = wilson_interval(lt_count, iterations)
     upper_ci_low, upper_ci_high = wilson_interval(upper_count, iterations)
+    profit_condition_rows = calculate_profit_condition_rows(results, iterations)
     
     return {
         "avg_profit": avg_profit,
@@ -687,6 +821,8 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "positive_close_rate": positive_close_rate,
         "positive_close_rate_ci_low": positive_ci_low,
         "positive_close_rate_ci_high": positive_ci_high,
+        "profit_condition_rows": profit_condition_rows,
+        "profit_condition_summary": profit_condition_summary_from_rows(profit_condition_rows),
         "ruin_rate": ruin_rate,
         "ruin_rate_ci_low": ruin_ci_low,
         "ruin_rate_ci_high": ruin_ci_high,
@@ -859,6 +995,7 @@ def print_multiple_result(store_name: str, machine: Machine, results: List[Dict[
             ["다이 품질 분포", true_spin_rate_text(m), f"품질 표준편차 {m['spin_rate_quality_stddev']:.1f}회"],
             ["헤소 입상 표본", observed_spin_rate_text(m), f"입상 {m['start_probability'] * 100:.2f}%/발"],
             ["플러스 마감", pct(m["positive_close_rate"]), f"95% CI {ci_pct(m, 'positive_close_rate')}"],
+            ["실질 플러스 조건", m["profit_condition_summary"], "순이익>0 조건부 확률"],
             ["평균 차액", yen(m["avg_profit"], signed=True), f"95% CI {yen(m['avg_profit_ci_low'], signed=True)}~{yen(m['avg_profit_ci_high'], signed=True)}"],
             ["평균 표준오차", yen(m["avg_profit_standard_error"]), f"표준편차 {yen(m['profit_stddev'])} / 예산대비 {m['avg_profit_se_budget_pct']:.2f}% / {m['mean_ci_method']} CI"],
             ["중앙값", yen(m["median_profit"], signed=True), ""],
@@ -870,6 +1007,12 @@ def print_multiple_result(store_name: str, machine: Machine, results: List[Dict[
             ["상위RUSH 진입", upper_rate_text(machine, m), "LT와 별도 집계"],
             ["최대 大当り(대당첨) / 연속", f"{m['max_hits']}회 / {m['max_streak_seen']}연", f"상위10% {m['p90_hits']}회 / {m['p90_streak']}연"],
         ],
+    )
+
+    print_ascii_table(
+        "ASCII 실질 플러스 조건",
+        ["조건", "표본/발생률", "플러스", "95% CI", "중앙", "평균", "판정"],
+        profit_condition_table_rows(m),
     )
 
     print_ascii_table(
@@ -920,23 +1063,26 @@ def print_matrix_results(machine: Machine, matrix_results: List[Dict[str, Any]],
     for mr in matrix_results:
         b = mr['budget']
         s = mr['spins_per_1000y']
+        rotation_display = rotation_display_text(mr)
         m = calculate_metrics(mr['results'], iterations)
         border_spins = mr.get("border_spins_per_1000yen")
         warning = operating_warning(machine.confidence, s, border_spins)
         theory_no_hit = theoretical_no_hit_rate_from_results(machine.normal_prob, mr["results"])
         summary_rows.append([
-            s,
+            rotation_display,
             spin_capacity_text(m),
             border_delta(s, border_spins),
+            rotation_condition_text(s, border_spins),
             pct(m["positive_close_rate"]),
             yen(m["avg_profit"], signed=True),
             yen(m["median_profit"], signed=True),
             yen(m["worst_10_profit"], signed=True),
             yen(m["top_10_profit"], signed=True),
+            m["profit_condition_summary"],
             warning or "-",
         ])
         risk_rows.append([
-            s,
+            rotation_display,
             pct(m["hit_rate"]),
             pct(m["ruin_rate"]),
             f"{theory_no_hit:.1f}%",
@@ -950,7 +1096,7 @@ def print_matrix_results(machine: Machine, matrix_results: List[Dict[str, Any]],
 
     print_ascii_table(
         "ASCII 조건 수익표",
-        ["입력회전", "가능회전", "보더+/-", "플러스", "평균", "중앙", "하위10", "상위10", "주의"],
+        ["입력회전", "가능회전", "보더+/-", "판정/보더비", "플러스", "평균", "중앙", "하위10", "상위10", "실익조건", "주의"],
         summary_rows,
     )
     print_ascii_table(
@@ -982,17 +1128,20 @@ def print_budget_matrix_results(store_name: str, machine: Machine, matrix_result
     for mr in matrix_results:
         budget = mr["budget"]
         spins = mr["spins_per_1000y"]
+        border_spins = mr.get("border_spins_per_1000yen")
         m = calculate_metrics(mr["results"], iterations)
         theory_no_hit = theoretical_no_hit_rate_from_results(machine.normal_prob, mr["results"])
         money_rows.append([
             yen(budget),
             spin_capacity_text(m),
             m["avg_spins"],
+            rotation_condition_text(spins, border_spins),
             pct(m["positive_close_rate"]),
             yen(m["avg_profit"], signed=True),
             yen(m["median_profit"], signed=True),
             yen(m["worst_10_profit"], signed=True),
             yen(m["top_10_profit"], signed=True),
+            m["profit_condition_summary"],
             yen(m["avg_cash_spent"]),
         ])
         risk_rows.append([
@@ -1018,7 +1167,7 @@ def print_budget_matrix_results(store_name: str, machine: Machine, matrix_result
 
     print_ascii_table(
         "ASCII 예산 손익표",
-        ["예산", "가능회전", "평균회전", "플러스", "평균", "중앙", "하위10", "상위10", "평균현금"],
+        ["예산", "가능회전", "평균회전", "판정/보더비", "플러스", "평균", "중앙", "하위10", "상위10", "실익조건", "평균현금"],
         money_rows,
     )
     print_ascii_table(
@@ -1110,6 +1259,7 @@ def print_model_profile_results(
                 pct(m["rush_rate"]),
                 lt_rate_text(machine, m),
                 upper_rate_text(machine, m),
+                m["profit_condition_summary"],
                 yen(m["median_profit"], signed=True),
                 yen(m["worst_10_profit"], signed=True),
             ]
@@ -1117,7 +1267,7 @@ def print_model_profile_results(
 
     print_ascii_table(
         "ASCII 예산별 아타리/연속 주요 지표",
-        ["예산", "가능회전", "이론당첨", "시뮬당첨", "평균초당첨", "초당첨P50/P90", "총체감P50/P90", "평균아타리", "초당첨후", "평균연속", "평균우타치", "RUSH", "LT", "상위RUSH", "중앙", "하위10"],
+        ["예산", "가능회전", "이론당첨", "시뮬당첨", "평균초당첨", "초당첨P50/P90", "총체감P50/P90", "평균아타리", "초당첨후", "평균연속", "평균우타치", "RUSH", "LT", "상위RUSH", "실익조건", "중앙", "하위10"],
         feel_rows,
     )
 
@@ -1171,10 +1321,11 @@ def print_strategy_matrix_results(store_name: str, machine: Machine, matrix_resu
         score = relative_score(m, mr["budget"], machine.confidence, mr["spins_per_1000y"], border_spins)
         ranked.append((score, mr, m))
         strategy_label = mr.get("strategy_label", mr["strategy"])
+        rotation_display = rotation_display_text(mr)
         warning = operating_warning(machine.confidence, mr["spins_per_1000y"], border_spins)
         core_rows.append([
             strategy_label,
-            mr["spins_per_1000y"],
+            rotation_display,
             f"{score:.2f}",
             pct(m["positive_close_rate"]),
             yen(m["avg_profit"], signed=True),
@@ -1187,13 +1338,15 @@ def print_strategy_matrix_results(store_name: str, machine: Machine, matrix_resu
         ])
         condition_rows.append([
             strategy_label,
-            mr["spins_per_1000y"],
+            rotation_display,
             border_delta(mr["spins_per_1000y"], border_spins),
+            rotation_condition_text(mr["spins_per_1000y"], border_spins),
             warning or "-",
             f"{m['max_hits']}회/{m['max_streak_seen']}연",
             pct(m["recovery_50_rate"]),
             pct(m["recovery_80_rate"]),
             pct(m["recovery_100_rate"]),
+            m["profit_condition_summary"],
             pct(m["profit_lock_trigger_rate"]),
             pct(m["stop_loss_trigger_rate"]),
         ])
@@ -1205,7 +1358,7 @@ def print_strategy_matrix_results(store_name: str, machine: Machine, matrix_resu
     )
     print_ascii_table(
         "ASCII 전략 조건/발동",
-        ["전략", "회전", "보더+/-", "주의", "최대당/연", "회수50", "회수80", "회수100", "익절", "손절"],
+        ["전략", "회전", "보더+/-", "판정/보더비", "주의", "최대당/연", "회수50", "회수80", "회수100", "실익조건", "익절", "손절"],
         condition_rows,
     )
 
@@ -1216,7 +1369,7 @@ def print_strategy_matrix_results(store_name: str, machine: Machine, matrix_resu
         top_rows.append([
             rank,
             strategy_label,
-            mr["spins_per_1000y"],
+            rotation_display_text(mr),
             f"{score:.2f}",
             pct(m["positive_close_rate"]),
             yen(m["avg_profit"], signed=True),
@@ -1240,6 +1393,11 @@ def store_comparison_assumption_text(mode: str) -> str:
             "같은 구슬 1발당 헤소 입상 확률을 유지합니다. "
             "1.111엔은 1000엔당 대여 구슬이 적으므로 같은 못 상태라면 입력 회전수가 낮게 보입니다."
         )
+    if mode == "border_margin":
+        return (
+            "각 가게의 기종별 보더 대비 같은 +/- 회전수를 적용합니다. "
+            "레이트와 보더가 다른 점포를 손익분기 기준으로 맞춰 보는 비교입니다."
+        )
     return (
         "각 가게에서 실제로 1000엔당 같은 회전수를 확인했다고 보는 비교입니다. "
         "1.111엔에서 같은 회전수가 나오면 구슬 1발당 헤소 입상 품질은 더 높은 조건입니다."
@@ -1261,7 +1419,10 @@ def print_store_comparison_results(
 
     first_row = comparison_results[0]
     print(f"비교 기준: {first_row.get('comparison_mode_label', '-')}")
-    print(f"기준 입력 회전수: {spins_text(first_row.get('reference_spins_per_1000y'))}/1000엔")
+    reference_rotation = f"{spins_text(first_row.get('reference_spins_per_1000y'))}/1000엔"
+    if first_row.get("reference_rotation_label"):
+        reference_rotation = f"{first_row['reference_rotation_label']} -> {reference_rotation}"
+    print(f"기준 입력 회전수: {reference_rotation}")
     print(f"예산/전략/세션: {yen(first_row.get('budget', 0))} / {first_row.get('strategy_label', '-')} / {first_row.get('session_policy_label', '-')}")
     print("비교 해석:", store_comparison_assumption_text(first_row.get("comparison_mode", "")))
 
@@ -1297,8 +1458,8 @@ def print_store_comparison_results(
         count_text = f"{row.get('count', 0)}대" if row.get("installed") else "설치없음"
 
         if not row.get("installed"):
-            condition_rows.append([store_label, rate, count_text, "-", "-", "-", "-", "-", "-", "-", "설치 없음"])
-            money_rows.append([store_label, "-", "-", "-", "-", "-", "-", "-", "-", "설치 없음"])
+            condition_rows.append([store_label, rate, count_text, "-", "-", "-", "-", "-", "-", "-", "-", "설치 없음"])
+            money_rows.append([store_label, "-", "-", "-", "-", "-", "-", "-", "-", "-", "설치 없음"])
             continue
 
         metrics = calculate_metrics(row["results"], iterations)
@@ -1315,6 +1476,7 @@ def print_store_comparison_results(
                 f"{spins_text(spins)}/1000엔",
                 f"{row.get('start_probability', 0.0) * 100:.2f}%",
                 border_delta(spins, border_spins),
+                rotation_condition_text(spins, border_spins),
                 pct(metrics["hit_rate"]),
                 pct(metrics["ruin_rate"]),
                 f"{theory_no_hit:.1f}%",
@@ -1333,18 +1495,19 @@ def print_store_comparison_results(
                 pct(metrics["recovery_80_rate"]),
                 f"{metrics['avg_first_hit']}회",
                 f"{metrics['avg_hits']:.2f}회/{metrics['avg_streak']:.2f}연",
+                metrics["profit_condition_summary"],
                 warning or "-",
             ]
         )
 
     print_ascii_table(
         "ASCII 가게/레이트 조건표",
-        ["가게", "레이트", "설치", "입력회전", "헤소/발", "보더+/-", "당첨", "0회", "이론0회", "RUSH", "LT/상위"],
+        ["가게", "레이트", "설치", "입력회전", "헤소/발", "보더+/-", "판정/보더비", "당첨", "0회", "이론0회", "RUSH", "LT/상위"],
         condition_rows,
     )
     print_ascii_table(
         "ASCII 가게별 손익/체감표",
-        ["가게", "플러스", "평균", "중앙", "하위10", "상위10", "회수80", "평균초당첨", "평균아타리/연", "주의"],
+        ["가게", "플러스", "평균", "중앙", "하위10", "상위10", "회수80", "평균초당첨", "평균아타리/연", "실익조건", "주의"],
         money_rows,
     )
 
@@ -1361,7 +1524,7 @@ def save_matrix_to_csv(machine: Machine, matrix_results: List[Dict[str, Any]], i
         "중앙값차액", "중앙값95CI하한", "중앙값95CI상한",
         "하위10%차액", "하위10%95CI하한", "하위10%95CI상한", "CVaR10차액",
         "하위25%차액", "상위10%차액", "상위10%95CI하한", "상위10%95CI상한", "상위10%평균차액",
-        "최대손실", "최대이익", "평균당첨횟수", "초당첨평균회전", "초당첨중앙회전", "초당첨P90회전", "초당첨후평균당첨", "당첨세션평균대당첨", "평균RUSH진입", "평균LT진입", "LT진입성공률", "평균상위RUSH진입", "상위RUSH진입성공률", "익절발동률", "손절발동률", "평균최대연속", "평균플레이회전"
+        "최대손실", "최대이익", "실익조건", "평균당첨횟수", "초당첨평균회전", "초당첨중앙회전", "초당첨P90회전", "초당첨후평균당첨", "당첨세션평균대당첨", "평균RUSH진입", "평균LT진입", "LT진입성공률", "평균상위RUSH진입", "상위RUSH진입성공률", "익절발동률", "손절발동률", "평균최대연속", "평균플레이회전"
     ]
     
     file_exists = os.path.isfile(filepath)
@@ -1385,7 +1548,7 @@ def save_matrix_to_csv(machine: Machine, matrix_results: List[Dict[str, Any]], i
                 m['median_profit'], m['median_profit_ci_low'], m['median_profit_ci_high'],
                 m['worst_10_profit'], m['worst_10_profit_ci_low'], m['worst_10_profit_ci_high'], m['cvar_10_profit'],
                 m['worst_25_profit'], m['top_10_profit'], m['top_10_profit_ci_low'], m['top_10_profit_ci_high'], m['upper_tail_10_profit'],
-                m['min_profit'], m['max_profit'], round(m['avg_hits'], 1), m["avg_first_hit"], m["median_first_hit"], m["p90_first_hit"], round(m["avg_after_first_hits"], 2), round(m["avg_hits_when_hit"], 2), round(m['avg_rush_entries'], 2),
+                m['min_profit'], m['max_profit'], m["profit_condition_summary"], round(m['avg_hits'], 1), m["avg_first_hit"], m["median_first_hit"], m["p90_first_hit"], round(m["avg_after_first_hits"], 2), round(m["avg_hits_when_hit"], 2), round(m['avg_rush_entries'], 2),
                 round(m['avg_lt_entries'], 2) if machine_has_lt(machine) else "N/A",
                 round(m['lt_success_rate'], 1) if machine_has_lt(machine) else "N/A",
                 round(m['avg_upper_entries'], 2) if machine_has_upper(machine) else "N/A",

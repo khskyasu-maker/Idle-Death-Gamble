@@ -13,6 +13,15 @@ from simulator import (
     run_strategy_matrix,
 )
 from store_comparison import STORE_COMPARISON_MODES, run_store_comparison
+from rotation import (
+    border_case_rates,
+    estimate_from_absolute_spins,
+    estimate_from_ball_unit,
+    estimate_from_border_margin,
+    estimate_from_yen_observation,
+    estimate_summary,
+    rented_balls_per_1000yen,
+)
 from result import (
     border_label,
     print_single_result,
@@ -98,6 +107,24 @@ def get_int_input(prompt: str, min_val: int = None, max_val: int = None, default
             print("경고: 올바른 숫자를 입력해주세요.")
 
 
+def get_float_input(prompt: str, min_val: float = None, max_val: float = None, default: float = None) -> float:
+    while True:
+        try:
+            user_input = input(prompt).strip()
+            if not user_input and default is not None:
+                return float(default)
+            val = float(user_input)
+            if min_val is not None and val < min_val:
+                print(f"경고: 최소 {min_val:g} 이상이어야 합니다.")
+                continue
+            if max_val is not None and val > max_val:
+                print(f"경고: 최대 {max_val:g} 이하여야 합니다.")
+                continue
+            return val
+        except ValueError:
+            print("경고: 올바른 숫자를 입력해주세요.")
+
+
 def choose_strategy() -> str:
     print("\n[전략]")
     print("1: 노룰")
@@ -129,17 +156,99 @@ def choose_store_comparison_mode(default: int = 1) -> str:
     print("\n[가게 비교 기준]")
     print("1: 동일 1000엔 회전수 - 각 가게에서 같은 현금 회전수를 실측했다고 가정")
     print("2: 동일 헤소 입상 품질 - 구슬 1발당 입상 확률을 같게 두고 레이트별 회전수 환산")
-    mode_choice = get_int_input(f"비교 기준을 선택하세요 (1-2) [기본값: {default}]: ", 1, 2, default)
+    print("3: 동일 보더 마진 - 각 가게의 보더 대비 같은 +/- 회전수로 비교")
+    mode_choice = get_int_input(f"비교 기준을 선택하세요 (1-3) [기본값: {default}]: ", 1, 3, default)
     return {
         1: "cash_rotation",
         2: "ball_quality",
+        3: "border_margin",
     }[mode_choice]
 
 
-def print_spin_rate_guide():
+def default_spin_rate_for_border(border_spins_per_1000yen) -> int:
+    if border_spins_per_1000yen is None:
+        return 70
+    return int(round(border_spins_per_1000yen))
+
+
+def print_spin_rate_guide(border_spins_per_1000yen=None):
     print("\n[1000엔당 회전수 가이드]")
-    print("매우 나쁨: 50회전 / 나쁨: 60회전 / 애매함: 70회전 / 최소 후보: 80회전 / 좋음: 90회전 / 매우 좋음: 100회전")
+    if border_spins_per_1000yen is not None:
+        cases = border_case_rates(border_spins_per_1000yen)
+        case_text = " / ".join(
+            f"{case['rotation_label']}={case['spins_per_1000y']:.1f}회"
+            for case in cases
+        )
+        print(f"선택 기종 보더 기준: {case_text}")
+    print("보더가 없을 때 절대값 참고: 위험 50회 이하 / 타협 60회 / 합격 70회 / 우수 80회 이상")
     print("입력값은 평균 회전수입니다. 실제 세션 회전수는 구슬->헤소 입상 확률로 표본 변동을 반영합니다.")
+
+
+def choose_rotation_estimate(lend_rate: float, border_spins_per_1000yen=None):
+    default_spins = default_spin_rate_for_border(border_spins_per_1000yen)
+    rented_balls = rented_balls_per_1000yen(lend_rate)
+    default_200yen_spins = default_spins / 5.0
+    default_250ball_spins = default_spins / (rented_balls / 250.0) if rented_balls else default_spins / 4.0
+
+    print_spin_rate_guide(border_spins_per_1000yen)
+    print("\n[회전율 입력 방식]")
+    print("1: 1000엔당 회전수")
+    print("2: 200엔당 회전수 (라쿠엔 1.111엔은 200엔=180玉 기준)")
+    print("3: 250玉당 회전수")
+    print("4: 사용 금액 + 실제 회전수")
+    if border_spins_per_1000yen is not None:
+        print("5: 보더 기준 +/- 회전")
+    mode_max = 5 if border_spins_per_1000yen is not None else 4
+    choice = get_int_input(f"입력 방식을 선택하세요 (1-{mode_max}) [기본값: 1]: ", 1, mode_max, 1)
+
+    if choice == 2:
+        spins = get_float_input(
+            f"200엔당 회전수를 입력하세요 [기본값: {default_200yen_spins:.1f}]: ",
+            0.1,
+            80.0,
+            default_200yen_spins,
+        )
+        estimate = estimate_from_yen_observation(spins, 200)
+    elif choice == 3:
+        spins = get_float_input(
+            f"250玉당 회전수를 입력하세요 [기본값: {default_250ball_spins:.1f}]: ",
+            0.1,
+            80.0,
+            default_250ball_spins,
+        )
+        estimate = estimate_from_ball_unit(spins, 250, lend_rate)
+    elif choice == 4:
+        yen = get_float_input("사용 금액을 입력하세요 [기본값: 1000]: ", 1.0, 200000.0, 1000.0)
+        default_observed_spins = default_spins * (yen / 1000.0)
+        spins = get_float_input(
+            f"그 금액으로 실제 돈 회전수를 입력하세요 [기본값: {default_observed_spins:.1f}]: ",
+            0.0,
+            20000.0,
+            default_observed_spins,
+        )
+        estimate = estimate_from_yen_observation(spins, yen)
+    elif choice == 5:
+        margin = get_float_input("보더 대비 +/- 회전수를 입력하세요 [기본값: 0]: ", -50.0, 80.0, 0.0)
+        estimate = estimate_from_border_margin(border_spins_per_1000yen, margin)
+    else:
+        spins = get_float_input(
+            f"1000엔당 회전수를 입력하세요 [기본값: {default_spins}]: ",
+            1.0,
+            250.0,
+            default_spins,
+        )
+        estimate = estimate_from_absolute_spins(spins)
+
+    print(f"환산 회전율: {estimate_summary(estimate, border_spins_per_1000yen)}")
+    return estimate
+
+
+def add_rotation_estimate_context(matrix_results, estimate):
+    for row in matrix_results:
+        row["rotation_basis"] = estimate.input_basis
+        row["rotation_label"] = estimate.source_label
+        row["border_margin"] = estimate.border_margin
+
 
 def main():
     print("=== 오사카 난바 실제 설치기종 1엔 파친코 체감 모의 ===")
@@ -224,8 +333,8 @@ def main():
     # 3. 실행 모드
     print("\n[실행 모드]")
     print("1: 단일 시뮬레이션 (1회 방문 체험)")
-    print("2: 리스크 평가 테스트 (1000회 반복)")
-    print("3: 회전율 매트릭스 (50/60/70/80/90/100회 비교)")
+    print("2: 리스크 평가 테스트 (반복 시뮬레이션)")
+    print("3: 회전율 매트릭스 (보더 기준 또는 절대 회전율 비교)")
     print("4: 전략 비교 (노룰/손절/이익잠금/공격형)")
     print("5: 예산 비교 (10000/20000/30000/40000/50000엔)")
     print("6: 모델 프로파일/위화감 검증 (1000엔 체감 + 공개 일본값 비교)")
@@ -245,7 +354,10 @@ def main():
         budget = get_int_input("\n예산을 입력하세요 [기본값: 10000]: ", 1000, 200000, 10000)
         iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 5000]: ", 100, 100000, 5000)
         session_policy = choose_session_policy(default=1)
-        print(f"\n[매트릭스 모드 실행 중...] 회전율 {SPIN_RATE_CASES} 조건을 비교합니다.")
+        if selected_border_spins is not None:
+            print("\n[매트릭스 모드 실행 중...] 보더-10/-5/±0/+5/+10 조건을 비교합니다.")
+        else:
+            print(f"\n[매트릭스 모드 실행 중...] 회전율 {SPIN_RATE_CASES} 조건을 비교합니다.")
         matrix_results = run_matrix_simulation(
             machine,
             rental_rate,
@@ -265,7 +377,10 @@ def main():
         budget = get_int_input("\n예산을 입력하세요 [기본값: 10000]: ", 1000, 200000, 10000)
         iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 5000]: ", 100, 100000, 5000)
         session_policy = choose_session_policy(default=1)
-        print(f"\n[전략 비교 실행 중...] 회전율 {SPIN_RATE_CASES}, 전략 4종을 비교합니다.")
+        if selected_border_spins is not None:
+            print("\n[전략 비교 실행 중...] 보더-10/-5/±0/+5/+10, 전략 4종을 비교합니다.")
+        else:
+            print(f"\n[전략 비교 실행 중...] 회전율 {SPIN_RATE_CASES}, 전략 4종을 비교합니다.")
         matrix_results = run_strategy_matrix(
             machine,
             rental_rate,
@@ -278,12 +393,15 @@ def main():
         add_lineup_context(matrix_results, selected_machine_info)
         print_strategy_matrix_results(store_name, machine, matrix_results, iterations)
     elif mode == 5:
-        print_spin_rate_guide()
-        spins_per_1000y = get_int_input("1000엔당 회전수를 입력하세요 [기본값: 80]: ", 10, 200, 80)
+        rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
+        spins_per_1000y = rotation_estimate.spins_per_1000y
         iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 1000]: ", 100, 100000, 1000)
         strategy = choose_strategy()
         session_policy = choose_session_policy(default=1)
-        print(f"\n[예산 비교 실행 중...] 예산 {BUDGET_CASES}엔, {spins_per_1000y}회/1000엔 조건을 비교합니다.")
+        print(
+            f"\n[예산 비교 실행 중...] 예산 {BUDGET_CASES}엔, "
+            f"{estimate_summary(rotation_estimate, selected_border_spins)} 조건을 비교합니다."
+        )
         matrix_results = run_budget_matrix(
             machine,
             rental_rate,
@@ -295,15 +413,16 @@ def main():
             session_policy=session_policy,
             border_spins_per_1000y=selected_border_spins,
         )
+        add_rotation_estimate_context(matrix_results, rotation_estimate)
         add_lineup_context(matrix_results, selected_machine_info)
         print_budget_matrix_results(store_name, machine, matrix_results, iterations)
     elif mode == 6:
-        print_spin_rate_guide()
-        spins_per_1000y = get_int_input("1000엔당 회전수를 입력하세요 [기본값: 80]: ", 10, 200, 80)
+        rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
+        spins_per_1000y = rotation_estimate.spins_per_1000y
         iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 20000]: ", 100, 200000, 20000)
         print(
             f"\n[모델 프로파일 실행 중...] 예산 {PROFILE_BUDGET_CASES}엔, "
-            f"{spins_per_1000y}회/1000엔 조건을 비교합니다."
+            f"{estimate_summary(rotation_estimate, selected_border_spins)} 조건을 비교합니다."
         )
         matrix_results = []
         for budget in PROFILE_BUDGET_CASES:
@@ -311,6 +430,9 @@ def main():
                 {
                     "budget": budget,
                     "spins_per_1000y": spins_per_1000y,
+                    "rotation_basis": rotation_estimate.input_basis,
+                    "rotation_label": rotation_estimate.source_label,
+                    "border_margin": rotation_estimate.border_margin,
                     "strategy": "no_rule",
                     "session_policy": "fixed_spin_cap",
                     "results": simulate_multiple(
@@ -329,16 +451,16 @@ def main():
         add_lineup_context(matrix_results, selected_machine_info)
         print_model_profile_results(store_name, machine, matrix_results, iterations)
     elif mode == 7:
-        print_spin_rate_guide()
         budget = get_int_input("\n예산을 입력하세요 [기본값: 10000]: ", 1000, 200000, 10000)
-        spins_per_1000y = get_int_input("기준 1000엔당 회전수를 입력하세요 [기본값: 80]: ", 10, 200, 80)
+        rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
+        spins_per_1000y = rotation_estimate.spins_per_1000y
         iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 5000]: ", 100, 100000, 5000)
         strategy = choose_strategy()
         session_policy = choose_session_policy(default=1)
         comparison_mode = choose_store_comparison_mode(default=1)
         print(
             f"\n[가게별 비교 실행 중...] {STORE_COMPARISON_MODES[comparison_mode]}, "
-            f"예산 {budget}엔, 기준 {spins_per_1000y}회/1000엔 조건을 비교합니다."
+            f"예산 {budget}엔, 기준 {estimate_summary(rotation_estimate, selected_border_spins)} 조건을 비교합니다."
         )
         comparison_results = run_store_comparison(
             machine,
@@ -351,12 +473,16 @@ def main():
             strategy=strategy,
             session_policy=session_policy,
             comparison_mode=comparison_mode,
+            reference_border_spins_per_1000y=selected_border_spins,
         )
+        for row in comparison_results:
+            row["reference_rotation_label"] = rotation_estimate.source_label
+            row["reference_rotation_basis"] = rotation_estimate.input_basis
         print_store_comparison_results(machine, comparison_results, iterations)
     else:
         budget = get_int_input("\n예산을 입력하세요 (예: 10000, 20000) [기본값: 10000]: ", 1000, 200000, 10000)
-        print_spin_rate_guide()
-        spins_per_1000y = get_int_input("1000엔당 회전수를 입력하세요 [기본값: 50]: ", 10, 200, 50)
+        rotation_estimate = choose_rotation_estimate(rental_rate, selected_border_spins)
+        spins_per_1000y = rotation_estimate.spins_per_1000y
         strategy = choose_strategy()
         session_policy = choose_session_policy(default=1)
         
@@ -377,9 +503,10 @@ def main():
                 f"\n[보더라인 기준] "
                 f"{border_label(spins_per_1000y, selected_machine_info.get('border_spins_per_1000yen'))}"
             )
+            print(f"[입력 환산] {estimate_summary(rotation_estimate, selected_border_spins)}")
             print_single_result(store_name, machine, res, spins_per_1000y)
         elif mode == 2:
-            iterations = 1000
+            iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 5000]: ", 100, 100000, 5000)
             results = simulate_multiple(
                 machine,
                 budget,
@@ -397,6 +524,7 @@ def main():
                 f"\n[보더라인 기준] "
                 f"{border_label(spins_per_1000y, selected_machine_info.get('border_spins_per_1000yen'))}"
             )
+            print(f"[입력 환산] {estimate_summary(rotation_estimate, selected_border_spins)}")
             print_multiple_result(store_name, machine, results, iterations)
 
 if __name__ == "__main__":

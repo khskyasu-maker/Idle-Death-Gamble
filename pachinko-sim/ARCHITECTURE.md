@@ -30,6 +30,9 @@ pachinko-sim/stores.py
 pachinko-sim/machines.py
         |
         v
+pachinko-sim/rotation.py
+        |
+        v
 pachinko-sim/start_gate.py
         |
         v
@@ -152,6 +155,23 @@ many start spins the balls produce, and each start spin is an independent
 machine-probability trial. Borderline values may bound the table-quality
 distribution, but they do not change jackpot probability.
 
+### `rotation.py`
+
+Normalizes runtime rotation and borderline assumptions.
+
+Responsibilities:
+
+- convert observed field notes into `spins_per_1000y`
+- preserve the input basis as a `RotationEstimate`, so the CLI can show whether
+  a run came from `1000엔`, `200엔`, `250玉`, cash observation, or border-margin input
+- convert `250玉`, `200玉`, `180玉`, and cash observations across 1円/1.111円 rates
+- build border-relative scenario cases such as `보더-5`, `보더±0`, and `보더+5`
+- calculate border margin, border ratio, and human-readable rotation judgement
+- keep absolute `70회/1000엔` warnings as fallback only when no machine border is known
+
+This module does not change jackpot probability. It only changes how many
+normal-start trials a cash or ball budget can buy.
+
 ### `store_comparison.py`
 
 Builds runtime same-machine store comparison scenarios.
@@ -161,10 +181,12 @@ Responsibilities:
 - compare only the same simulator machine id across stores
 - keep installed and not-installed store rows visible in the output
 - preserve the selected store as the reference condition
-- support two rate-aware assumptions:
+- support three rate-aware assumptions:
   - `cash_rotation`: the same 1,000円(1000엔)당 observed rotation is used at each store
   - `ball_quality`: the same per-ball ヘソ(헤소) entry probability is preserved and
     1,000円(1000엔)당 rotation is recalculated by each store's lend rate
+  - `border_margin`: each store uses the same margin against its own
+    `border_spins_per_1000yen`, useful when comparing 1円 and 1.111円 stores
 
 This module must not write comparison scores or visit decisions back into public
 data files.
@@ -224,10 +246,15 @@ Statistical layers:
 - jackpot wait: geometric distribution for independent Bernoulli spins
 - payout realization: truncated normal distribution around nominal payout balls
 - categorical rates: Wilson confidence intervals
+- conditioned useful-profit rates: Wilson confidence intervals for `net_profit > 0`
+  after 大当り(대당첨) count and max-streak thresholds
 - mean net profit: t-based confidence interval for small samples, normal limit for large samples
 - denominator-tail display: normal-probability no-hit probability after 1x/2x/3x/5x
   the denominator, showing that exceeding the public probability denominator is normal
   under independent trials
+- border-relative matrix scenarios: when a machine has a known border, default
+  rotation comparisons use `보더-10/-5/±0/+5/+10`; unknown-border machines fall
+  back to absolute `50/60/70/80/90/100` cases
 
 Important current limitation:
 
@@ -250,6 +277,8 @@ Primary outputs:
 - per-session 大当り(대당첨) count and max streak
 - single-session 大当り(대당첨) event log
 - positive close rate
+- useful-profit condition rows by 大当り(대당첨) count and max streak, so
+  "hit once" is not confused with a session that actually ends positive
 - average and median net profit
 - lower 10% and upper 10% outcomes
 - standard error for average net profit
@@ -262,7 +291,7 @@ Primary outputs:
 - recovery rates
 - profit-lock and stop-loss trigger rates
 - relative comparison score
-- borderline warning
+- borderline warning, border margin, border ratio, and rotation judgement
 - public Japanese spec benchmark comparison, shown with Korean translation
 
 Statistical outputs should include uncertainty because Monte Carlo rankings can move when iteration counts are low.
