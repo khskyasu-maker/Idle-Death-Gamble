@@ -270,8 +270,9 @@ Session accounting:
 - `cashless_play_minutes` estimates time continuing without new cash input,
   including right-side play, hit effects, and normal spins paid by reusable balls.
 - `stay_reach_rates` reports the share of sampled sessions reaching each hour
-  from 1 to 12 hours. The 12-hour value is a planning cap for normal store-day
-  limits, not a prediction that the hall will let a session continue unchanged.
+  from 1 to 11 hours. The 11-hour value is a practical stop cap for leaving
+  before close and avoiding late cash input, not a prediction that the hall will
+  let a session continue unchanged.
 - `final_remaining_value` is unused cash plus exchangeable final balls converted
   to yen. This is separate from `net_profit`, which remains final exchange money
   minus cash spent.

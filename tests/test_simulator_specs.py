@@ -12,7 +12,14 @@ from machine_traits import machine_has_lt, machine_has_upper  # noqa: E402
 from machines import MACHINES  # noqa: E402
 from machines import Machine, Payout  # noqa: E402
 from model_checks import theoretical_no_hit_rate, validate_all_machine_models  # noqa: E402
-from result import benchmark_model_value, calculate_metrics, denominator_tail_rows, fall_state_continue_chance, mean_interval  # noqa: E402
+from result import (  # noqa: E402
+    SESSION_TIME_LIMIT_HOURS,
+    benchmark_model_value,
+    calculate_metrics,
+    denominator_tail_rows,
+    fall_state_continue_chance,
+    mean_interval,
+)
 from rotation import (  # noqa: E402
     border_case_rates,
     border_delta_text,
@@ -296,7 +303,8 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertIn("time_assumptions", result)
         self.assertEqual("sea_classic", result["time_assumptions"]["profile_name"])
         metrics = calculate_metrics([result], 1)
-        self.assertIn(12, metrics["stay_reach_rates"])
+        self.assertIn(SESSION_TIME_LIMIT_HOURS, metrics["stay_reach_rates"])
+        self.assertNotIn(SESSION_TIME_LIMIT_HOURS + 1, metrics["stay_reach_rates"])
         self.assertIn("avg_final_remaining_value", metrics)
         self.assertEqual("타협", rotation_reality_label(65, None))
 

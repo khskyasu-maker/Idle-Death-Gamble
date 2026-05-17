@@ -753,7 +753,7 @@ def build_simulator_context():
             "lt_entry_rate": "Sampled LT entry share; non-LT machines should be interpreted as not applicable.",
             "avg_play_minutes": "Estimated stay/play time, including ball firing, reserve waiting, right-side spins, and hit effects.",
             "avg_cashless_play_minutes": "Estimated time continuing without new cash input through right-side play, hit effects, and reusable held balls.",
-            "stay_reach_rates": "Share of sampled sessions reaching each hour from 1 to 12 hours.",
+            "stay_reach_rates": "Share of sampled sessions reaching each hour from 1 to 11 hours.",
             "final_remaining_value": "Unused cash plus exchangeable final balls converted to yen.",
         },
         "ai_interpretation_rules": [
