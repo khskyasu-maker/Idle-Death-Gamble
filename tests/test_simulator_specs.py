@@ -35,6 +35,7 @@ from rotation import (  # noqa: E402
     spins_from_yen_observation,
 )
 from simulator import sample_payout_balls, simulate_single, spins_until_hit  # noqa: E402
+from simulator import run_budget_matrix  # noqa: E402
 from spec_benchmarks import PUBLIC_BENCHMARKS  # noqa: E402
 from start_gate import estimate_rate_from_observed_spins, sample_session_spin_rate  # noqa: E402
 from store_comparison import store_spins_per_1000yen  # noqa: E402
@@ -460,6 +461,18 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertTrue(post_budget["cash_budget_exhausted"])
         self.assertTrue(post_budget["funds_exhausted_triggered"])
         self.assertEqual(0, post_budget["post_budget_play_minutes"])
+
+        budget_matrix = run_budget_matrix(
+            no_hit_machine,
+            lend_rate=1.0,
+            exchange_rate=0.89,
+            iterations=1,
+            budgets=[1000],
+            spins_per_1000y=100,
+            session_policy="play_until_budget_and_balls_gone",
+            start_variance=False,
+        )
+        self.assertIsNone(budget_matrix[0]["results"][0]["normal_spin_cap"])
 
     def test_rotation_estimates_keep_input_basis_and_summary(self):
         cash = estimate_from_yen_observation(14, 200)

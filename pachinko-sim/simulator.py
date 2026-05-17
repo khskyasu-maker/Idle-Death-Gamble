@@ -1035,7 +1035,7 @@ def run_budget_matrix(
     spins_per_1000y: int = 80,
     strategy: str = "no_rule",
     session_policy: str = "fixed_spin_cap",
-    max_normal_spin_multiplier: int = 2,
+    max_normal_spin_multiplier: int | None = None,
     start_variance: bool = True,
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
@@ -1047,7 +1047,10 @@ def run_budget_matrix(
 
     for budget in budgets:
         max_normal_spins = None
-        if session_policy == "play_until_budget_and_balls_gone":
+        if (
+            session_policy == "play_until_budget_and_balls_gone"
+            and max_normal_spin_multiplier is not None
+        ):
             max_normal_spins = int((budget / 1000) * spins_per_1000y * max_normal_spin_multiplier)
         results = simulate_multiple(
             machine,

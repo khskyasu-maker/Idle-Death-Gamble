@@ -274,8 +274,8 @@ Session accounting:
   run indefinitely.
 - new cash input is blocked after the 9-hour mark. Existing banked balls can
   continue only when the player is still resolving the active right-side state.
-- budget comparison applies a practical normal-spin safety cap when using the
-  play-until policy, so rare long positive sessions do not dominate runtime
+- budget comparison does not cap normal spins in the play-until policy by
+  default; the 9-hour soft stop and 11-hour hard cap are the runtime guards.
 - miss streaks are sampled with an equivalent geometric distribution instead
   of looping one spin at a time, which keeps 5,000 to 20,000 iteration runs
   practical without changing Bernoulli hit probabilities
