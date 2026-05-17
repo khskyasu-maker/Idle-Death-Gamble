@@ -75,6 +75,9 @@ Responsibilities:
 - map DMM/manual lineup machine names to simulator model keys
 - keep `MACHINE_NAME_TO_SIM_ID` as the active selectable subset; `machines.py`
   may retain extra reference models for deterministic spec checks
+- keep non-Eva/non-DaiUmi selectable models limited to
+  `ACTIVE_OTHER_SIM_MODEL_IDS`; validation and unit tests should fail if a
+  reference-only other model becomes selectable accidentally
 - keep supported and unsupported machines separate
 - calculate local registered count, supported count, unsupported count, and DMM low-rate total gap
 - convert borderline values into `spins per 1000 yen`

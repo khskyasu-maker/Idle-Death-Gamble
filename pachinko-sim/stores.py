@@ -308,21 +308,6 @@ def border_info(row: dict) -> dict:
     }
 
 
-def border_judgement(spins_per_1000yen: int, border_spins_per_1000yen) -> str:
-    if border_spins_per_1000yen is None:
-        return "보더 미확정"
-    margin = spins_per_1000yen - border_spins_per_1000yen
-    if margin < -5:
-        return "보더 미만"
-    if margin < 0:
-        return "보더 근처이나 부족"
-    if margin < 5:
-        return "보더 근처"
-    if margin < 15:
-        return "보더 상회"
-    return "보더 크게 상회"
-
-
 def build_lineup_row(row: dict, sim_id: str | None, source_url: str) -> dict:
     machine_name = row.get("machine_name", "")
     machine_name_ko = row.get("machine_name_ko", "")

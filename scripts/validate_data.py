@@ -488,11 +488,19 @@ def validate_simulator_lineup(errors, warnings):
         except ValueError:
             pass
 
-    if len(ACTIVE_OTHER_SIM_MODEL_IDS) != 6:
+    expected_active_other = {
+        "hokuto_jibo",
+        "re_zero_99",
+        "re_zero_s2_129",
+        "lupin_77_sweet",
+        "kabaneri_2",
+        "tokyo_ghoul",
+    }
+    if set(ACTIVE_OTHER_SIM_MODEL_IDS) != expected_active_other:
         add_issue(
             errors,
             "pachinko-sim/stores.py.ACTIVE_OTHER_SIM_MODEL_IDS",
-            "active non-Eva/non-DaiUmi simulator subset must stay at 6 models.",
+            f"active non-Eva/non-DaiUmi simulator subset must stay {sorted(expected_active_other)}.",
         )
 
     for choice, store in STORE_INVENTORY.items():

@@ -262,7 +262,7 @@ def add_rotation_estimate_context(matrix_results, estimate):
 def main():
     print("=== 오사카 난바 실제 설치기종 1엔 파친코 체감 모의 ===")
     print("본 프로그램은 수익 예측이 아닌, 여행지에서의 실질적인 체감 리스크와 만족도를 비교하기 위한 도구입니다.\n")
-    
+
     # 1. 매장 선택
     print("[1엔/저대여 파친코 매장 선택]")
     store_choices = sorted(STORE_INVENTORY.keys(), key=int)
@@ -272,11 +272,11 @@ def main():
     store_choice = str(
         get_int_input(f"매장을 선택하세요 (1-{len(store_choices)}): ", 1, len(store_choices))
     )
-    
+
     store_info = STORE_INVENTORY[store_choice]
     store_name = store_info["name"]
     rental_rate = store_info["rental_rate"]
-    
+
     # 2. 기종 선택
     print(f"\n[{store_name} 1엔/저대여 설치 라인업]")
     print(
@@ -332,13 +332,13 @@ def main():
                 f"첫 테스트 {m_info['first_test_budget']}엔 | "
                 f"{m_info['quit_condition']}이면 이동"
             )
-        
+
     machine_idx = get_int_input(f"기종을 선택하세요 (1-{len(available_machines)}): ", 1, len(available_machines))
     selected_machine_info = available_machines[machine_idx - 1]
     selected_machine_id = selected_machine_info["id"]
     machine = MACHINES[selected_machine_id]
     selected_border_spins = selected_machine_info.get("border_spins_per_1000yen")
-    
+
     # 3. 실행 모드
     print("\n[실행 모드]")
     print("1: 단일 시뮬레이션 (1회 방문 체험)")
@@ -349,7 +349,7 @@ def main():
     print("6: 모델 프로파일/위화감 검증 (1000엔 체감 + 예산별 체류 시간 + 공개 일본값 비교)")
     print("7: 가게별 같은 기종 비교 (라쿠엔/123/HIPS, 레이트 보정)")
     mode = get_int_input("실행 모드를 선택하세요 (1-7): ", 1, 7)
-    
+
     default_exchange_rate = 0.89
     exchange_rate_input = get_int_input(
         "\n교환율을 입력하세요. 0.89엔/발이면 89 입력 [기본값: 89]: ",
@@ -358,7 +358,7 @@ def main():
         int(default_exchange_rate * 100),
     )
     exchange_rate = exchange_rate_input / 100.0
-    
+
     if mode == 3:
         budget = get_int_input("\n예산을 입력하세요 [기본값: 10000]: ", 1000, 200000, 10000)
         iterations = get_int_input("반복 횟수를 입력하세요 [기본값: 5000]: ", 100, 100000, 5000)
@@ -494,7 +494,7 @@ def main():
         spins_per_1000y = rotation_estimate.spins_per_1000y
         strategy = choose_strategy()
         session_policy = choose_session_policy(default=1)
-        
+
         if mode == 1:
             res = simulate_single(
                 machine,

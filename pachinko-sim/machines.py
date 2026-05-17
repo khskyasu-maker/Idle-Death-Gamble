@@ -211,7 +211,7 @@ MACHINES = {
         name_ko="P 신 에반게리온 129 LT 버전",
         spec_type="라이트 / 1種2種 LT",
         risk_grade="1/129",
-        normal_prob=129.8, 
+        normal_prob=129.8,
         high_prob=54.4,
         normal_hit_dist=[
             Payout(balls=930, weight=0.005, next_state="LT", st_spins=127, is_lt=True, ball_variance=0.03),
@@ -275,7 +275,7 @@ MACHINES = {
         high_prob=79.9,
         normal_hit_dist=[
             Payout(balls=300, weight=0.50, next_state='ST', st_spins=104),
-            Payout(balls=300, weight=0.50, next_state='NORMAL') 
+            Payout(balls=300, weight=0.50, next_state='NORMAL')
         ],
         st_hit_dist=[
             Payout(balls=1800, weight=0.25, next_state='ST', st_spins=104),

@@ -38,6 +38,12 @@ from simulator import sample_payout_balls, simulate_single, spins_until_hit  # n
 from simulator import run_budget_matrix  # noqa: E402
 from spec_benchmarks import PUBLIC_BENCHMARKS  # noqa: E402
 from start_gate import estimate_rate_from_observed_spins, sample_session_spin_rate  # noqa: E402
+from stores import (  # noqa: E402
+    ACTIVE_OTHER_SIM_MODEL_IDS,
+    MACHINE_NAME_TO_SIM_ID,
+    STORE_INVENTORY,
+    store_contexts_for_machine,
+)
 from store_comparison import store_spins_per_1000yen  # noqa: E402
 from time_model import (  # noqa: E402
     DEFAULT_TIME_ASSUMPTIONS,
@@ -265,6 +271,40 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertAlmostEqual(0.010, sum(p.weight for p in jibo.st_hit_dist if p.next_state == "LT"))
         self.assertEqual({166}, {p.jitan_spins for p in jibo.lt_hit_dist})
         self.assertTrue(all(p.next_state == "LT" for p in jibo.lt_hit_dist))
+
+    def test_active_other_subset_is_exact_current_policy(self):
+        expected = {
+            "hokuto_jibo",
+            "re_zero_99",
+            "re_zero_s2_129",
+            "lupin_77_sweet",
+            "kabaneri_2",
+            "tokyo_ghoul",
+        }
+        self.assertEqual(expected, ACTIVE_OTHER_SIM_MODEL_IDS)
+
+        selectable_other_ids = {
+            row["id"]
+            for store in STORE_INVENTORY.values()
+            for row in store["machines"]
+            if row["lineup_category"] == "other"
+        }
+        self.assertEqual(expected, selectable_other_ids)
+
+        inactive_names = {
+            "P Re:ゼロから始める異世界生活 鬼がかり 199ver.",
+            "e Re:ゼロから始める異世界生活 season2",
+            "e北斗の拳10",
+        }
+        self.assertTrue(inactive_names.isdisjoint(MACHINE_NAME_TO_SIM_ID))
+
+    def test_re_zero_season2_129_is_only_selectable_for_hips_low_rate(self):
+        contexts = store_contexts_for_machine("re_zero_s2_129", include_missing=True)
+        installed = [context for context in contexts if context["installed"]]
+
+        self.assertEqual(["arrow_namba_hips"], [context["store_id"] for context in installed])
+        self.assertEqual([2], [context["count"] for context in installed])
+        self.assertEqual(["1yen"], [context["rate"] for context in installed])
 
     def test_shinsea_support_time_is_not_counted_as_a_jackpot(self):
         shinsea = MACHINES["shinsea_99"]

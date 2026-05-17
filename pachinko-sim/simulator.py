@@ -65,7 +65,7 @@ def get_payout(payouts: List[Payout]) -> Payout:
     """확률 가중치에 따라 출옥 수 및 상태 전이 정보를 추첨합니다."""
     if not payouts:
         return Payout(balls=0, weight=1.0, next_state='NORMAL')
-        
+
     r = random.random()
     cumulative = 0.0
     for p in payouts:
@@ -684,7 +684,7 @@ def simulate_single(
                 streak = 0
                 rush_active = False
                 continue
-                
+
         elif state in ['KAKUBEN', 'JINBEE']:
             current_prob = machine.high_prob
             wait_to_hit = spins_until_hit(machine.high_prob)
@@ -699,11 +699,11 @@ def simulate_single(
                 first_hit_spin = spins_used
             if first_hit_total_spins is None:
                 first_hit_total_spins = spins_used + right_spins
-                
+
             streak += 1
             if streak > max_streak:
                 max_streak = streak
-                
+
             # 출옥 및 다음 상태 결정
             if state == 'NORMAL':
                 payout = get_payout(machine.normal_hit_dist)
@@ -729,13 +729,13 @@ def simulate_single(
             hit_seconds = hit_effect_time_seconds(payout_balls, previous_state, time_assumptions)
             hit_effect_seconds_total += hit_seconds
             cashless_play_seconds += hit_seconds
-            
+
             # 다음 상태 전이 반영
             state = payout.next_state
             rush_entry_event = False
             lt_entry_event = False
             upper_entry_event = False
-            
+
             if state in ['ST', 'LT', 'UPPER']:
                 if payout.counts_as_rush and not rush_active:
                     rush_entries += 1
@@ -777,7 +777,7 @@ def simulate_single(
                 spins_left = 0
                 jitan_reserve = 0
                 rush_active = False
-                
+
             # LT 플래그는 진입 횟수 집계용입니다. 일부 기종의 LT는 별도
             # 전サポ 상태가 아니라 대량 출옥 보너스 후 RUSH로 복귀합니다.
             if payout.is_lt:
@@ -856,7 +856,7 @@ def simulate_single(
         if play_seconds > 0
         else 0.0
     )
-    
+
     return {
         "budget": budget,
         "total_spins_possible": total_spins_possible,
@@ -1016,7 +1016,7 @@ def run_matrix_simulation(
         ]
     )
     matrix_results = []
-    
+
     for budget in budgets:
         for spin_case in spin_cases:
             spins = spin_case["spins_per_1000y"]

@@ -375,13 +375,20 @@ estimated. Use `low` for temporary placeholders.
 5. Add public benchmark values to `spec_benchmarks.py` when available.
 6. Add validation metadata in `model_checks.py` if the model should be selectable.
 7. Add name mapping in `stores.py` only if the machine exists in the low-rate lineup and should be selectable.
-8. Run:
+8. For non-Eva/non-DaiUmi machines, update `ACTIVE_OTHER_SIM_MODEL_IDS` only after deciding that the model is part of the current small active set. Reference models may stay in `machines.py` without a store mapping.
+9. Run:
 
 ```bash
 python3 -m py_compile pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machines.py pachinko-sim/model_checks.py pachinko-sim/spec_benchmarks.py pachinko-sim/simulator.py pachinko-sim/result.py
 python3 -m unittest discover -s tests
 python3 scripts/validate_data.py
 ```
+
+Current active other-machine policy:
+
+- Active: `hokuto_jibo`, `re_zero_99`, `re_zero_s2_129`, `lupin_77_sweet`, `kabaneri_2`, `tokyo_ghoul`
+- Reference only: `re_zero_199`, `re_zero_s2_349`, `hokuto_10`
+- `re_zero_s2_129` must remain selectable only where the low-rate lineup row exists. As of the current checked data, that is HIPS 1円, not 123/Rakuen low-rate.
 
 ## What Not To Model Yet
 

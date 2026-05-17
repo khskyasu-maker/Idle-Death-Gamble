@@ -728,7 +728,7 @@ def print_travel_satisfaction_grade(machine: Machine):
     elif machine.risk_grade == "1/399":
         print("▶ 1/399 e기 계열: 고위험 짧은 체험용.")
         print("1엔 파친코라도 돈이 녹는 속도가 빠릅니다. 3000엔~5000엔 정도로 '한 번 앉아봤다'에 의의를 두는 것을 권장합니다.")
-    
+
     print(f"\n모델 신뢰도: {machine.confidence} | 출처: {annotate_japanese_terms(machine.spec_source)}")
     if machine.confidence == "low":
         print("주의: 이 기종은 추정 의존도가 높아 순위/손익 해석을 낮은 신뢰도로 봐야 합니다.")
@@ -791,18 +791,18 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         for r in results
         if r.get('first_hit_total_spins', r.get('first_hit_spin')) is not None
     ]
-    
+
     avg_profit = int(statistics.mean(profits))
     median_profit = int(statistics.median(profits))
     max_profit = max(profits)
     min_profit = min(profits)
-    
+
     # 퍼센타일(하위/상위 손익)
     sorted_profits = sorted(profits)
     worst_10_profit = sorted_profits[max(0, int(iterations * 0.1) - 1)]
     worst_25_profit = sorted_profits[max(0, int(iterations * 0.25) - 1)]
     top_10_profit = sorted_profits[min(iterations - 1, int(iterations * 0.9))]
-    
+
     # 핵심 지표
     positive_count = sum(1 for p in profits if p > 0)
     ruin_count = sum(1 for r in results if r['total_hits'] == 0)
@@ -817,11 +817,11 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     positive_close_rate = (positive_count / iterations) * 100
     ruin_rate = (ruin_count / iterations) * 100
     hit_rate = 100.0 - ruin_rate # 당첨 체험률
-    
+
     rush_rate = (rush_count / iterations) * 100
     single_hit_finish_rate = (sum(1 for r in results if r['total_hits'] == 1) / iterations) * 100
     under_500_finish_rate = (sum(1 for r in results if 0 < r['total_out_balls'] <= 500) / iterations) * 100
-    
+
     def recovery_rate(ratio: float) -> float:
         recovered = 0
         for r in results:
@@ -833,7 +833,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     recovery_50_rate = recovery_rate(0.5)
     recovery_80_rate = recovery_rate(0.8)
     recovery_100_rate = recovery_rate(1.0)
-    
+
     avg_hits = statistics.mean(hits)
     avg_streak = statistics.mean(streaks)
     avg_spins = statistics.mean(spins_used)
@@ -883,7 +883,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     lt_ci_low, lt_ci_high = wilson_interval(lt_count, iterations)
     upper_ci_low, upper_ci_high = wilson_interval(upper_count, iterations)
     profit_condition_rows = calculate_profit_condition_rows(results, iterations)
-    
+
     return {
         "avg_profit": avg_profit,
         "avg_profit_ci_low": avg_profit_ci_low,
@@ -1022,7 +1022,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
 def print_single_result(store_name: str, machine: Machine, res: Dict[str, Any], spins_per_1000y: int):
     print("\n" + "="*45)
     print("=== 오사카 난바 실제 설치기종 1엔 파친코 체감 모의 ===")
-    
+
     first_hit = f"{res['first_hit_spin']}회전" if res['first_hit_spin'] is not None else "당첨 없음 (예산 전액 증발)"
     first_hit_total = (
         f"{res.get('first_hit_total_spins')}회전"
@@ -1110,7 +1110,7 @@ def print_single_result(store_name: str, machine: Machine, res: Dict[str, Any], 
             for event in events
         ]
         print_ascii_table("ASCII 출옥 추이", ["#", "보유 구슬", "그래프"], graph_rows)
-    
+
     print_travel_satisfaction_grade(machine)
     print("="*45)
 
@@ -1121,7 +1121,7 @@ def print_multiple_result(store_name: str, machine: Machine, results: List[Dict[
     placement_summary = placement_summary_from_results(results)
     installed_name_ko = installed_name_ko_from_results(results)
     installed_name_ja = installed_name_ja_from_results(results)
-    
+
     print("\n" + "="*50)
     print(f"=== {iterations}회 반복 리스크 평가 결과 ===")
     print(f"기종: {machine.name_ko}")
@@ -1200,7 +1200,7 @@ def print_multiple_result(store_name: str, machine: Machine, results: List[Dict[
             ["익절 / 손절", f"{pct(m['profit_lock_trigger_rate'])} / {pct(m['stop_loss_trigger_rate'])}", ""],
         ],
     )
-    
+
     print_travel_satisfaction_grade(machine)
     print("="*50)
 
@@ -1262,7 +1262,7 @@ def print_matrix_results(machine: Machine, matrix_results: List[Dict[str, Any]],
         ["회전", "당첨", "0회", "이론0회", "RUSH", "LT", "상위RUSH", "회수50/80/100", "최대당/연", "상위10당/연"],
         risk_rows,
     )
-        
+
     print_travel_satisfaction_grade(machine)
     print("="*60)
 
@@ -1800,23 +1800,23 @@ def save_matrix_to_csv(machine: Machine, matrix_results: List[Dict[str, Any]], i
         "하위25%차액", "상위10%차액", "상위10%95CI하한", "상위10%95CI상한", "상위10%평균차액",
         "최대손실", "최대이익", "실익조건", "평균당첨횟수", "초당첨평균회전", "초당첨중앙회전", "초당첨P90회전", "초당첨후평균당첨", "당첨세션평균대당첨", "평균RUSH진입", "평균LT진입", "LT진입성공률", "평균상위RUSH진입", "상위RUSH진입성공률", "평균체류분", "중앙체류분", "P90체류분", f"{SESSION_TIME_LIMIT_HOURS}시간도달률", f"{SESSION_TIME_LIMIT_HOURS}시간정리율", f"{HARD_SESSION_TIME_LIMIT_HOURS}시간하드종료율", "현금마감작동률", "평균최종잔류액", "중앙최종잔류액", "최종잔류P10", "최종잔류P90", "예산소진률", "완전소진정지율", "예산소진후지속률", "평균예산소진후체류분", "소진후지속시평균분", "평균현금없는분", "평균무현금비율", "평균보류대기분", "평균현금소모엔시간", "1000엔당평균분", "익절발동률", "손절발동률", "평균최대연속", "평균플레이회전"
     ]
-    
+
     file_exists = os.path.isfile(filepath)
-    
+
     with open(filepath, 'a', newline='', encoding='utf-8-sig') as f:
         writer = csv.writer(f)
         if not file_exists:
             writer.writerow(headers)
-            
+
         for mr in matrix_results:
             b = mr['budget']
             s = mr['spins_per_1000y']
             m = calculate_metrics(mr['results'], iterations)
-            
+
             writer.writerow([
                 machine.name_ko, b, s, round(m["avg_true_spins_per_1000y"], 1), round(m["avg_observed_spins_per_1000y"], 1), m["avg_spin_capacity"], m["p10_spin_capacity"], m["p90_spin_capacity"],
-                round(m['hit_rate'], 1), round(m['rush_rate'], 1), round(m['ruin_rate'], 1), 
-                round(m['single_hit_finish_rate'], 1), round(m['under_500_finish_rate'], 1), 
+                round(m['hit_rate'], 1), round(m['rush_rate'], 1), round(m['ruin_rate'], 1),
+                round(m['single_hit_finish_rate'], 1), round(m['under_500_finish_rate'], 1),
                 round(m['recovery_50_rate'], 1), round(m['recovery_80_rate'], 1), round(m['recovery_100_rate'], 1), round(m['positive_close_rate'], 1),
                 m['avg_profit'], m['avg_profit_standard_error'], round(m['avg_profit_se_budget_pct'], 3), m['mean_ci_method'], m['avg_profit_ci_low'], m['avg_profit_ci_high'],
                 m['median_profit'], m['median_profit_ci_low'], m['median_profit_ci_high'],
