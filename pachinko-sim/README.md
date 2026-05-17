@@ -63,7 +63,8 @@ python3 scripts/clean.py --apply
 - `stores.py`: 라쿠엔/123/HIPS 매장별 보유 기종 매핑과 활성 시뮬 후보 제한
 - `store_comparison.py`: 같은 기종을 가게별 레이트, 헤소 입상 품질, 보더 마진 기준으로 비교하는 런타임 시나리오 로직
 - `simulator.py`: 순수 확률 기반 계산 및 시뮬레이션 코어 (UI 로직 없음)
-- `result.py`: 계산된 결과를 화면에 출력하고 사용자용 표를 조립
+- `result.py`: 기존 `from result import ...` 경로를 보존하는 호환 export 래퍼
+- `result_printers.py`: 계산된 결과를 화면에 출력하고 사용자용 표를 조립하는 프린터 오케스트레이션
 - `result_metrics.py`: 반복 결과에서 평균/분위수/체류 시간/조건부 플러스율 같은 집계 지표 계산
 - `result_output_helpers.py`: 출력 문구, 보더/스펙 비교, LT/상위RUSH 표시, 표 행 보조 로직
 - `result_table_builders.py`: 단일/반복/매트릭스/예산/프로파일/전략 출력에 쓰는 표 행 생성 로직

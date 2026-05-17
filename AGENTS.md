@@ -98,7 +98,8 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── rotation.py                # Rotation-rate, border, and rate-unit conversion helpers
 │   ├── store_comparison.py        # Same-machine store comparison scenario builder
 │   ├── simulator.py              # Monte Carlo session engine
-│   ├── result.py                 # CLI result assembly and user-facing output
+│   ├── result.py                 # Compatibility exports for legacy result imports
+│   ├── result_printers.py        # CLI result printer orchestration
 │   ├── result_metrics.py          # Monte Carlo metric aggregation
 │   ├── result_output_helpers.py   # Output text, benchmark, and table helper functions
 │   ├── result_table_builders.py   # Reusable result table row builders
@@ -170,7 +171,7 @@ The normal data and report pipeline is:
 
 Current near-term development should keep improving correctness, maintainability, and explainability before adding more speculative features.
 
-- Keep `main.py` and `result.py` shrinking. Interactive mode flow belongs in `cli_*` modules; new output tables, row builders, formatting helpers, and pure statistics should move into focused helper modules when they can be tested without running the interactive CLI.
+- Keep `main.py` and compatibility wrappers such as `result.py` thin. Interactive mode flow belongs in `cli_*` modules; new output tables, row builders, formatting helpers, and pure statistics should move into focused helper modules when they can be tested without running the interactive CLI.
 - Prefer deterministic unit tests for pure logic. For result/output helpers, use small fixed dictionaries and metric stubs rather than slow Monte Carlo runs.
 - Do not add a new simulator model just because a machine name appears in a store lineup. Add or promote a model only after the public spec structure is understood well enough to encode the state transitions.
 - If a model is useful but partially uncertain, mark it with conservative `confidence`, `is_estimated`, `spec_source`, and visible `notes`; do not hide uncertainty in output.
@@ -372,7 +373,7 @@ python scripts/clean.py --apply
 Equivalent manual syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_metrics.py pachinko-sim/result_output_helpers.py pachinko-sim/result_table_builders.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_result_table_builders.py tests/test_result_exports.py tests/test_clean.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_printers.py pachinko-sim/result_metrics.py pachinko-sim/result_output_helpers.py pachinko-sim/result_table_builders.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_result_compat.py tests/test_result_table_builders.py tests/test_result_exports.py tests/test_clean.py
 ```
 
 JSON validation:

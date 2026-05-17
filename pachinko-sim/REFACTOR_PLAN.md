@@ -33,7 +33,8 @@
 |---|---|---|
 | `main.py` | CLI 입력, 모드 선택, 시나리오 생성, 결과 출력 호출 | 입력 파싱과 실행 오케스트레이션이 결합됨 |
 | `simulator.py` | 세션 상태머신, 전략, 매트릭스 실행, 상수 | 엔진과 시나리오 빌더가 같이 있음 |
-| `result.py` | 통계 계산, 보더 판정, ASCII 테이블, 최신 CSV 저장 | 계산/표시/저장이 한 파일에 집중됨 |
+| `result.py` | 기존 import 경로 호환 export | 실제 책임은 `result_*` 모듈로 분리됨 |
+| `result_printers.py` | ASCII 테이블 출력 오케스트레이션, 최신 CSV 저장 안내 | 출력 함수가 아직 커서 표 행 생성은 별도 모듈에 위임 |
 | `start_gate.py` | 구슬->헤소 입상, 회전율 표본 | 좋은 분리지만 단위 환산 책임은 부족함 |
 | `store_comparison.py` | 점포별 같은 기종 비교, 레이트 환산 | 동일 보더 마진 비교가 없음 |
 | `stores.py` | 라인업 로딩, 보더 환산, 미지원 후보 표시 | 보더 환산과 관찰 후보 정책이 결합됨 |
@@ -42,7 +43,7 @@
 현재 보더는 주로 다음 위치에서 쓰인다.
 
 - `stores.py`: `border_1yen_per_200`, `border_1_111yen_per_180`을 `border_spins_per_1000yen`으로 환산
-- `result.py`: 보더 대비 +/- 표시, 점수 감점, 경고 문구
+- `result_output_helpers.py`: 보더 대비 +/- 표시, 점수 감점, 경고 문구
 - `start_gate.py`: 세션 회전율 표본의 상하한 보조 anchor
 - `main.py`: 선택 기종의 보더를 실행 함수에 전달
 
@@ -200,6 +201,11 @@ def border_rotation_rows(scenario, metrics): ...
 
 CSV 저장은 사용자가 명시적으로 선택할 때만 실행하고, 누적하지 않고 최신 결과만 덮어쓴다는 정책을 유지한다. `result.py`에서 분리해 테스트하기 쉽게 만든다.
 
+### `result_printers.py`
+
+`result.py`에 남아 있던 `print_*` 출력 함수는 `result_printers.py`로 옮긴다.
+`result.py`는 외부/테스트의 기존 import를 깨지 않기 위한 호환 export만 유지한다.
+
 ### `cli.py`와 `main.py`
 
 `main.py`는 얇은 entry point로 만든다.
@@ -333,9 +339,9 @@ CLI에는 회전율 입력 모드를 추가한다.
 - 완료: `result_metrics.py`로 순수 통계 이동
 - 완료: `result_output_helpers.py`로 출력 문구/보더/벤치마크/표 행 보조 로직 이동
 - 완료: `result_table_builders.py`로 단일/반복/매트릭스/예산/프로파일/전략 표 행 생성 이동
-- 진행 중: 남은 `result.py` 출력 함수 자체를 더 작은 프린터 모듈로 나눌지 여부 판단
+- 완료: 남은 `result.py` 출력 함수 자체를 `result_printers.py` 프린터 모듈로 이동
 - 완료: `main.py`를 thin entry point로 축소하고 CLI 흐름을 `cli_*` 모듈로 분리
-- `result.py`는 호환 출력 조립 모듈로 유지하면서 계속 축소
+- `result.py`는 호환 export wrapper로 유지
 
 ### 7단계: 문서/테스트 정리
 

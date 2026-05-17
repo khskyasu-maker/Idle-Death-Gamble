@@ -15,7 +15,7 @@ from cli_inputs import (
     get_int_input,
 )
 from machines import MACHINES
-from result import (
+from result_printers import (
     print_budget_matrix_results,
     print_matrix_results,
     print_model_profile_results,

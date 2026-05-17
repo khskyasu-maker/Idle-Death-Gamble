@@ -379,7 +379,7 @@ estimated. Use `low` for temporary placeholders.
 9. Run:
 
 ```bash
-python3 -m py_compile pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machines.py pachinko-sim/model_checks.py pachinko-sim/spec_benchmarks.py pachinko-sim/simulator.py pachinko-sim/result.py
+python3 -m py_compile pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machines.py pachinko-sim/model_checks.py pachinko-sim/spec_benchmarks.py pachinko-sim/simulator.py pachinko-sim/result.py pachinko-sim/result_printers.py
 python3 -m unittest discover -s tests
 python3 scripts/validate_data.py
 ```
