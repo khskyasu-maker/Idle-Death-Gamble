@@ -57,6 +57,9 @@ pachinko-sim/result_basic_printers.py + pachinko-sim/result_matrix_printers.py +
 pachinko-sim/result_printer_common.py
         |
         v
+pachinko-sim/result_matrix_sections.py
+        |
+        v
 pachinko-sim/result_metrics.py + pachinko-sim/result_output_helpers.py + pachinko-sim/result_table_builders.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_export.py
         |
         v
@@ -365,6 +368,8 @@ Important current limitation:
 printer implementations live in `result_basic_printers.py`,
 `result_matrix_printers.py`, and `result_store_printers.py`.
 Shared printer header/context/footer helpers live in `result_printer_common.py`.
+Matrix-family table headers and section printers live in
+`result_matrix_sections.py`.
 `result.py` is a compatibility export wrapper for older `from result import ...`
 callers.
 

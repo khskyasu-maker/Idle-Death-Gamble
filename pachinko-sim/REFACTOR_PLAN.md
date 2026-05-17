@@ -37,6 +37,7 @@
 | `result_printers.py` | 공개 프린터 export와 최신 CSV 저장 안내 | 실제 출력 구현은 하위 프린터 모듈로 분리됨 |
 | `result_basic_printers.py` | 단일 실행/반복 실행 출력 | 표 행 생성은 별도 모듈에 위임 |
 | `result_matrix_printers.py` | 회전율/예산/프로파일/전략 매트릭스 출력 | 표 행 생성은 별도 모듈에 위임 |
+| `result_matrix_sections.py` | 매트릭스 계열 표 헤더와 섹션 출력 | 표 행 데이터 생성은 하지 않음 |
 | `result_store_printers.py` | 가게별 같은 기종 비교 출력 | 점포 비교 뷰 조립은 `result_store_views.py`에 위임 |
 | `result_printer_common.py` | 프린터 공통 헤더/기종 문맥/세션 문맥/footer 출력 | 순수 표 행 생성은 하지 않음 |
 | `start_gate.py` | 구슬->헤소 입상, 회전율 표본 | 좋은 분리지만 단위 환산 책임은 부족함 |
@@ -349,6 +350,7 @@ CLI에는 회전율 입력 모드를 추가한다.
 - 완료: 남은 `result.py` 출력 함수 자체를 `result_printers.py` 프린터 모듈로 이동
 - 완료: `result_printers.py`를 공개 export로 축소하고 단일/매트릭스/점포 비교 프린터 모듈로 분리
 - 완료: 반복되는 프린터 헤더/기종 문맥/footer 출력을 `result_printer_common.py`로 분리
+- 완료: 매트릭스 계열 표 헤더와 섹션 출력을 `result_matrix_sections.py`로 분리
 - 완료: `main.py`를 thin entry point로 축소하고 CLI 흐름을 `cli_*` 모듈로 분리
 - `result.py`는 호환 export wrapper로 유지
 

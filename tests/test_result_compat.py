@@ -12,6 +12,7 @@ sys.path.insert(0, str(SIM_DIR))
 import result  # noqa: E402
 import result_basic_printers  # noqa: E402
 import result_matrix_printers  # noqa: E402
+import result_matrix_sections  # noqa: E402
 import result_printer_common  # noqa: E402
 import result_printers  # noqa: E402
 import result_store_printers  # noqa: E402
@@ -64,6 +65,22 @@ class ResultCompatTests(unittest.TestCase):
         self.assertIn("실설치명(한국어): 테스트 한국어", output)
         self.assertIn("실설치명(일본어): テスト日本語", output)
         self.assertIn("가게별 배치: 테스트 배치", output)
+
+    def test_matrix_sections_print_expected_table_titles(self):
+        rows = {
+            "summary": [["회전", "가능", "시간", "+0", "판정", "0%", "0", "0", "0", "0", "조건", "-"]],
+            "risk": [["회전", "0%", "100%", "100%", "0%", "해당없음", "해당없음", "0/0/0", "0/0", "0/0"]],
+        }
+
+        buffer = StringIO()
+        with redirect_stdout(buffer):
+            result_matrix_sections.print_matrix_tables(rows)
+
+        output = buffer.getvalue()
+        self.assertIn("[ASCII 조건 수익표]", output)
+        self.assertIn("[ASCII 조건 체감표]", output)
+        self.assertIn("입력회전", output)
+        self.assertIn("상위10당/연", output)
 
 
 if __name__ == "__main__":
