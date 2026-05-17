@@ -264,6 +264,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "avg_play_minutes": avg_play_minutes,
         "median_play_minutes": percentile_float(play_minutes, 0.5),
         "p10_play_minutes": percentile_float(play_minutes, 0.1),
+        "p25_play_minutes": percentile_float(play_minutes, 0.25),
         "p90_play_minutes": percentile_float(play_minutes, 0.9),
         "max_play_minutes": max(play_minutes) if play_minutes else 0.0,
         "avg_capped_play_minutes": statistics.mean(capped_play_minutes) if capped_play_minutes else 0.0,

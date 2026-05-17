@@ -9,6 +9,7 @@ SIM_DIR = ROOT / "pachinko-sim"
 sys.path.insert(0, str(SIM_DIR))
 
 from machine_types import Machine  # noqa: E402
+from machine_traits import machine_has_lt, machine_has_upper  # noqa: E402
 from machines import MACHINES  # noqa: E402
 from result_metrics import calculate_metrics  # noqa: E402
 from result_public_export import save_public_sim_results  # noqa: E402
@@ -20,6 +21,7 @@ DEFAULT_BUDGETS = [10000, 15000, 20000]
 DEFAULT_ITERATIONS = 5000
 DEFAULT_SENSITIVITY_BUDGET = 10000
 DEFAULT_SENSITIVITY_ITERATIONS = 3000
+DEFAULT_RISK_REVIEW_BUDGET = 10000
 DEFAULT_EXCHANGE_RATE = 0.89
 DEFAULT_BASE_SEED = 20260518
 FALLBACK_SPINS_PER_1000Y = 70.0
@@ -115,8 +117,16 @@ def format_minutes_range(min_minutes: float, max_minutes: float) -> str:
     return f"{min_minutes:.0f}~{max_minutes:.0f}분"
 
 
+def format_minutes_value(minutes: float) -> str:
+    return f"{minutes:.0f}분"
+
+
 def format_pct_range(min_pct: float, max_pct: float) -> str:
     return f"{min_pct:.1f}~{max_pct:.1f}%"
+
+
+def format_pct_value(value: float) -> str:
+    return f"{value:.1f}%"
 
 
 def format_yen_range(min_yen: int, max_yen: int) -> str:
@@ -140,6 +150,33 @@ def sensitivity_label(plus_range: float, median_time_range: float, exhausted_ran
     if plus_range >= 12.0 or median_time_range >= 90.0 or exhausted_range >= 15.0:
         return "중간"
     return "낮음"
+
+
+def tail_risk_label(
+    *,
+    has_lt: bool,
+    budget: int,
+    median_profit: int,
+    cvar_10_profit: int,
+    mean_median_gap: int,
+    p25_play_minutes: float,
+    funds_exhausted_rate: float,
+) -> str:
+    deep_median_loss = median_profit <= -0.7 * budget
+    deep_tail_loss = cvar_10_profit <= -0.9 * budget
+    large_tail_lift = mean_median_gap >= 0.35 * budget
+    short_lower_quartile = p25_play_minutes < 240.0
+    high_exhaustion = funds_exhausted_rate >= 50.0
+
+    if has_lt and deep_median_loss and large_tail_lift:
+        return "LT꼬리의존"
+    if deep_median_loss and (high_exhaustion or short_lower_quartile):
+        return "하방큼"
+    if deep_tail_loss and high_exhaustion:
+        return "소진주의"
+    if large_tail_lift:
+        return "꼬리의존"
+    return "보통"
 
 
 def simulate_case(
@@ -206,7 +243,10 @@ def build_result_rows(
             count = context.get("count", 0)
             row = {
                 "category": category,
+                "machine_id": machine_id,
                 "machine_label": machine_label(machine),
+                "has_lt": machine_has_lt(machine),
+                "has_upper_rush": machine_has_upper(machine),
                 "store_short_label": f"{store}/{count}대",
                 "case_label": f"{rotation_label} / 노룰 / 9h정리",
                 "budget": budget,
@@ -330,13 +370,80 @@ def build_rotation_sensitivity(
     }
 
 
+def build_tail_risk_review(
+    *,
+    result_rows: list[dict],
+    budget: int,
+    iterations: int,
+) -> dict:
+    rows = []
+    for row in result_rows:
+        if row.get("budget") != budget:
+            continue
+        metrics = calculate_metrics(row["results"], iterations)
+        mean_median_gap = metrics["avg_profit"] - metrics["median_profit"]
+        has_lt = bool(row.get("has_lt"))
+        rows.append(
+            {
+                "category": row.get("category", ""),
+                "machine": row.get("machine_label", ""),
+                "store": row.get("store_short_label", ""),
+                "budget_yen": budget,
+                "p10_play_minutes": round(metrics["p10_play_minutes"], 2),
+                "p25_play_minutes": round(metrics["p25_play_minutes"], 2),
+                "p10_play_text": format_minutes_value(metrics["p10_play_minutes"]),
+                "p25_play_text": format_minutes_value(metrics["p25_play_minutes"]),
+                "funds_exhausted_rate_pct": round(metrics["funds_exhausted_stop_rate"], 1),
+                "funds_exhausted_text": format_pct_value(metrics["funds_exhausted_stop_rate"]),
+                "median_profit_yen": metrics["median_profit"],
+                "median_profit_text": f"{metrics['median_profit']:+,}엔",
+                "cvar10_yen": metrics["cvar_10_profit"],
+                "cvar10_text": f"{metrics['cvar_10_profit']:+,}엔",
+                "mean_median_gap_yen": mean_median_gap,
+                "mean_median_gap_text": f"{mean_median_gap:+,}엔",
+                "lt_entry_rate_pct": round(metrics["lt_success_rate"], 1) if has_lt else None,
+                "lt_entry_text": (
+                    f"{metrics['lt_success_rate']:.1f}%"
+                    if has_lt
+                    else "해당없음"
+                ),
+                "risk_label": tail_risk_label(
+                    has_lt=has_lt,
+                    budget=budget,
+                    median_profit=metrics["median_profit"],
+                    cvar_10_profit=metrics["cvar_10_profit"],
+                    mean_median_gap=mean_median_gap,
+                    p25_play_minutes=metrics["p25_play_minutes"],
+                    funds_exhausted_rate=metrics["funds_exhausted_stop_rate"],
+                ),
+            }
+        )
+
+    risk_order = {"LT꼬리의존": 0, "하방큼": 1, "소진주의": 2, "꼬리의존": 3, "보통": 4}
+    rows.sort(
+        key=lambda row: (
+            risk_order.get(row["risk_label"], 99),
+            row["p25_play_minutes"],
+            row["median_profit_yen"],
+        )
+    )
+    return {
+        "budget_yen": budget,
+        "iterations": iterations,
+        "scope": "lower-tail risk summary, not actual play results",
+        "rows": rows,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Publish latest sanitized simulator aggregate table.")
     parser.add_argument("--iterations", type=int, default=DEFAULT_ITERATIONS)
     parser.add_argument("--budgets", type=parse_budgets, default=DEFAULT_BUDGETS)
     parser.add_argument("--sensitivity-budget", type=int, default=DEFAULT_SENSITIVITY_BUDGET)
     parser.add_argument("--sensitivity-iterations", type=int, default=DEFAULT_SENSITIVITY_ITERATIONS)
+    parser.add_argument("--risk-review-budget", type=int, default=DEFAULT_RISK_REVIEW_BUDGET)
     parser.add_argument("--skip-sensitivity", action="store_true")
+    parser.add_argument("--skip-risk-review", action="store_true")
     parser.add_argument("--exchange-rate", type=float, default=DEFAULT_EXCHANGE_RATE)
     parser.add_argument("--base-seed", type=int, default=DEFAULT_BASE_SEED)
     args = parser.parse_args()
@@ -354,6 +461,12 @@ def main() -> int:
             iterations=args.sensitivity_iterations,
             exchange_rate=args.exchange_rate,
             base_seed=args.base_seed,
+        )
+    if not args.skip_risk_review:
+        extra_analysis["tail_risk_review"] = build_tail_risk_review(
+            result_rows=rows,
+            budget=args.risk_review_budget,
+            iterations=args.iterations,
         )
     paths = save_public_sim_results(
         "대표 저대여 설치 조건(점포 순위 아님)",

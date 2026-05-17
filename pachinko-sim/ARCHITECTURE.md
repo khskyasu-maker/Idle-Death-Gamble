@@ -408,6 +408,7 @@ Primary outputs:
 - standard error as a percentage of budget, to show Monte Carlo precision
 - rank-based 95% confidence intervals for median/lower-10%/upper-10% quantiles
 - CVaR10-style lower-tail average for downside risk
+- P10/P25 stay-time, mean-minus-median profit gap, and LT entry rate as a lower-tail review, so high-variance LT/e-machine rows are not judged by average profit alone
 - independent-trial tail probabilities for denominator-overrun interpretation
 - first-hit total-spin metrics that include 時短(시단)/right-side spins before the first jackpot
 - budget comparison for 10,000 / 20,000 / 30,000 / 40,000 / 50,000 yen inputs

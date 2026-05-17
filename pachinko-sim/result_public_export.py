@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List
 from zoneinfo import ZoneInfo
 
+from machine_traits import machine_has_lt, machine_has_upper
 from machines import Machine
 from result_formatting import minutes_text, pct, spins_text, yen
 from session_limits import SESSION_TIME_LIMIT_HOURS
@@ -70,6 +71,7 @@ def simulation_method_summary() -> Dict[str, Any]:
             "공개 표는 평균, 중앙값, 꼬리 손실, 체류 시간, 당첨, RUSH, 플러스 마감, 연속 지표를 보여줍니다",
             "플러스 마감률은 Wilson 방식 95% 신뢰구간을 함께 표시합니다",
             "평균 손익은 표준오차를 함께 공개해 불안정한 행과 안정적인 행을 구분할 수 있게 합니다",
+            "하방/꼬리 리스크 요약은 P10/P25 체류, CVaR10, 평균-중앙 손익 차이, LT 진입률을 함께 봅니다",
             "회전율 민감도는 원시 표본을 저장하지 않고 기종별 요약 범위만 공개합니다",
             "JSON에는 행별 simulation_seed를 저장해 같은 조건을 재현할 수 있게 합니다",
         ],
@@ -243,6 +245,108 @@ def build_rotation_sensitivity_html(analysis: Dict[str, Any]) -> str:
 """
 
 
+def build_tail_risk_review_markdown(analysis: Dict[str, Any]) -> str:
+    review = analysis.get("tail_risk_review") if analysis else None
+    if not review:
+        return ""
+
+    rows = review.get("rows", [])
+    if not rows:
+        return ""
+
+    md = "## 하방/꼬리 리스크 요약\n\n"
+    md += f"- 예산: {yen(review.get('budget_yen', 0))}\n"
+    md += f"- 반복: {review.get('iterations', 0)}회\n"
+    md += "- 목적: LT/e기처럼 평균과 상위 꼬리가 좋은 기종의 고평가를 줄이기 위한 사전 통계 검토입니다.\n"
+    md += "- 해석: P10/P25 시간이 짧거나 CVaR10이 깊고 평균-중앙 손익 차이가 크면 일부 대박 표본이 평균을 끌어올린 구조일 수 있습니다.\n\n"
+
+    headers = [
+        "분류",
+        "기종",
+        "점포",
+        "P10시간",
+        "P25시간",
+        "완전소진",
+        "중앙손익",
+        "CVaR10",
+        "평균-중앙",
+        "LT진입",
+        "리스크",
+    ]
+    md += "|" + "|".join(headers) + "|\n"
+    md += "|" + "|".join("---" for _ in headers) + "|\n"
+    for row in rows:
+        values = [
+            row.get("category", ""),
+            row.get("machine", ""),
+            row.get("store", ""),
+            row.get("p10_play_text", ""),
+            row.get("p25_play_text", ""),
+            row.get("funds_exhausted_text", ""),
+            row.get("median_profit_text", ""),
+            row.get("cvar10_text", ""),
+            row.get("mean_median_gap_text", ""),
+            row.get("lt_entry_text", ""),
+            row.get("risk_label", ""),
+        ]
+        md += "|" + "|".join(str(value).replace("|", "/") for value in values) + "|\n"
+    md += "\n"
+    return md
+
+
+def build_tail_risk_review_html(analysis: Dict[str, Any]) -> str:
+    review = analysis.get("tail_risk_review") if analysis else None
+    if not review:
+        return ""
+
+    rows = review.get("rows", [])
+    if not rows:
+        return ""
+
+    headers = [
+        "분류",
+        "기종",
+        "점포",
+        "P10시간",
+        "P25시간",
+        "완전소진",
+        "중앙손익",
+        "CVaR10",
+        "평균-중앙",
+        "LT진입",
+        "리스크",
+    ]
+    head_cells = "".join(f"<th>{escape(header)}</th>" for header in headers)
+    body_rows = []
+    for row in rows:
+        values = [
+            row.get("category", ""),
+            row.get("machine", ""),
+            row.get("store", ""),
+            row.get("p10_play_text", ""),
+            row.get("p25_play_text", ""),
+            row.get("funds_exhausted_text", ""),
+            row.get("median_profit_text", ""),
+            row.get("cvar10_text", ""),
+            row.get("mean_median_gap_text", ""),
+            row.get("lt_entry_text", ""),
+            row.get("risk_label", ""),
+        ]
+        body_rows.append("<tr>" + "".join(f"<td>{escape(str(value))}</td>" for value in values) + "</tr>")
+
+    return f"""
+  <section class="note">
+    <h2>하방/꼬리 리스크 요약</h2>
+    <p><strong>예산:</strong> {escape(yen(review.get('budget_yen', 0)))} / <strong>반복:</strong> {escape(str(review.get('iterations', 0)))}회</p>
+    <p>LT/e기처럼 평균과 상위 꼬리가 좋은 기종의 고평가를 줄이기 위한 사전 통계 검토입니다. P10/P25 시간이 짧거나 CVaR10이 깊고 평균-중앙 손익 차이가 크면 일부 대박 표본이 평균을 끌어올린 구조일 수 있습니다.</p>
+    <table>
+      <thead><tr>{head_cells}</tr></thead>
+      <tbody>{''.join(body_rows)}</tbody>
+    </table>
+  </section>
+"""
+
+
 def public_case_label(row: Dict[str, Any]) -> str:
     if row.get("case_label"):
         return str(row["case_label"])
@@ -271,6 +375,8 @@ def public_result_rows(
     calculate_metrics_fn: MetricsFn,
 ) -> List[Dict[str, Any]]:
     public_rows = []
+    default_has_lt = machine_has_lt(machine)
+    default_has_upper_rush = machine_has_upper(machine)
     for row in result_rows:
         if row.get("installed") is False:
             public_rows.append(
@@ -286,6 +392,12 @@ def public_result_rows(
             continue
 
         metrics = calculate_metrics_fn(row["results"], iterations)
+        has_lt = bool(row.get("has_lt")) if "has_lt" in row else default_has_lt
+        has_upper_rush = (
+            bool(row.get("has_upper_rush"))
+            if "has_upper_rush" in row
+            else default_has_upper_rush
+        )
         public_rows.append(
             {
                 "category": row.get("category", ""),
@@ -294,6 +406,9 @@ def public_result_rows(
                 "case": public_case_label(row),
                 "status": "simulated",
                 "simulation_seed": row.get("simulation_seed"),
+                "machine_id": row.get("machine_id"),
+                "has_lt": has_lt,
+                "has_upper_rush": has_upper_rush,
                 "assumption_budget_yen": row.get("budget"),
                 "assumption_spins_per_1000yen": row.get("spins_per_1000y"),
                 "border_spins_per_1000yen": row.get("border_spins_per_1000yen"),
@@ -317,9 +432,17 @@ def public_result_rows(
                 "avg_profit_yen": metrics["avg_profit"],
                 "median_profit_yen": metrics["median_profit"],
                 "worst_10_profit_yen": metrics["worst_10_profit"],
+                "worst_25_profit_yen": metrics["worst_25_profit"],
+                "cvar_10_profit_yen": metrics["cvar_10_profit"],
+                "mean_median_profit_gap_yen": metrics["avg_profit"] - metrics["median_profit"],
                 "top_10_profit_yen": metrics["top_10_profit"],
                 "funds_exhausted_stop_rate_pct": round(metrics["funds_exhausted_stop_rate"], 1),
+                "p10_play_minutes": round(metrics.get("p10_play_minutes", 0.0), 2),
+                "p25_play_minutes": round(metrics.get("p25_play_minutes", 0.0), 2),
                 "avg_first_hit_spins": metrics["avg_first_hit"],
+                "lt_success_rate_pct": round(metrics["lt_success_rate"], 1) if has_lt else None,
+                "lt_success_rate_ci_low_pct": round(metrics["lt_success_rate_ci_low"], 1) if has_lt else None,
+                "lt_success_rate_ci_high_pct": round(metrics["lt_success_rate_ci_high"], 1) if has_lt else None,
                 "avg_hits": round(metrics["avg_hits"], 2),
                 "avg_streak": round(metrics["avg_streak"], 2),
                 "p90_streak": metrics.get("p90_streak", 0),
@@ -341,7 +464,7 @@ def build_public_sim_result_payload(
     extra_analysis: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "generated_at": generated_at or kst_now_text(),
         "publication_scope": "latest sanitized aggregate simulator result only",
         "simulation_method": simulation_method_summary(),
@@ -457,6 +580,7 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
     md += "- 범위: 공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.\n\n"
     md += build_public_method_markdown(payload.get("simulation_method", {}))
     md += build_rotation_sensitivity_markdown(payload.get("analysis", {}))
+    md += build_tail_risk_review_markdown(payload.get("analysis", {}))
     md += "|" + "|".join(headers) + "|\n"
     md += "|" + "|".join("---" for _ in headers) + "|\n"
     for row in payload["rows"]:
@@ -499,6 +623,7 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
     machine = payload["machine"]
     method_html = build_public_method_html(payload.get("simulation_method", {}))
     sensitivity_html = build_rotation_sensitivity_html(payload.get("analysis", {}))
+    tail_risk_html = build_tail_risk_review_html(payload.get("analysis", {}))
     return f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -529,6 +654,7 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
   <div class="note">공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.</div>
   {method_html}
 {sensitivity_html}
+{tail_risk_html}
   <table>
     <thead><tr>{head_cells}</tr></thead>
     <tbody>{''.join(body_rows)}</tbody>

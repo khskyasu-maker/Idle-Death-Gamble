@@ -138,14 +138,21 @@ class ResultExportTests(unittest.TestCase):
                 "avg_profit_se_budget_pct": 3.21,
                 "avg_play_minutes": 90.0,
                 "median_play_minutes": 80.0,
+                "p10_play_minutes": 30.0,
+                "p25_play_minutes": 50.0,
                 "stay_reach_rates": {SESSION_TIME_LIMIT_HOURS: 10.0},
                 "avg_final_remaining_value": 8000,
                 "avg_profit": -2000,
                 "median_profit": -3000,
                 "worst_10_profit": -9000,
+                "worst_25_profit": -7000,
+                "cvar_10_profit": -9500,
                 "top_10_profit": 12000,
                 "funds_exhausted_stop_rate": 40.0,
                 "avg_first_hit": 150,
+                "lt_success_rate": 0.0,
+                "lt_success_rate_ci_low": 0.0,
+                "lt_success_rate_ci_high": 0.0,
                 "avg_hits": 1.2,
                 "avg_streak": 1.1,
                 "profit_condition_summary": "테스트 조건",
@@ -188,13 +195,44 @@ class ResultExportTests(unittest.TestCase):
                             "sensitivity_label": "높음",
                         }
                     ],
+                },
+                "tail_risk_review": {
+                    "budget_yen": 10000,
+                    "iterations": 5,
+                    "rows": [
+                        {
+                            "category": "기타",
+                            "machine": "테스트 LT",
+                            "store": "123/1대",
+                            "p10_play_text": "120분",
+                            "p25_play_text": "240분",
+                            "funds_exhausted_text": "60.0%",
+                            "median_profit_text": "-9,000엔",
+                            "cvar10_text": "-10,000엔",
+                            "mean_median_gap_text": "+6,000엔",
+                            "lt_entry_text": "12.0%",
+                            "risk_label": "LT꼬리의존",
+                        }
+                    ],
                 }
             },
         )
         markdown = build_public_sim_result_markdown(payload)
 
         self.assertFalse(payload["privacy_policy"]["raw_sample_sessions_included"])
-        self.assertEqual(3, payload["schema_version"])
+        self.assertEqual(4, payload["schema_version"])
+        self.assertFalse(payload["rows"][0]["has_lt"])
+        lt_payload = build_public_sim_result_payload(
+            "123難波店",
+            "테스트 모드",
+            MACHINES["eva_beginning"],
+            rows,
+            5,
+            metrics_stub,
+            generated_at="2026-05-17 12:00:00 KST",
+        )
+        self.assertTrue(lt_payload["rows"][0]["has_lt"])
+        self.assertEqual(0.0, lt_payload["rows"][0]["lt_success_rate_pct"])
         self.assertIn("simulation_method", payload)
         self.assertIn("model_structure", payload["simulation_method"])
         self.assertIn("statistics", payload["simulation_method"])
@@ -204,7 +242,9 @@ class ResultExportTests(unittest.TestCase):
         self.assertIn("시뮬 설계와 구성", markdown)
         self.assertIn("사전 유추와 실제 결과 비교 기준", markdown)
         self.assertIn("회전율 민감도 요약", markdown)
+        self.assertIn("하방/꼬리 리스크 요약", markdown)
         self.assertIn("60-75회/1000엔", markdown)
+        self.assertIn("LT꼬리의존", markdown)
         self.assertIn("기종", markdown)
         self.assertIn("평균최대연", markdown)
         self.assertIn("플러스95%CI", markdown)
