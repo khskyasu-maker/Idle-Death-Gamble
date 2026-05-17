@@ -11,11 +11,20 @@ from start_gate import (
     start_probability_from_rate,
 )
 from rotation import ABSOLUTE_SPIN_RATE_CASES, border_case_rates
+from time_model import (
+    DEFAULT_TIME_ASSUMPTIONS,
+    TimeAssumptions,
+    assumption_dict,
+    hit_effect_seconds as hit_effect_time_seconds,
+    minutes,
+    normal_time_components,
+    right_seconds,
+)
 
 
 SPIN_RATE_CASES = ABSOLUTE_SPIN_RATE_CASES
-BUDGET_CASES = [10000, 20000, 30000, 40000, 50000]
-PROFILE_BUDGET_CASES = [1000, 10000, 20000, 30000, 40000, 50000]
+BUDGET_CASES = [5000, 10000, 15000, 20000]
+PROFILE_BUDGET_CASES = [1000, 5000, 10000, 15000, 20000]
 
 SESSION_POLICIES = {
     "fixed_spin_cap": "예산 고정 회전수",
@@ -167,6 +176,7 @@ def simulate_single(
     spin_rate_quality_stddev: float = 3.0,
     spin_rate_min: float = None,
     spin_rate_max: float = None,
+    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
 ) -> Dict[str, Any]:
     """단일 시뮬레이션: 현금 투입, 보유 구슬, 우타치 소모, 전략을 함께 반영합니다."""
 
@@ -223,6 +233,14 @@ def simulate_single(
     bank_balls = 0.0
     locked_balls = 0.0
     cash_spent = 0.0
+    normal_play_seconds = 0.0
+    active_launch_seconds = 0.0
+    normal_display_seconds = 0.0
+    reserve_wait_seconds = 0.0
+    right_play_seconds = 0.0
+    hit_effect_seconds_total = 0.0
+    support_event_seconds = 0.0
+    cashless_play_seconds = 0.0
 
     first_hit_spin = None
     first_hit_total_spins = None
@@ -252,8 +270,16 @@ def simulate_single(
     spin_cost_yen = 1000.0 / effective_spins_per_1000y
     safety_counter = 0
 
+    def add_right_time(state_name: str, spin_count: int):
+        nonlocal right_play_seconds, cashless_play_seconds
+        seconds = right_seconds(state_name, spin_count, time_assumptions)
+        right_play_seconds += seconds
+        cashless_play_seconds += seconds
+
     def pay_normal_spins(spin_count: int) -> int:
         nonlocal bank_balls, cash_spent, normal_balls_fired
+        nonlocal normal_play_seconds, active_launch_seconds, normal_display_seconds
+        nonlocal reserve_wait_seconds, cashless_play_seconds
         if spin_count <= 0:
             return 0
 
@@ -267,6 +293,8 @@ def simulate_single(
         if playable_spins <= 0:
             return 0
 
+        ball_cost = 0.0
+        reusable_balls = 0.0
         if card_reuse:
             ball_cost = spin_cost_balls * playable_spins
             reusable_balls = min(bank_balls, ball_cost)
@@ -274,8 +302,18 @@ def simulate_single(
             cash_spent += (ball_cost - reusable_balls) * lend_rate
             normal_balls_fired += ball_cost
         else:
-            cash_spent += spin_cost_yen * playable_spins
-            normal_balls_fired += (spin_cost_yen * playable_spins) / lend_rate
+            cash_cost = spin_cost_yen * playable_spins
+            cash_spent += cash_cost
+            ball_cost = cash_cost / lend_rate
+            normal_balls_fired += ball_cost
+
+        time_parts = normal_time_components(playable_spins, ball_cost, time_assumptions)
+        normal_play_seconds += time_parts["elapsed_seconds"]
+        active_launch_seconds += time_parts["active_launch_seconds"]
+        normal_display_seconds += time_parts["display_seconds"]
+        reserve_wait_seconds += time_parts["reserve_wait_seconds"]
+        if ball_cost > 0:
+            cashless_play_seconds += time_parts["elapsed_seconds"] * (reusable_balls / ball_cost)
 
         if cash_spent > budget and cash_spent - budget < 0.000001:
             cash_spent = float(budget)
@@ -352,6 +390,8 @@ def simulate_single(
 
             if support_event:
                 payout = get_payout(machine.normal_support_dist)
+                support_event_seconds += time_assumptions.normal_support_event_seconds
+                cashless_play_seconds += time_assumptions.normal_support_event_seconds
                 state = payout.next_state
                 if state in ['ST', 'LT', 'UPPER']:
                     spins_left = payout.st_spins
@@ -377,6 +417,7 @@ def simulate_single(
                 if wait_to_hit <= wait_to_fall:
                     right_spins_to_take = wait_to_hit
                     right_spins += right_spins_to_take
+                    add_right_time(state, right_spins_to_take)
                     bank_balls = max(
                         0.0,
                         bank_balls - (machine.right_spend_per_spin.get(state, 0.0) * right_spins_to_take),
@@ -384,6 +425,7 @@ def simulate_single(
                 else:
                     right_spins_to_take = wait_to_fall
                     right_spins += right_spins_to_take
+                    add_right_time(state, right_spins_to_take)
                     bank_balls = max(
                         0.0,
                         bank_balls - (machine.right_spend_per_spin.get(state, 0.0) * right_spins_to_take),
@@ -399,6 +441,7 @@ def simulate_single(
                     wait_to_reserve_hit = spins_until_hit(machine.high_prob)
                     reserve_spins_to_take = min(wait_to_reserve_hit, reserve_spins)
                     right_spins += reserve_spins_to_take
+                    add_right_time(state, reserve_spins_to_take)
                     bank_balls = max(
                         0.0,
                         bank_balls - (machine.right_spend_per_spin.get(state, 0.0) * reserve_spins_to_take),
@@ -413,6 +456,7 @@ def simulate_single(
                 right_spins_to_take = min(wait_to_hit, spins_left)
                 spins_left -= right_spins_to_take
                 right_spins += right_spins_to_take
+                add_right_time(state, right_spins_to_take)
                 bank_balls = max(
                     0.0,
                     bank_balls - (machine.right_spend_per_spin.get(state, 0.0) * right_spins_to_take),
@@ -438,6 +482,7 @@ def simulate_single(
                 right_spins_to_take = min(wait_to_hit, spins_left)
                 spins_left -= right_spins_to_take
                 right_spins += right_spins_to_take
+                add_right_time(state, right_spins_to_take)
                 bank_balls = max(
                     0.0,
                     bank_balls - (machine.right_spend_per_spin.get(state, 0.0) * right_spins_to_take),
@@ -454,6 +499,7 @@ def simulate_single(
             current_prob = machine.high_prob
             wait_to_hit = spins_until_hit(machine.high_prob)
             right_spins += wait_to_hit
+            add_right_time(state, wait_to_hit)
             bank_balls = max(
                 0.0,
                 bank_balls - (machine.right_spend_per_spin.get(state, 0.0) * wait_to_hit),
@@ -491,6 +537,9 @@ def simulate_single(
             payout_balls = sample_payout_balls(payout)
             total_out_balls += payout_balls
             bank_balls += payout_balls
+            hit_seconds = hit_effect_time_seconds(payout_balls, previous_state, time_assumptions)
+            hit_effect_seconds_total += hit_seconds
+            cashless_play_seconds += hit_seconds
             
             # 다음 상태 전이 반영
             state = payout.next_state
@@ -597,6 +646,17 @@ def simulate_single(
     final_money = int(final_balls * exchange_rate)
     net_profit = int(final_money - cash_spent)
     exchange_loss = int(final_balls * lend_rate - final_money)
+    play_seconds = (
+        normal_play_seconds
+        + right_play_seconds
+        + hit_effect_seconds_total
+        + support_event_seconds
+    )
+    cashless_share = (
+        (cashless_play_seconds / play_seconds) * 100.0
+        if play_seconds > 0
+        else 0.0
+    )
     
     return {
         "budget": budget,
@@ -627,6 +687,23 @@ def simulate_single(
         "spins_used": spins_used,
         "right_spins": right_spins,
         "normal_balls_fired": int(normal_balls_fired),
+        "play_seconds": play_seconds,
+        "play_minutes": minutes(play_seconds),
+        "normal_play_seconds": normal_play_seconds,
+        "normal_play_minutes": minutes(normal_play_seconds),
+        "active_launch_seconds": active_launch_seconds,
+        "normal_display_seconds": normal_display_seconds,
+        "reserve_wait_seconds": reserve_wait_seconds,
+        "reserve_wait_minutes": minutes(reserve_wait_seconds),
+        "right_play_seconds": right_play_seconds,
+        "right_play_minutes": minutes(right_play_seconds),
+        "hit_effect_seconds": hit_effect_seconds_total,
+        "hit_effect_minutes": minutes(hit_effect_seconds_total),
+        "support_event_seconds": support_event_seconds,
+        "cashless_play_seconds": cashless_play_seconds,
+        "cashless_play_minutes": minutes(cashless_play_seconds),
+        "cashless_play_share": cashless_share,
+        "time_assumptions": assumption_dict(time_assumptions),
         "strategy": strategy,
         "strategy_label": STRATEGIES[strategy],
         "spins_per_1000y": spins_per_1000y,
@@ -666,6 +743,7 @@ def simulate_multiple(
     spin_rate_quality_stddev: float = 3.0,
     spin_rate_min: float = None,
     spin_rate_max: float = None,
+    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
 ) -> List[Dict[str, Any]]:
     """반복 시뮬레이션을 수행하고 결과 리스트를 반환"""
     results = []
@@ -688,6 +766,7 @@ def simulate_multiple(
             spin_rate_quality_stddev=spin_rate_quality_stddev,
             spin_rate_min=spin_rate_min,
             spin_rate_max=spin_rate_max,
+            time_assumptions=time_assumptions,
         )
         results.append(res)
     return results
@@ -704,6 +783,7 @@ def run_matrix_simulation(
     start_variance: bool = True,
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
+    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
 ) -> List[Dict[str, Any]]:
     """예산과 회전율에 따른 매트릭스 시뮬레이션을 수행합니다."""
     budgets = [budget]
@@ -737,6 +817,7 @@ def run_matrix_simulation(
                 start_variance=start_variance,
                 border_spins_per_1000y=border_spins_per_1000y,
                 spin_rate_quality_stddev=spin_rate_quality_stddev,
+                time_assumptions=time_assumptions,
             )
             matrix_results.append({
                 "budget": budget,
@@ -766,6 +847,7 @@ def run_budget_matrix(
     start_variance: bool = True,
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
+    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
 ) -> List[Dict[str, Any]]:
     budgets = budgets or BUDGET_CASES
     session_policy = normalize_session_policy(session_policy)
@@ -788,6 +870,7 @@ def run_budget_matrix(
             start_variance=start_variance,
             border_spins_per_1000y=border_spins_per_1000y,
             spin_rate_quality_stddev=spin_rate_quality_stddev,
+            time_assumptions=time_assumptions,
         )
         matrix_results.append({
             "budget": budget,
@@ -813,6 +896,7 @@ def run_strategy_matrix(
     start_variance: bool = True,
     border_spins_per_1000y: float = None,
     spin_rate_quality_stddev: float = 3.0,
+    time_assumptions: TimeAssumptions = DEFAULT_TIME_ASSUMPTIONS,
 ) -> List[Dict[str, Any]]:
     spin_cases = (
         border_case_rates(border_spins_per_1000y)
@@ -856,6 +940,7 @@ def run_strategy_matrix(
                         start_variance=start_variance,
                         border_spins_per_1000y=border_spins_per_1000y,
                         spin_rate_quality_stddev=spin_rate_quality_stddev,
+                        time_assumptions=time_assumptions,
                     ),
                 }
             )

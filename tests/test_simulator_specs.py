@@ -31,6 +31,7 @@ from simulator import sample_payout_balls, simulate_single, spins_until_hit  # n
 from spec_benchmarks import PUBLIC_BENCHMARKS  # noqa: E402
 from start_gate import estimate_rate_from_observed_spins, sample_session_spin_rate  # noqa: E402
 from store_comparison import store_spins_per_1000yen  # noqa: E402
+from time_model import DEFAULT_TIME_ASSUMPTIONS, hit_effect_seconds, normal_time_components, right_seconds  # noqa: E402
 
 
 class SimulatorSpecTests(unittest.TestCase):
@@ -258,6 +259,30 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual("+5.0", border_delta_text(72.5, 67.5))
         self.assertEqual("1.07x", border_ratio_text(72.5, 67.5))
         self.assertEqual("좋음", rotation_reality_label(72.5, 67.5))
+
+    def test_time_model_counts_launch_display_and_cashless_play(self):
+        parts = normal_time_components(
+            start_spins=120,
+            fired_balls=1000,
+            assumptions=DEFAULT_TIME_ASSUMPTIONS,
+        )
+        self.assertAlmostEqual(600.0, parts["active_launch_seconds"])
+        self.assertAlmostEqual(720.0, parts["display_seconds"])
+        self.assertAlmostEqual(120.0, parts["reserve_wait_seconds"])
+        self.assertAlmostEqual(62.5, right_seconds("ST", 50))
+        self.assertAlmostEqual(118.0, hit_effect_seconds(1500, "NORMAL"))
+
+        result = simulate_single(
+            MACHINES["sea_5_agnes"],
+            budget=1000,
+            lend_rate=1.0,
+            spins_per_1000y=70,
+            exchange_rate=0.89,
+            start_variance=False,
+        )
+        self.assertGreater(result["play_minutes"], 0)
+        self.assertIn("cashless_play_minutes", result)
+        self.assertIn("time_assumptions", result)
         self.assertEqual("타협", rotation_reality_label(65, None))
 
     def test_rotation_estimates_keep_input_basis_and_summary(self):

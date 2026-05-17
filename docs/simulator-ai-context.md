@@ -21,8 +21,8 @@
 
 - 교환율 기본값: `0.89`엔/발
 - 회전수 케이스: `[50, 60, 70, 80, 90, 100]`회/1000엔
-- 예산 케이스: `[10000, 20000, 30000, 40000, 50000]`엔
-- 프로파일 예산 케이스: `[1000, 10000, 20000, 30000, 40000, 50000]`엔
+- 예산 케이스: `[5000, 10000, 15000, 20000]`엔
+- 프로파일 예산 케이스: `[1000, 5000, 10000, 15000, 20000]`엔
 - 기본 전략: `no_rule`
 - 기본 세션 방식: `fixed_spin_cap`
 - 스타트 입상 변동 반영: `True`
@@ -49,6 +49,8 @@
 - `hit_rate`: Share of sampled sessions with at least one 大当り(대당첨); not a next-spin prediction.
 - `rush_entry_rate`: Sampled RUSH entry share.
 - `lt_entry_rate`: Sampled LT entry share; non-LT machines should be interpreted as not applicable.
+- `avg_play_minutes`: Estimated stay/play time, including ball firing, reserve waiting, right-side spins, and hit effects.
+- `avg_cashless_play_minutes`: Estimated time continuing without new cash input through right-side play, hit effects, and reusable held balls.
 
 ## AI 해석 규칙
 

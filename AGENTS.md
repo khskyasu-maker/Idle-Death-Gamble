@@ -82,6 +82,7 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── sim_terms.py               # Shared Japanese/Korean simulator terminology
 │   ├── spec_benchmarks.py         # Fixed public spec benchmark values for profile checks
 │   ├── start_gate.py              # Ball-to-start-spin stochastic first gate model
+│   ├── time_model.py              # Play/stay time assumptions and conversion helpers
 │   ├── rotation.py                # Rotation-rate, border, and rate-unit conversion helpers
 │   ├── store_comparison.py        # Same-machine store comparison scenario builder
 │   ├── simulator.py              # Monte Carlo session engine
@@ -277,7 +278,7 @@ Before finishing changes, run the checks that match the change scope.
 Syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
 ```
 
 JSON validation:
@@ -321,7 +322,7 @@ curl -I --max-time 15 <url>
 - Treat `data/namba-actual-1yen-lineup.json` as public objective lineup/spec data. Do not add simulator-derived fields such as `sim_supported`, `sim_model_key`, `risk_level`, `first_test_budget`, `keep_condition`, or `quit_condition`.
 - Keep 1円/1.111円 simulator candidates separate from 4円 machines. If a source page mixes rates, verify the row's rate before adding it to the low-rate lineup.
 - Keep simulator-derived guidance in `pachinko-sim/stores.py` or runtime CLI output, not in public JSON outputs.
-- Simulator verification output should expose practical inputs such as 1,000円당 회전수, 예산별 당첨률, 평균 大当り(아타리), 평균 연속, RUSH/LT, and public Japanese spec benchmark differences.
+- Simulator verification output should expose practical inputs such as 1,000円당 회전수, 예산별 당첨률, 평균 大当り(아타리), 평균 연속, RUSH/LT, 평균 체류 시간, 현금 없이 이어진 시간, and public Japanese spec benchmark differences.
 - In simulator output, display LT as `해당없음` for non-LT machines. Use `0%` only when the model actually has an LT path and the simulated entry rate is zero. Keep non-LT upper RUSH metrics separate from LT.
 - Treat `docs/` as generated Pages output, not as a separate hand-maintained app.
 - AI helper files in `docs/` must stay generic and blank. Do not write actual onsite observations, personal movement, budget, or spending notes into generated public files.

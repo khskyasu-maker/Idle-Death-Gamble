@@ -718,11 +718,18 @@ def build_simulator_context():
         "default_assumptions": {
             "exchange_rate_yen_per_ball": 0.89,
             "spin_rate_cases_per_1000yen": [50, 60, 70, 80, 90, 100],
-            "budget_cases_yen": [10000, 20000, 30000, 40000, 50000],
-            "profile_budget_cases_yen": [1000, 10000, 20000, 30000, 40000, 50000],
+            "budget_cases_yen": [5000, 10000, 15000, 20000],
+            "profile_budget_cases_yen": [1000, 5000, 10000, 15000, 20000],
             "default_strategy": "no_rule",
             "default_session_policy": "fixed_spin_cap",
             "start_variance": True,
+            "time_model": {
+                "launch_balls_per_minute": 100,
+                "normal_seconds_per_start": 6.0,
+                "rush_seconds_per_spin": "1.10~1.60 by state",
+                "payout_balls_per_minute": 900,
+                "reserve_wait": "normal display time beyond active launch time",
+            },
         },
         "rate_rules": [
             "1yen uses 200玉 per 200円 and 1000玉 per 1000円.",
@@ -743,6 +750,8 @@ def build_simulator_context():
             "hit_rate": "Share of sampled sessions with at least one 大当り(대당첨); not a next-spin prediction.",
             "rush_entry_rate": "Sampled RUSH entry share.",
             "lt_entry_rate": "Sampled LT entry share; non-LT machines should be interpreted as not applicable.",
+            "avg_play_minutes": "Estimated stay/play time, including ball firing, reserve waiting, right-side spins, and hit effects.",
+            "avg_cashless_play_minutes": "Estimated time continuing without new cash input through right-side play, hit effects, and reusable held balls.",
         },
         "ai_interpretation_rules": [
             "Treat all simulator outputs as local estimates, not predictions.",

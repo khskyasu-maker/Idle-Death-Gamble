@@ -102,6 +102,7 @@ PUBLIC_PRIVACY_SCAN_FILES = [
     "pachinko-sim/sim_terms.py",
     "pachinko-sim/spec_benchmarks.py",
     "pachinko-sim/start_gate.py",
+    "pachinko-sim/time_model.py",
     "pachinko-sim/store_comparison.py",
     ".github/workflows/daily.yml",
 ]

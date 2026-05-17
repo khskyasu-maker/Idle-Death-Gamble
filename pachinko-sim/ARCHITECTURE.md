@@ -36,6 +36,9 @@ pachinko-sim/rotation.py
 pachinko-sim/start_gate.py
         |
         v
+pachinko-sim/time_model.py
+        |
+        v
 pachinko-sim/simulator.py
         |
         v
@@ -54,6 +57,7 @@ Fixed real-world inputs and runtime outputs must remain separate:
 - fixed machine specs and payout distributions: `machines.py`
 - fixed public benchmark values used for model drift checks: `spec_benchmarks.py`
 - runtime session assumptions: CLI inputs, strategy settings, `spins_per_1000y`, budget, exchange rate
+- runtime time assumptions: launch speed, display seconds per start, right-side seconds per spin, payout/effect time
 - runtime statistical output: `result.py` metrics and optional append-only `results.csv`
 
 Do not copy Monte Carlo output, recommendation scores, or visit decisions back into fixed data files.
@@ -174,6 +178,24 @@ Responsibilities:
 This module does not change jackpot probability. It only changes how many
 normal-start trials a cash or ball budget can buy.
 
+### `time_model.py`
+
+Converts simulated play into stay/play time.
+
+Responsibilities:
+
+- estimate active launch time from fired balls and a fixed balls-per-minute assumption
+- estimate normal display time from start spins
+- treat display time beyond active launch time as 保留(보류) full/effect waiting
+- estimate right-side/ST/LT/時短(시단) time by state-specific seconds per spin
+- estimate 大当り(대당첨) effect and payout time from payout balls
+- keep these values as runtime assumptions, not fixed public lineup data
+
+Default assumptions are intentionally simple and visible: 100 balls/minute launch,
+6 seconds per normal start, right-side 1.10~2.20 seconds per spin by state, and
+900 payout balls/minute. These values are for visit-time budgeting, not machine
+performance prediction.
+
 ### `store_comparison.py`
 
 Builds runtime same-machine store comparison scenarios.
@@ -240,6 +262,10 @@ Session accounting:
 - `first_hit_spin` records normal-side spins at the first jackpot, while
   `first_hit_total_spins` also includes 時短(시단)/right-side spins before that
   first jackpot for field-like "how long until it hit" interpretation.
+- `play_minutes` estimates stay/play time from normal launch time, display time,
+  保留(보류) full/effect waiting, right-side spins, and 大当り(대당첨) payout/effect time.
+- `cashless_play_minutes` estimates time continuing without new cash input,
+  including right-side play, hit effects, and normal spins paid by reusable balls.
 
 Statistical layers:
 
@@ -247,6 +273,8 @@ Statistical layers:
 - start-entry count: binomial distribution from fired balls and start probability
 - jackpot wait: geometric distribution for independent Bernoulli spins
 - payout realization: truncated normal distribution around nominal payout balls
+- play time: deterministic conversion from sampled spins/balls/events through
+  `time_model.py` assumptions
 - categorical rates: Wilson confidence intervals
 - conditioned useful-profit rates: Wilson confidence intervals for `net_profit > 0`
   after 大当り(대당첨) count and max-streak thresholds
