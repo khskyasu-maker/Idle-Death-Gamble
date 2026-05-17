@@ -99,6 +99,14 @@ python scripts/build_report.py
 - `docs/latest-sim-results.html`: 명시적으로 공유한 최신 1개 시뮬레이터 집계표
 - `docs/onsite-input-template.md`: 현장 관찰값 입력 템플릿
 
+공개 시뮬레이터 결과 형식:
+
+- 최신 집계표는 `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, `docs/latest-sim-results.html` 3개 파일만 사용하며 누적 기록을 만들지 않습니다.
+- 공개 표의 각 행은 대표 저대여 설치 조건에서 `예산`, `회전수`, `교환율`, `전략`, `세션 중단 규칙`을 고정해 Monte Carlo로 집계한 값입니다.
+- 기종 스펙은 공개 확률, 출옥 분포, RUSH/LT/時短(시단) 상태 전이를 Python 모델로 옮겨 사용합니다.
+- 구슬/시간 모델은 헤소 입상 표본, 보유구슬 재사용, 우타치/RUSH/LT 평균 소모, 9시간 소프트 스톱과 11시간 하드 캡을 반영합니다.
+- 공개 결과는 체감 리스크 비교용 집계 추정치이며, 당첨 예측, 방문 지시, 점포 순위, 실제 지출/손익 기록이 아닙니다.
+
 시뮬레이터 스펙 회귀 테스트:
 
 ```bash

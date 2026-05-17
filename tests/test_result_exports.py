@@ -170,8 +170,12 @@ class ResultExportTests(unittest.TestCase):
         markdown = build_public_sim_result_markdown(payload)
 
         self.assertFalse(payload["privacy_policy"]["raw_sample_sessions_included"])
+        self.assertEqual(2, payload["schema_version"])
+        self.assertIn("simulation_method", payload)
         self.assertNotIn("results", payload["rows"][0])
         self.assertIn("최신 공개 시뮬 결과", markdown)
+        self.assertIn("기종", markdown)
+        self.assertIn("평균최대연", markdown)
         self.assertIn("보더+5", markdown)
 
         with tempfile.TemporaryDirectory() as tmpdir:

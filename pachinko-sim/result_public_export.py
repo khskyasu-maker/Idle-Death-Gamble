@@ -42,7 +42,32 @@ def clean_legacy_public_sim_results(docs_dir: Path) -> None:
                 path.unlink()
 
 
+def simulation_method_summary() -> Dict[str, Any]:
+    return {
+        "summary": "Public machine specs are encoded as Monte Carlo state transitions, then run against visible budget, rotation, exchange, and stop-rule assumptions.",
+        "inputs": [
+            "machine probability and payout distributions from public specs",
+            "low-rate store installation context and converted border spins per 1000円",
+            "runtime budget, exchange rate, rotation assumption, strategy, and session policy",
+        ],
+        "runtime_model": [
+            "normal-start spins are sampled from a ball-to-start gate model around the input rotation",
+            "held balls can be reused for normal play before adding new cash",
+            "right-side RUSH/LT/時短 time and average ball spend are modeled by machine family",
+            "sessions use a 9-hour soft stop and an 11-hour hard cap",
+        ],
+        "limits": [
+            "aggregate estimate only, not jackpot prediction or a visit instruction",
+            "no raw sample sessions, personal trip data, or actual spending/profit records are published",
+            "store labels are representative installation/rate context, not store ranking",
+        ],
+    }
+
+
 def public_case_label(row: Dict[str, Any]) -> str:
+    if row.get("case_label"):
+        return str(row["case_label"])
+
     labels = []
     if row.get("store_short_label"):
         labels.append(str(row["store_short_label"]))
@@ -71,6 +96,8 @@ def public_result_rows(
         if row.get("installed") is False:
             public_rows.append(
                 {
+                    "category": row.get("category", ""),
+                    "machine": row.get("machine_label", machine.name_ko),
                     "store": row.get("store_short_label", row.get("store_name", "")),
                     "case": public_case_label(row),
                     "status": "not_installed",
@@ -82,6 +109,8 @@ def public_result_rows(
         metrics = calculate_metrics_fn(row["results"], iterations)
         public_rows.append(
             {
+                "category": row.get("category", ""),
+                "machine": row.get("machine_label", machine.name_ko),
                 "store": row.get("store_short_label", row.get("store_name", "")),
                 "case": public_case_label(row),
                 "status": "simulated",
@@ -95,6 +124,7 @@ def public_result_rows(
                 "rush_rate_pct": round(metrics["rush_rate"], 1),
                 "positive_close_rate_pct": round(metrics["positive_close_rate"], 1),
                 "avg_play_minutes": round(metrics["avg_play_minutes"], 2),
+                "median_play_minutes": round(metrics.get("median_play_minutes", 0.0), 2),
                 f"{SESSION_TIME_LIMIT_HOURS}h_reach_rate_pct": round(
                     metrics.get("stay_reach_rates", {}).get(SESSION_TIME_LIMIT_HOURS, 0.0),
                     1,
@@ -108,6 +138,8 @@ def public_result_rows(
                 "avg_first_hit_spins": metrics["avg_first_hit"],
                 "avg_hits": round(metrics["avg_hits"], 2),
                 "avg_streak": round(metrics["avg_streak"], 2),
+                "p90_streak": metrics.get("p90_streak", 0),
+                "max_streak_seen": metrics.get("max_streak_seen", 0),
                 "profit_condition_summary": metrics["profit_condition_summary"],
             }
         )
@@ -124,9 +156,10 @@ def build_public_sim_result_payload(
     generated_at: str | None = None,
 ) -> Dict[str, Any]:
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": generated_at or kst_now_text(),
         "publication_scope": "latest sanitized aggregate simulator result only",
+        "simulation_method": simulation_method_summary(),
         "privacy_policy": {
             "latest_only": True,
             "raw_sample_sessions_included": False,
@@ -154,6 +187,8 @@ def build_public_sim_result_payload(
 def markdown_row_text(row: Dict[str, Any]) -> List[str]:
     if row.get("status") != "simulated":
         return [
+            row.get("category", ""),
+            row.get("machine", ""),
             row.get("store", ""),
             row.get("case", ""),
             row.get("note", "설치 없음"),
@@ -166,8 +201,16 @@ def markdown_row_text(row: Dict[str, Any]) -> List[str]:
             "-",
             "-",
             "-",
+            "-",
+            "-",
+            "-",
+            "-",
+            "-",
+            "-",
         ]
     return [
+        row.get("category", ""),
+        row.get("machine", ""),
         row.get("store", ""),
         row.get("case", ""),
         yen(row.get("assumption_budget_yen", 0)),
@@ -177,15 +220,23 @@ def markdown_row_text(row: Dict[str, Any]) -> List[str]:
         pct(row.get("rush_rate_pct", 0.0)),
         pct(row.get("positive_close_rate_pct", 0.0)),
         minutes_text(row.get("avg_play_minutes", 0.0)),
+        minutes_text(row.get("median_play_minutes", 0.0)),
         pct(row.get(f"{SESSION_TIME_LIMIT_HOURS}h_reach_rate_pct", 0.0)),
+        pct(row.get("funds_exhausted_stop_rate_pct", 0.0)),
         yen(row.get("avg_final_remaining_value_yen", 0)),
-        yen(row.get("avg_profit_yen", 0), signed=True),
+        yen(row.get("median_profit_yen", 0), signed=True),
+        f"{row.get('avg_hits', 0.0):.2f}",
+        f"{row.get('avg_streak', 0.0):.2f}",
+        str(row.get("p90_streak", 0)),
+        str(row.get("max_streak_seen", 0)),
     ]
 
 
 def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
     machine = payload["machine"]
     headers = [
+        "분류",
+        "기종",
         "점포",
         "조건",
         "예산",
@@ -195,9 +246,15 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
         "RUSH",
         "플러스",
         "평균시간",
+        "P50시간",
         f"{SESSION_TIME_LIMIT_HOURS}h+",
+        "완전소진",
         "잔류액",
-        "평균손익",
+        "중앙손익",
+        "평균당첨",
+        "평균최대연",
+        "P90연",
+        "최대연",
     ]
     md = "# 최신 공개 시뮬 결과\n\n"
     md += f"- 생성 시각: {payload['generated_at']}\n"
@@ -206,6 +263,13 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
     md += f"- 기종: {machine['name_ko']} / {machine['name_ja']}\n"
     md += f"- 반복: {payload['iterations']}회\n"
     md += "- 범위: 공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.\n\n"
+    method = payload.get("simulation_method", {})
+    if method:
+        md += "## 시뮬 구현 요약\n\n"
+        md += f"- 방식: {method.get('summary', '')}\n"
+        md += "- 입력: 기종 스펙, 설치/레이트/보더, 예산, 회전수, 교환율, 중단 규칙\n"
+        md += "- 구슬/시간: 헤소 입상 표본, 보유구슬 재사용, 우타치/RUSH/LT 시간, 9시간 소프트 스톱을 반영\n"
+        md += "- 한계: 집계 추정치일 뿐 당첨 예측, 방문 지시, 점포 순위가 아닙니다.\n\n"
     md += "|" + "|".join(headers) + "|\n"
     md += "|" + "|".join("---" for _ in headers) + "|\n"
     for row in payload["rows"]:
@@ -217,6 +281,8 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
 def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
     markdown_rows = [markdown_row_text(row) for row in payload["rows"]]
     headers = [
+        "분류",
+        "기종",
         "점포",
         "조건",
         "예산",
@@ -226,9 +292,15 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
         "RUSH",
         "플러스",
         "평균시간",
+        "P50시간",
         f"{SESSION_TIME_LIMIT_HOURS}h+",
+        "완전소진",
         "잔류액",
-        "평균손익",
+        "중앙손익",
+        "평균당첨",
+        "평균최대연",
+        "P90연",
+        "최대연",
     ]
     head_cells = "".join(f"<th>{escape(header)}</th>" for header in headers)
     body_rows = []
@@ -261,6 +333,12 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
     <p><strong>반복:</strong> {escape(str(payload['iterations']))}회</p>
   </div>
   <div class="note">공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.</div>
+  <section class="note">
+    <strong>시뮬 구현 요약:</strong>
+    공개 스펙의 확률/출옥 분포를 상태 전이로 모델링하고, 보더+회전수, 예산, 교환율, 보유구슬 재사용,
+    우타치/RUSH/LT 시간, 9시간 소프트 스톱을 적용한 Monte Carlo 집계입니다.
+    당첨 예측, 방문 지시, 점포 순위가 아닙니다.
+  </section>
   <table>
     <thead><tr>{head_cells}</tr></thead>
     <tbody>{''.join(body_rows)}</tbody>
