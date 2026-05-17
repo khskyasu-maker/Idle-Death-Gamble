@@ -100,6 +100,7 @@ Core fields:
 - `jitan_hit_dist`: time-short hit distribution
 - `kakuben_hit_dist`: loop-type probability-change distribution
 - `lt_hit_dist`: Lucky Trigger state distribution
+- `LT_JITAN`: Lucky Trigger 중 時短(시단)처럼 저확률로 소화되지만, 당첨 후에는 `lt_hit_dist`를 따라 LT가 유지되는 보조 상태
 - `upper_hit_dist`: non-LT upper RUSH distribution, for states like GOLDパールRUSH(골드 펄 러시)
 - `jinbee_hit_dist`: Okinawa6 ジンベェタイム(진베에 타임) distribution
 - `right_spend_per_spin`: average ball loss during supported right-side states

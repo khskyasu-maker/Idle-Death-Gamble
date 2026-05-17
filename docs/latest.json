@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17 15:30:51 KST",
+  "generated_at": "2026-05-17 21:14:33 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
@@ -23,7 +23,7 @@
       "checked_at": "Manual/public-source check date. Re-check onsite if stale."
     },
     "data_freshness": {
-      "generated_at": "2026-05-17 15:30:51 KST",
+      "generated_at": "2026-05-17 21:14:33 KST",
       "earliest_checked_at": "2026-05-10",
       "latest_checked_at": "2026-05-17",
       "checked_dates": [
@@ -40,8 +40,8 @@
         "rate": "1.111yen",
         "eva_machine_count": 19,
         "daiumi_machine_count": 34,
-        "other_machine_count": 34,
-        "total_machine_count": 87
+        "other_machine_count": 37,
+        "total_machine_count": 90
       },
       {
         "store_id": "123_namba",
@@ -50,8 +50,8 @@
         "rate": "1yen",
         "eva_machine_count": 25,
         "daiumi_machine_count": 36,
-        "other_machine_count": 33,
-        "total_machine_count": 94
+        "other_machine_count": 34,
+        "total_machine_count": 95
       },
       {
         "store_id": "arrow_namba_hips",
@@ -1068,6 +1068,115 @@
       "memo": "라쿠엔 1.111パチ 실제 설치 후보. 1대 체험 후보."
     },
     {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "rate": "1.111yen",
+      "onsite_unit": "180玉",
+      "machine_name": "e東京喰種",
+      "machine_name_ko": "e 도쿄구울",
+      "aliases": [
+        "e東京喰種",
+        "e 도쿄구울"
+      ],
+      "tags": [
+        "lt"
+      ],
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "rush_type": "RUSH/LT",
+      "initial_probability": "1/199.9",
+      "machine_count": 1,
+      "border_spins_per_1000yen": 60.0,
+      "border_unit": "200円/180玉",
+      "border_unit_value": 12.0,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "180玉당 12.1회 이상",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "manual_note",
+        "border_source": "pachiseven",
+        "spec_source_url": "",
+        "border_reference_url": "https://pachiseven.jp/machines/7159",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "라쿠엔 DMM 1.111円 섹션 재확인. e東京喰種 1대. 확률은 チャージ込み 실질 대당첨 기준."
+    },
+    {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "rate": "1.111yen",
+      "onsite_unit": "180玉",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "aliases": [
+        "e甲鉄城のカバネリ2 咲かせや燦然",
+        "e 갑철성의 카바네리2 사카세야 산젠"
+      ],
+      "tags": [
+        "lt"
+      ],
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "rush_type": "RUSH/LT",
+      "initial_probability": "1/319.7",
+      "machine_count": 1,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "manual_note",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "라쿠엔 DMM 1.111円 섹션 재확인. 카바네리2 1대."
+    },
+    {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "rate": "1.111yen",
+      "onsite_unit": "180玉",
+      "machine_name": "デジハネP北斗の拳 慈母",
+      "machine_name_ko": "디지하네 P 북두의 권 자모",
+      "aliases": [
+        "デジハネP北斗の拳 慈母",
+        "디지하네 P 북두의 권 자모",
+        "북두",
+        "hokuto"
+      ],
+      "tags": [
+        "hokuto",
+        "ama_like",
+        "lt"
+      ],
+      "category": "other",
+      "spec_type": "ama_deji_lt",
+      "rush_type": "ST/時短/LT",
+      "initial_probability": "1/79.9",
+      "machine_count": 1,
+      "border_spins_per_1000yen": 63.5,
+      "border_unit": "200円/180玉",
+      "border_unit_value": 12.7,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "180玉당 12.7회 이상",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "manual_note",
+        "border_source": "p_world",
+        "spec_source_url": "",
+        "border_reference_url": "https://www.p-world.co.jp/machine/database/10235",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "라쿠엔 DMM 1.111円 섹션 재확인. 디지하네 북두 慈母 1대."
+    },
+    {
       "store_id": "123_namba",
       "store_name": "123難波店",
       "store_name_ko": "123 난바점",
@@ -1807,13 +1916,12 @@
         "e 도쿄구울"
       ],
       "tags": [
-        "lt",
-        "high_variance"
+        "lt"
       ],
       "category": "other",
       "spec_type": "smart_pachinko_lt",
       "rush_type": "RUSH/LT",
-      "initial_probability": "1/399",
+      "initial_probability": "1/199.9",
       "machine_count": 2,
       "border_spins_per_1000yen": null,
       "border_unit": null,
@@ -1822,13 +1930,13 @@
       "onsite_judgment": "-",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "dmm_pachitown",
+        "spec_source": "manual_note",
         "border_source": "",
         "spec_source_url": "",
         "border_reference_url": "",
         "checked_at": "2026-05-17"
       },
-      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인. 확률은 チャージ込み 실질 대당첨 기준."
     },
     {
       "store_id": "123_namba",
@@ -2269,6 +2377,45 @@
         "checked_at": "2026-05-17"
       },
       "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
+      "machine_name": "デジハネP北斗の拳 慈母",
+      "machine_name_ko": "디지하네 P 북두의 권 자모",
+      "aliases": [
+        "デジハネP北斗の拳 慈母",
+        "디지하네 P 북두의 권 자모",
+        "북두",
+        "hokuto"
+      ],
+      "tags": [
+        "hokuto",
+        "ama_like",
+        "lt"
+      ],
+      "category": "other",
+      "spec_type": "ama_deji_lt",
+      "rush_type": "ST/時短/LT",
+      "initial_probability": "1/79.9",
+      "machine_count": 1,
+      "border_spins_per_1000yen": 70.5,
+      "border_unit": "200円/200玉",
+      "border_unit_value": 14.1,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "200玉당 14.1회 이상",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "manual_note",
+        "border_source": "p_world",
+        "spec_source_url": "",
+        "border_reference_url": "https://www.p-world.co.jp/machine/database/10235",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 재확인. 디지하네 북두 慈母 1대."
     },
     {
       "store_id": "arrow_namba_hips",
@@ -3071,14 +3218,14 @@
       "store_name": "楽園なんば店",
       "store_name_ko": "라쿠엔 난바점",
       "rate": "1.111yen",
-      "total_machine_count": 87
+      "total_machine_count": 90
     },
     {
       "store_id": "123_namba",
       "store_name": "123難波店",
       "store_name_ko": "123 난바점",
       "rate": "1yen",
-      "total_machine_count": 94
+      "total_machine_count": 95
     },
     {
       "store_id": "arrow_namba_hips",
@@ -3118,15 +3265,15 @@
       "store_name_ko": "라쿠엔 난바점",
       "rate": "1.111yen",
       "onsite_unit": "180玉",
-      "entry_count": 22,
-      "total_machine_count": 87,
+      "entry_count": 25,
+      "total_machine_count": 90,
       "eva_machine_count": 19,
       "daiumi_machine_count": 34,
-      "other_machine_count": 34,
-      "ama_like_machine_count": 36,
-      "border_entry_count": 22,
-      "border_machine_count": 87,
-      "missing_border_machine_count": 0
+      "other_machine_count": 37,
+      "ama_like_machine_count": 37,
+      "border_entry_count": 24,
+      "border_machine_count": 89,
+      "missing_border_machine_count": 1
     },
     {
       "store_id": "123_namba",
@@ -3134,14 +3281,14 @@
       "store_name_ko": "123 난바점",
       "rate": "1yen",
       "onsite_unit": "200玉",
-      "entry_count": 31,
-      "total_machine_count": 94,
+      "entry_count": 32,
+      "total_machine_count": 95,
       "eva_machine_count": 25,
       "daiumi_machine_count": 36,
-      "other_machine_count": 33,
-      "ama_like_machine_count": 33,
-      "border_entry_count": 24,
-      "border_machine_count": 85,
+      "other_machine_count": 34,
+      "ama_like_machine_count": 34,
+      "border_entry_count": 25,
+      "border_machine_count": 86,
       "missing_border_machine_count": 9
     },
     {
@@ -3563,7 +3710,7 @@
       "rate": "1yen",
       "machine_name": "e東京喰種",
       "machine_name_ko": "e 도쿄구울",
-      "initial_probability": "1/399",
+      "initial_probability": "1/199.9",
       "machine_count": 2,
       "onsite_unit": "200玉",
       "onsite_judgment": "-",
@@ -3646,10 +3793,23 @@
       "onsite_unit": "200玉",
       "onsite_judgment": "-",
       "checked_at": "2026-05-17"
+    },
+    {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "rate": "1.111yen",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "initial_probability": "1/319.7",
+      "machine_count": 1,
+      "onsite_unit": "180玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
     }
   ],
-  "border_ready_machine_count": 66,
-  "missing_border_machine_count": 7,
+  "border_ready_machine_count": 69,
+  "missing_border_machine_count": 8,
   "missing_border_machines": [
     {
       "store_id": "123_namba",
@@ -3726,7 +3886,18 @@
       "rate": "1yen",
       "machine_count": 2,
       "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
-      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인. 확률은 チャージ込み 실질 대당첨 기준."
+    },
+    {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "rate": "1.111yen",
+      "machine_count": 1,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "라쿠엔 DMM 1.111円 섹션 재확인. 카바네리2 1대."
     }
   ],
   "machine_info": [
@@ -5401,8 +5572,8 @@
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
       "checked_at": "2026-05-17",
-      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
-      "spec_source": "dmm_pachitown",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인. 확률은 チャージ込み 실질 대당첨 기준.",
+      "spec_source": "manual_note",
       "border_source": "",
       "border_1yen_per_200": null,
       "border_1_111yen_per_180": null,
@@ -5414,7 +5585,7 @@
       "machine_name": "e東京喰種",
       "machine_name_ko": "e 도쿄구울",
       "spec_type": "smart_pachinko_lt",
-      "initial_probability": "1/399",
+      "initial_probability": "1/199.9",
       "rush_type": "RUSH/LT",
       "machine_count": 2
     },
@@ -5625,6 +5796,112 @@
       "border_confidence": "web_verified",
       "border_reference_url": "https://p-gabu.jp/guideworks/machinecontents/detail/6930/100",
       "border_1yen_per_200": 14.5
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "デジハネP北斗の拳 慈母",
+      "machine_name_ko": "디지하네 P 북두의 권 자모",
+      "rate": "1yen",
+      "category": "other",
+      "spec_type": "ama_deji_lt",
+      "initial_probability": "1/79.9",
+      "rush_type": "ST/時短/LT",
+      "machine_count": 1,
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 재확인. 디지하네 북두 慈母 1대.",
+      "spec_source": "manual_note",
+      "border_source": "p_world",
+      "border_note": "P-WORLD 25玉等価 17.6回/1000円を1円/200玉 기준으로 환산.",
+      "border_spins_per_1000yen": 70.5,
+      "border_unit_value": 14.1,
+      "border_unit": "200円/200玉",
+      "border_confidence": "web_verified",
+      "border_reference_url": "https://www.p-world.co.jp/machine/database/10235",
+      "border_1yen_per_200": 14.1
+    },
+    {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "rate": "1.111yen",
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "initial_probability": "1/319.7",
+      "rush_type": "RUSH/LT",
+      "machine_count": 1,
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "라쿠엔 DMM 1.111円 섹션 재확인. 카바네리2 1대.",
+      "spec_source": "manual_note",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요"
+    },
+    {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "machine_name": "e東京喰種",
+      "machine_name_ko": "e 도쿄구울",
+      "rate": "1.111yen",
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "initial_probability": "1/199.9",
+      "rush_type": "RUSH/LT",
+      "machine_count": 1,
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "라쿠엔 DMM 1.111円 섹션 재확인. e東京喰種 1대. 확률은 チャージ込み 실질 대당첨 기준.",
+      "spec_source": "manual_note",
+      "border_source": "pachiseven",
+      "border_note": "パチセブン 4円等価 16.7回/1000円を1円/200玉 및 1.111円/180玉 기준으로 환산.",
+      "border_spins_per_1000yen": 60.0,
+      "border_unit_value": 12.0,
+      "border_unit": "200円/180玉",
+      "border_confidence": "web_verified",
+      "border_reference_url": "https://pachiseven.jp/machines/7159",
+      "border_1yen_per_200": 13.4,
+      "border_1_111yen_per_180": 12.1
+    },
+    {
+      "store_id": "rakuen_namba",
+      "store_name": "楽園なんば店",
+      "store_name_ko": "라쿠엔 난바점",
+      "machine_name": "デジハネP北斗の拳 慈母",
+      "machine_name_ko": "디지하네 P 북두의 권 자모",
+      "rate": "1.111yen",
+      "category": "other",
+      "spec_type": "ama_deji_lt",
+      "initial_probability": "1/79.9",
+      "rush_type": "ST/時短/LT",
+      "machine_count": 1,
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "라쿠엔 DMM 1.111円 섹션 재확인. 디지하네 북두 慈母 1대.",
+      "spec_source": "manual_note",
+      "border_source": "p_world",
+      "border_note": "P-WORLD 25玉等価 17.6回/1000円を1円/200玉 및 1.111円/180玉 기준으로 환산.",
+      "border_spins_per_1000yen": 63.5,
+      "border_unit_value": 12.7,
+      "border_unit": "200円/180玉",
+      "border_confidence": "web_verified",
+      "border_reference_url": "https://www.p-world.co.jp/machine/database/10235",
+      "border_1yen_per_200": 14.1,
+      "border_1_111yen_per_180": 12.7
     }
   ]
 }

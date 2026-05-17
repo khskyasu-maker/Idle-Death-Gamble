@@ -25,7 +25,7 @@ def iter_payouts(machine: Machine):
 
 
 def machine_has_lt(machine: Machine) -> bool:
-    return any(payout.is_lt or payout.next_state == "LT" for payout in iter_payouts(machine))
+    return any(payout.is_lt or payout.next_state in {"LT", "LT_JITAN"} for payout in iter_payouts(machine))
 
 
 def machine_has_upper(machine: Machine) -> bool:

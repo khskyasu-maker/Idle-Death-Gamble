@@ -289,7 +289,7 @@ def main():
         print(
             f"주의: DMM 전체 대비 로컬 JSON 미등록 가능 대수 "
             f"{store_info['dmm_gap_machine_count']}대가 있습니다. "
-            "현재 선택지는 에바/바다/리제로 중심 수동 후보입니다."
+            "현재 선택지는 에바/대해물어/기타 선별 수동 후보입니다."
         )
     if store_info["unsupported_machine_count"]:
         print(

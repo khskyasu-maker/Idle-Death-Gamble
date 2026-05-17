@@ -174,6 +174,7 @@ def right_seconds(
     seconds_per_spin = {
         "ST": assumptions.st_seconds_per_spin,
         "LT": assumptions.lt_seconds_per_spin,
+        "LT_JITAN": assumptions.jitan_seconds_per_spin,
         "UPPER": assumptions.upper_seconds_per_spin,
         "JITAN": assumptions.jitan_seconds_per_spin,
         "JINBEE_JITAN": assumptions.jitan_seconds_per_spin,

@@ -45,11 +45,12 @@ STORE_SHORT_LABELS = {
 STORE_ORDER = ("rakuen_namba", "123_namba", "arrow_namba_hips")
 
 ACTIVE_OTHER_SIM_MODEL_IDS = {
+    "hokuto_jibo",
     "re_zero_99",
-    "re_zero_199",
-    "re_zero_s2_349",
     "re_zero_s2_129",
-    "hokuto_10",
+    "lupin_77_sweet",
+    "kabaneri_2",
+    "tokyo_ghoul",
 }
 
 # Only names in this map become selectable simulator models from the current
@@ -72,10 +73,11 @@ MACHINE_NAME_TO_SIM_ID = {
     "ぱちんこ シン・エヴァンゲリオン 129 LT ver.": "shin_eva_129_lt",
     "e新世紀エヴァンゲリオン ～はじまりの記憶～": "eva_beginning",
     "P Re:ゼロから始める異世界生活 鬼がかり 99ver.": "re_zero_99",
-    "P Re:ゼロから始める異世界生活 鬼がかり 199ver.": "re_zero_199",
-    "e Re:ゼロから始める異世界生活 season2": "re_zero_s2_349",
     "P Re:ゼロから始める異世界生活 season2 129ver.": "re_zero_s2_129",
-    "e北斗の拳10": "hokuto_10",
+    "Pルパン三世 銭形からの招待状 77Sweet Ver.": "lupin_77_sweet",
+    "e甲鉄城のカバネリ2 咲かせや燦然": "kabaneri_2",
+    "e東京喰種": "tokyo_ghoul",
+    "デジハネP北斗の拳 慈母": "hokuto_jibo",
 }
 
 

@@ -5,7 +5,7 @@ from machines import Machine
 from machine_traits import DISTRIBUTION_FIELDS
 
 
-VALID_STATES = {"NORMAL", "ST", "JITAN", "KAKUBEN", "LT", "UPPER", "JINBEE", "JINBEE_JITAN"}
+VALID_STATES = {"NORMAL", "ST", "JITAN", "KAKUBEN", "LT", "LT_JITAN", "UPPER", "JINBEE", "JINBEE_JITAN"}
 VALID_CONFIDENCE_LEVELS = {"high", "medium", "low"}
 
 KNOWN_SPEC_EXPECTATIONS = {
@@ -230,6 +230,40 @@ KNOWN_SPEC_EXPECTATIONS = {
         "high_prob": 99.9,
         "normal_weights": [0.50, 0.50],
         "st_weights": [0.03225, 0.02450, 0.01850, 0.02450, 0.02525, 0.12500, 0.55000, 0.20000],
+    },
+    "lupin_77_sweet": {
+        "normal_prob": 77.7,
+        "high_prob": 37.3,
+        "normal_weights": [0.51, 0.49],
+        "normal_states": ["ST", "NORMAL"],
+        "normal_counts_as_rush": [True, False],
+        "st_weights": [0.15, 0.85],
+        "lt_weights": [1.00],
+    },
+    "kabaneri_2": {
+        "normal_prob": 319.7,
+        "high_prob": 98.3,
+        "normal_weights": [0.50, 0.50],
+        "normal_states": ["LT", "NORMAL"],
+        "normal_counts_as_rush": [True, False],
+        "lt_weights": [0.062, 0.738, 0.200],
+    },
+    "tokyo_ghoul": {
+        "normal_prob": 199.9,
+        "high_prob": 95.3,
+        "normal_weights": [0.250, 0.005, 0.245, 0.500],
+        "normal_states": ["LT", "LT", "NORMAL", "NORMAL"],
+        "normal_counts_as_rush": [True, True, False, False],
+        "lt_weights": [0.03, 0.97],
+    },
+    "hokuto_jibo": {
+        "normal_prob": 79.9,
+        "high_prob": 7.99,
+        "normal_weights": [0.012, 0.788, 0.200],
+        "normal_states": ["ST", "ST", "ST"],
+        "st_weights": [0.010, 0.002, 0.788, 0.200],
+        "jitan_weights": [0.010, 0.002, 0.788, 0.200],
+        "lt_weights": [0.012, 0.788, 0.200],
     },
     "hokuto_10": {
         "normal_prob": 348.6,

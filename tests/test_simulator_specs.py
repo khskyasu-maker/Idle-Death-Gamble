@@ -236,6 +236,36 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertAlmostEqual(0.05, sum(p.weight for p in naginami.st_hit_dist if p.balls == 800))
         self.assertAlmostEqual(0.95, sum(p.weight for p in naginami.st_hit_dist if p.balls == 240))
 
+    def test_other_candidate_models_match_public_step_specs(self):
+        lupin = MACHINES["lupin_77_sweet"]
+        self.assertEqual([210, 210], [p.balls for p in lupin.normal_hit_dist])
+        self.assertEqual(["ST", "NORMAL"], [p.next_state for p in lupin.normal_hit_dist])
+        self.assertEqual({34}, {p.st_spins for p in lupin.normal_hit_dist if p.next_state == "ST"})
+        self.assertAlmostEqual(0.15, sum(p.weight for p in lupin.st_hit_dist if p.next_state == "LT"))
+        self.assertEqual({88}, {p.st_spins for p in lupin.lt_hit_dist})
+
+        kabaneri = MACHINES["kabaneri_2"]
+        self.assertTrue(machine_has_lt(kabaneri))
+        self.assertEqual([700, 700], [p.balls for p in kabaneri.normal_hit_dist])
+        self.assertEqual(["LT", "NORMAL"], [p.next_state for p in kabaneri.normal_hit_dist])
+        self.assertEqual([5580, 2790, 1400], [p.balls for p in kabaneri.lt_hit_dist])
+        self.assertAlmostEqual(0.062, kabaneri.lt_hit_dist[0].weight)
+        self.assertEqual({134}, {p.st_spins for p in kabaneri.lt_hit_dist})
+
+        ghoul = MACHINES["tokyo_ghoul"]
+        self.assertEqual(199.9, ghoul.normal_prob)
+        self.assertEqual([1400, 280, 1400, 280], [p.balls for p in ghoul.normal_hit_dist])
+        self.assertAlmostEqual(0.255, sum(p.weight for p in ghoul.normal_hit_dist if p.next_state == "LT"))
+        self.assertEqual([5600, 2800], [p.balls for p in ghoul.lt_hit_dist])
+
+        jibo = MACHINES["hokuto_jibo"]
+        self.assertEqual([900, 450, 120], [p.balls for p in jibo.normal_hit_dist])
+        self.assertEqual({5}, {p.st_spins for p in jibo.normal_hit_dist})
+        self.assertEqual({0, 25, 50}, {p.jitan_spins for p in jibo.normal_hit_dist})
+        self.assertAlmostEqual(0.010, sum(p.weight for p in jibo.st_hit_dist if p.next_state == "LT"))
+        self.assertEqual({166}, {p.jitan_spins for p in jibo.lt_hit_dist})
+        self.assertTrue(all(p.next_state == "LT" for p in jibo.lt_hit_dist))
+
     def test_shinsea_support_time_is_not_counted_as_a_jackpot(self):
         shinsea = MACHINES["shinsea_99"]
         self.assertAlmostEqual(199.8, shinsea.normal_support_prob)

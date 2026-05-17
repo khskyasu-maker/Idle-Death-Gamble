@@ -50,6 +50,7 @@ STATE_LABELS = {
     "JITAN": "JITAN/時短(시단)",
     "KAKUBEN": "KAKUBEN/確変(확변)",
     "LT": "LT(러키 트리거)",
+    "LT_JITAN": "LT_JITAN/時短(러키 트리거 시단)",
     "UPPER": "UPPER/上位RUSH(상위 러시)",
     "JINBEE": "JINBEE/ジンベェ確変(진베에 확변)",
     "JINBEE_JITAN": "JINBEE_JITAN/ジンベェ時短200(진베에 시단200)",

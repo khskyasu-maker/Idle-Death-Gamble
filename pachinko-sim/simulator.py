@@ -49,6 +49,7 @@ HIT_LABELS = {
     "JITAN": ("時短当り", "시단 당첨"),
     "KAKUBEN": ("確変当り", "확변 당첨"),
     "LT": ("LT当り", "LT 당첨"),
+    "LT_JITAN": ("LT時短当り", "LT 시단 당첨"),
     "UPPER": ("上位RUSH当り", "상위 러시 당첨"),
     "JINBEE": ("ジンベェ当り", "진베에 타임 당첨"),
     "JINBEE_JITAN": ("ジンベェ当り", "진베에 시단 당첨"),
@@ -657,7 +658,7 @@ def simulate_single(
                     continue
             else:
                 if jitan_reserve > 0:
-                    state = 'JITAN'
+                    state = 'LT_JITAN' if state == 'LT' else 'JITAN'
                     spins_left = jitan_reserve
                     jitan_reserve = 0
                     continue # 이번 턴은 당첨 추첨 없이 상태 전환만 처리
@@ -667,7 +668,7 @@ def simulate_single(
                     rush_active = False
                     continue
 
-        elif state in ['JITAN', 'JINBEE_JITAN']:
+        elif state in ['JITAN', 'LT_JITAN', 'JINBEE_JITAN']:
             current_prob = machine.normal_prob
             if spins_left > 0:
                 wait_to_hit = spins_until_hit(machine.normal_prob)
@@ -710,6 +711,8 @@ def simulate_single(
                 payout = get_payout(machine.st_hit_dist)
             elif state == 'JITAN':
                 payout = get_payout(machine.jitan_hit_dist)
+            elif state == 'LT_JITAN':
+                payout = get_payout(machine.lt_hit_dist)
             elif state == 'KAKUBEN':
                 payout = get_payout(machine.kakuben_hit_dist)
             elif state == 'LT':
@@ -746,6 +749,9 @@ def simulate_single(
             elif state == 'JITAN':
                 spins_left = payout.jitan_spins
                 jitan_reserve = 0
+            elif state == 'LT_JITAN':
+                spins_left = payout.jitan_spins or payout.st_spins
+                jitan_reserve = 0
             elif state == 'KAKUBEN':
                 if payout.counts_as_rush and not rush_active:
                     rush_entries += 1
@@ -775,7 +781,7 @@ def simulate_single(
             # LT 플래그는 진입 횟수 집계용입니다. 일부 기종의 LT는 별도
             # 전サポ 상태가 아니라 대량 출옥 보너스 후 RUSH로 복귀합니다.
             if payout.is_lt:
-                if previous_state != 'LT':
+                if previous_state not in ['LT', 'LT_JITAN']:
                     lt_entries += 1
                     lt_entry_event = True
                 if payout.next_state == 'LT':
