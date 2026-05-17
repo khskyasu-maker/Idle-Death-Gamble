@@ -55,7 +55,9 @@ Fixed real-world inputs and runtime outputs must remain separate:
 
 - fixed store lineup and border data: `data/namba-actual-1yen-lineup.json`
 - fixed machine specs and payout distributions: `machines.py`
+- reusable machine data types and family templates: `machine_types.py`, `machine_templates.py`
 - fixed public benchmark values used for model drift checks: `spec_benchmarks.py`
+- source-to-model translation rules: `SPEC_MODELING_GUIDE.md`
 - runtime session assumptions: CLI inputs, strategy settings, `spins_per_1000y`, budget, exchange rate
 - runtime time assumptions: launch speed, display seconds per start, right-side seconds per spin, payout/effect time
 - runtime statistical output: `result.py` metrics and optional append-only `results.csv`
@@ -83,6 +85,11 @@ This module should not contain personal visit priority or recommendation decisio
 ### `machines.py`
 
 Defines machine specs as `Machine` objects and hit distributions as `Payout` objects.
+Use `SPEC_MODELING_GUIDE.md` before adding or promoting a model, so public
+DMM/official/source-page terms are mapped consistently into Python states.
+When multiple machines share the same game flow, put the shared construction
+logic in `machine_templates.py` and pass only the differing source/spec values
+from `machines.py`.
 
 Core fields:
 

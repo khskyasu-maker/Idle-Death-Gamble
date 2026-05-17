@@ -34,6 +34,8 @@
 추후 Streamlit 등의 웹 기반 UI로 확장이 용이하도록 모듈이 분리되어 있습니다.
 - `main.py`: CLI 인터페이스와 사용자 입력 로직
 - `machines.py`: 파친코 기종별 스펙 데이터베이스
+- `machine_types.py`: `Machine`/`Payout` 공통 데이터 구조
+- `machine_templates.py`: 같은 구조의 기종을 값만 바꿔 생성하는 공통 팩토리
 - `machine_traits.py`: LT/상위 RUSH 여부와 payout 분포 목록을 공유하는 공통 판별 로직
 - `sim_terms.py`: 일본어 스펙/상태 용어의 한국어 병기 공통 사전
 - `spec_benchmarks.py`: 공개 일본 스펙값 대비 위화감 체크용 고정 기준값
@@ -47,6 +49,7 @@
 - `model_checks.py`: 이론 무당첨률, ST/LT 확률, payout weight와 고정 스펙 메타데이터 검증용 보조 로직
 
 상세 설계 기준은 `ARCHITECTURE.md`를 기준으로 관리합니다.
+기종 스펙을 DMM/공식 페이지에서 읽어 Python 모델로 옮기는 기준은 `SPEC_MODELING_GUIDE.md`를 기준으로 관리합니다.
 보더/회전율 입력 개선과 추가 모듈 분리 작업 계획은 `REFACTOR_PLAN.md`에 정리합니다.
 
 ## 현재 모델에 반영된 현실 요소

@@ -78,6 +78,8 @@ Do not store or publish dynamic decision data in GitHub:
 ├── pachinko-sim/
 │   ├── main.py                   # Local CLI simulator entry point
 │   ├── machines.py               # Simulator machine models and payout distributions
+│   ├── machine_types.py           # Shared Machine/Payout dataclasses
+│   ├── machine_templates.py       # Reusable machine-family model factories
 │   ├── machine_traits.py          # Shared machine trait helpers for LT/upper-RUSH detection
 │   ├── sim_terms.py               # Shared Japanese/Korean simulator terminology
 │   ├── session_limits.py          # Practical stay/cash-input limit constants
@@ -91,6 +93,7 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── stores.py                 # Local simulator lineup adapter from public JSON
 │   ├── model_checks.py           # Deterministic model consistency checks
 │   ├── README.md                 # Simulator usage notes
+│   ├── SPEC_MODELING_GUIDE.md     # DMM/official spec-to-Python modeling guide
 │   ├── REFACTOR_PLAN.md           # Simulator refactor and border-input improvement plan
 │   └── ARCHITECTURE.md           # Simulator design and assumptions
 ├── tests/
@@ -135,6 +138,8 @@ The normal data and report pipeline is:
 - Do not auto-create or overwrite `results.csv`; append only when the user explicitly chooses CSV save in the CLI.
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
 - When changing simulator assumptions, update `pachinko-sim/ARCHITECTURE.md` and keep `pachinko-sim/README.md` aligned.
+- When adding or correcting a machine model from DMM/official/product pages, follow `pachinko-sim/SPEC_MODELING_GUIDE.md`.
+- Prefer reusable factories in `pachinko-sim/machine_templates.py` for machines with the same structure; add a new template only when it represents a real shared mechanic.
 - When Japanese text appears in simulator output or maintained docs, include a Korean translation next to it where practical.
 
 ## Local Development Commands
@@ -279,7 +284,7 @@ Before finishing changes, run the checks that match the change scope.
 Syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/simulator.py pachinko-sim/stores.py
 ```
 
 JSON validation:
