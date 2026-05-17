@@ -477,7 +477,7 @@ def validate_simulator_lineup(errors, warnings):
     try:
         from machines import MACHINES
         from model_checks import validate_all_machine_models
-        from stores import STORE_INVENTORY
+        from stores import ACTIVE_OTHER_SIM_MODEL_IDS, STORE_INVENTORY
     except Exception as exc:
         add_issue(errors, "pachinko-sim", f"failed to import simulator lineup: {exc}")
         return
@@ -486,6 +486,13 @@ def validate_simulator_lineup(errors, warnings):
             sys.path.remove(str(sim_dir))
         except ValueError:
             pass
+
+    if len(ACTIVE_OTHER_SIM_MODEL_IDS) != 5:
+        add_issue(
+            errors,
+            "pachinko-sim/stores.py.ACTIVE_OTHER_SIM_MODEL_IDS",
+            "active non-Eva/non-DaiUmi simulator subset must stay at 5 models.",
+        )
 
     for choice, store in STORE_INVENTORY.items():
         store_name = store.get("name", "")
@@ -520,6 +527,12 @@ def validate_simulator_lineup(errors, warnings):
                     errors,
                     f"pachinko-sim/stores.py.STORE_INVENTORY[{choice}].machines[{index}].rate",
                     f"simulator store rate must stay {expected_rate}, got {row_rate}",
+                )
+            if row.get("lineup_category") == "other" and row.get("id") not in ACTIVE_OTHER_SIM_MODEL_IDS:
+                add_issue(
+                    errors,
+                    f"pachinko-sim/stores.py.STORE_INVENTORY[{choice}].machines[{index}].id",
+                    "active other simulator model must be one of ACTIVE_OTHER_SIM_MODEL_IDS.",
                 )
 
     for issue in validate_all_machine_models(MACHINES):

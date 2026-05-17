@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17 15:05:24 KST",
+  "generated_at": "2026-05-17 15:17:01 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
@@ -23,7 +23,7 @@
       "checked_at": "Manual/public-source check date. Re-check onsite if stale."
     },
     "data_freshness": {
-      "generated_at": "2026-05-17 15:05:24 KST",
+      "generated_at": "2026-05-17 15:17:01 KST",
       "earliest_checked_at": "2026-05-10",
       "latest_checked_at": "2026-05-17",
       "checked_dates": [
@@ -32,6 +32,38 @@
         "2026-05-17"
       ]
     },
+    "category_machine_totals": [
+      {
+        "store_id": "rakuen_namba",
+        "store_name": "楽園なんば店",
+        "store_name_ko": "라쿠엔 난바점",
+        "rate": "1.111yen",
+        "eva_machine_count": 19,
+        "daiumi_machine_count": 34,
+        "other_machine_count": 34,
+        "total_machine_count": 87
+      },
+      {
+        "store_id": "123_namba",
+        "store_name": "123難波店",
+        "store_name_ko": "123 난바점",
+        "rate": "1yen",
+        "eva_machine_count": 25,
+        "daiumi_machine_count": 36,
+        "other_machine_count": 33,
+        "total_machine_count": 94
+      },
+      {
+        "store_id": "arrow_namba_hips",
+        "store_name": "ARROW namBa HIPS",
+        "store_name_ko": "애로우 난바 힙스",
+        "rate": "1yen",
+        "eva_machine_count": 11,
+        "daiumi_machine_count": 20,
+        "other_machine_count": 23,
+        "total_machine_count": 54
+      }
+    ],
     "simulator_context_path": "simulator-ai-context.md",
     "onsite_observation_template": {
       "store_id": "",
@@ -3074,7 +3106,8 @@
       "entry_count": 22,
       "total_machine_count": 87,
       "eva_machine_count": 19,
-      "umi_machine_count": 34,
+      "daiumi_machine_count": 34,
+      "other_machine_count": 34,
       "ama_like_machine_count": 36,
       "border_entry_count": 22,
       "border_machine_count": 87,
@@ -3089,7 +3122,8 @@
       "entry_count": 31,
       "total_machine_count": 94,
       "eva_machine_count": 25,
-      "umi_machine_count": 36,
+      "daiumi_machine_count": 36,
+      "other_machine_count": 33,
       "ama_like_machine_count": 33,
       "border_entry_count": 24,
       "border_machine_count": 85,
@@ -3104,7 +3138,8 @@
       "entry_count": 20,
       "total_machine_count": 54,
       "eva_machine_count": 11,
-      "umi_machine_count": 20,
+      "daiumi_machine_count": 20,
+      "other_machine_count": 23,
       "ama_like_machine_count": 20,
       "border_entry_count": 20,
       "border_machine_count": 54,

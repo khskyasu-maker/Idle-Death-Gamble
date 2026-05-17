@@ -44,6 +44,14 @@ STORE_SHORT_LABELS = {
 
 STORE_ORDER = ("rakuen_namba", "123_namba", "arrow_namba_hips")
 
+ACTIVE_OTHER_SIM_MODEL_IDS = {
+    "re_zero_99",
+    "re_zero_199",
+    "re_zero_s2_349",
+    "re_zero_s2_129",
+    "hokuto_10",
+}
+
 # Only names in this map become selectable simulator models from the current
 # store lineup. Extra reference models may remain in machines.py for spec checks.
 MACHINE_NAME_TO_SIM_ID = {
@@ -333,6 +341,7 @@ def build_lineup_row(row: dict, sim_id: str | None, source_url: str) -> dict:
         "source": "DMMぱちタウン",
         "source_url": source_url,
         "source_checked_at": row.get("checked_at", ""),
+        "lineup_category": row.get("category", ""),
         "sim_supported": supported,
         "sim_model_key": sim_id if supported else None,
         "spec_confidence": machine.confidence if machine else None,

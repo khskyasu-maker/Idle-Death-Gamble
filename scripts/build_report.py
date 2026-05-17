@@ -116,10 +116,15 @@ def store_quick_stats(machines):
                     for m in store_machines
                     if is_eva_machine(m)
                 ),
-                "umi_machine_count": sum(
+                "daiumi_machine_count": sum(
                     int_count(m.get("machine_count"))
                     for m in store_machines
                     if is_umi_machine(m)
+                ),
+                "other_machine_count": sum(
+                    int_count(m.get("machine_count"))
+                    for m in store_machines
+                    if text(m.get("category", "")) == "other"
                 ),
                 "ama_like_machine_count": sum(
                     int_count(m.get("machine_count"))
@@ -192,7 +197,7 @@ def build_markdown(latest):
 
     machines = latest.get("machine_info", [])
     store_machine_totals = latest.get("store_machine_totals", [])
-    eva_machine_totals = latest.get("eva_machine_totals", [])
+    category_machine_totals = latest.get("category_machine_totals", [])
     border_ready_count = latest.get("border_ready_machine_count", 0)
     missing_border_count = latest.get("missing_border_machine_count", 0)
 
@@ -233,24 +238,30 @@ def build_markdown(latest):
 
     md += "\n---\n\n"
 
-    # 2. 점포별 에바 계열 총합
-    md += "## 2. 점포별 에바 계열 총합\n\n"
-    eva_headers = [
+    # 2. 점포별 3분류 총합
+    md += "## 2. 점포별 3분류 총합\n\n"
+    category_headers = [
         "점포 ID",
         "일본어 점포명",
         "한국어 점포명",
         "레이트",
-        "에바 계열 총 대수",
+        "에바",
+        "대해물어",
+        "기타",
+        "전체",
     ]
-    md += "| " + " | ".join(eva_headers) + " |\n"
-    md += "| " + " | ".join(["---", "---", "---", "---", "---:"]) + " |\n"
+    md += "| " + " | ".join(category_headers) + " |\n"
+    md += "| " + " | ".join(["---", "---", "---", "---", "---:", "---:", "---:", "---:"]) + " |\n"
 
-    for data in eva_machine_totals:
+    for data in category_machine_totals:
         row = [
             f"`{data.get('store_id', '')}`",
             f"`{data.get('store_name', '')}`",
             data.get("store_name_ko", ""),
             f"`{data.get('rate', '')}`",
+            str(data.get("eva_machine_count", 0)),
+            str(data.get("daiumi_machine_count", 0)),
+            str(data.get("other_machine_count", 0)),
             f"**{data.get('total_machine_count', 0)}대**",
         ]
         md += "| " + " | ".join(row) + " |\n"
@@ -268,12 +279,13 @@ def build_markdown(latest):
         "전체 대수",
         "에바",
         "대해물어",
+        "기타",
         "1/99·감데지",
         "보더 입력 대수",
         "보더 미입력 대수",
     ]
     md += "| " + " | ".join(quick_headers) + " |\n"
-    md += "| " + " | ".join(["---", "---", "---", "---:", "---:", "---:", "---:", "---:", "---:"]) + " |\n"
+    md += "| " + " | ".join(["---", "---", "---", "---:", "---:", "---:", "---:", "---:", "---:", "---:"]) + " |\n"
     for row_data in store_quick_stats(machines):
         row = [
             f"{row_data.get('store_name_ko', '')} (`{row_data.get('store_name', '')}`)",
@@ -281,7 +293,8 @@ def build_markdown(latest):
             row_data.get("onsite_unit", "-"),
             str(row_data.get("total_machine_count", 0)),
             str(row_data.get("eva_machine_count", 0)),
-            str(row_data.get("umi_machine_count", 0)),
+            str(row_data.get("daiumi_machine_count", 0)),
+            str(row_data.get("other_machine_count", 0)),
             str(row_data.get("ama_like_machine_count", 0)),
             f"{row_data.get('border_machine_count', 0)}대 / {row_data.get('border_entry_count', 0)}종",
             str(row_data.get("missing_border_machine_count", 0)),
@@ -843,6 +856,7 @@ def build_ai_context(latest):
             "generated_at": latest.get("generated_at", ""),
             **checked_at_summary(machines),
         },
+        "category_machine_totals": latest.get("category_machine_totals", []),
         "simulator_context_path": "simulator-ai-context.md",
         "onsite_observation_template": onsite_observation_template(),
     }
@@ -973,7 +987,7 @@ def compact_machine_table_html(rows, include_judgment=True):
 def build_machine_data_table_html(latest):
     machines = latest.get("machine_info", [])
     store_machine_totals = latest.get("store_machine_totals", [])
-    eva_machine_totals = latest.get("eva_machine_totals", [])
+    category_machine_totals = latest.get("category_machine_totals", [])
 
     if not machines:
         return "    <p>수동 입력 기종 정보가 없습니다.</p>\n"
@@ -1006,7 +1020,7 @@ def build_machine_data_table_html(latest):
     </div>
 """
 
-    html += "    <h2>2. 점포별 에바 계열 총합</h2>\n"
+    html += "    <h2>2. 점포별 3분류 총합</h2>\n"
     html += """    <div class="table-wrap">
         <table>
             <thead>
@@ -1015,17 +1029,23 @@ def build_machine_data_table_html(latest):
                     <th>일본어 점포명</th>
                     <th>한국어 점포명</th>
                     <th>레이트</th>
-                    <th class="right">에바 계열 총 대수</th>
+                    <th class="right">에바</th>
+                    <th class="right">대해물어</th>
+                    <th class="right">기타</th>
+                    <th class="right">전체</th>
                 </tr>
             </thead>
             <tbody>
 """
-    for data in eva_machine_totals:
+    for data in category_machine_totals:
         html += f"""                <tr>
                     <td><code>{escape(str(data.get('store_id', '')))}</code></td>
                     <td><code>{escape(str(data.get('store_name', '')))}</code></td>
                     <td>{escape(str(data.get('store_name_ko', '')))}</td>
                     <td><code>{escape(str(data.get('rate', '')))}</code></td>
+                    <td class="right">{data.get('eva_machine_count', 0)}</td>
+                    <td class="right">{data.get('daiumi_machine_count', 0)}</td>
+                    <td class="right">{data.get('other_machine_count', 0)}</td>
                     <td class="right"><strong>{data.get('total_machine_count', 0)}대</strong></td>
                 </tr>
 """
@@ -1046,6 +1066,7 @@ def build_machine_data_table_html(latest):
                     <th class="right">전체 대수</th>
                     <th class="right">에바</th>
                     <th class="right">대해물어</th>
+                    <th class="right">기타</th>
                     <th class="right">1/99·감데지</th>
                     <th class="right">보더 입력 대수</th>
                     <th class="right">보더 미입력 대수</th>
@@ -1060,7 +1081,8 @@ def build_machine_data_table_html(latest):
                     <td>{escape(row_data.get('onsite_unit', '-'))}</td>
                     <td class="right">{row_data.get('total_machine_count', 0)}</td>
                     <td class="right">{row_data.get('eva_machine_count', 0)}</td>
-                    <td class="right">{row_data.get('umi_machine_count', 0)}</td>
+                    <td class="right">{row_data.get('daiumi_machine_count', 0)}</td>
+                    <td class="right">{row_data.get('other_machine_count', 0)}</td>
                     <td class="right">{row_data.get('ama_like_machine_count', 0)}</td>
                     <td class="right">{row_data.get('border_machine_count', 0)}대 / {row_data.get('border_entry_count', 0)}종</td>
                     <td class="right">{row_data.get('missing_border_machine_count', 0)}</td>

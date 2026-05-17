@@ -26,6 +26,7 @@ def main():
     # Calculate store machine totals
     store_machine_totals_dict = {}
     eva_machine_totals_dict = {}
+    category_machine_totals_dict = {}
 
     border_ready_machine_count = 0
     missing_border_machine_count = 0
@@ -110,6 +111,26 @@ def main():
         store_machine_totals_dict[store_key]["total_machine_count"] += count
 
         category = m.get("category", "")
+        if store_key not in category_machine_totals_dict:
+            category_machine_totals_dict[store_key] = {
+                "store_id": sid,
+                "store_name": m.get("store_name", ""),
+                "store_name_ko": m.get("store_name_ko", ""),
+                "rate": m.get("rate", ""),
+                "eva_machine_count": 0,
+                "daiumi_machine_count": 0,
+                "other_machine_count": 0,
+                "total_machine_count": 0,
+            }
+        category_totals = category_machine_totals_dict[store_key]
+        category_totals["total_machine_count"] += count
+        if category == "eva":
+            category_totals["eva_machine_count"] += count
+        elif category == "daiumi":
+            category_totals["daiumi_machine_count"] += count
+        else:
+            category_totals["other_machine_count"] += count
+
         if category == "eva":
             if store_key not in eva_machine_totals_dict:
                 eva_machine_totals_dict[store_key] = {
@@ -123,6 +144,7 @@ def main():
 
     store_machine_totals = list(store_machine_totals_dict.values())
     eva_machine_totals = list(eva_machine_totals_dict.values())
+    category_machine_totals = list(category_machine_totals_dict.values())
 
     latest_data = {
         "generated_at": generated_at,
@@ -130,6 +152,7 @@ def main():
         "machine_info": machine_info,
         "store_machine_totals": store_machine_totals,
         "eva_machine_totals": eva_machine_totals,
+        "category_machine_totals": category_machine_totals,
         "border_ready_machine_count": border_ready_machine_count,
         "missing_border_machine_count": missing_border_machine_count,
         "missing_border_machines": missing_border_machines,
