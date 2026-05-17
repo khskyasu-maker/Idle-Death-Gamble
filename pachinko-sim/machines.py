@@ -94,51 +94,6 @@ def sea_kakuhen_10r(
     )
 
 
-def sea_ama_st(
-    machine_id: str,
-    name_ja: str,
-    name_ko: str,
-    source: str,
-    normal_prob: float = 99.9,
-    high_prob: float = 19.5,
-    st_spins: int = 10,
-    jitan_spins: int = 40,
-    confidence: str = "medium",
-    note: str = "",
-) -> Machine:
-    return Machine(
-        id=machine_id,
-        name_ja=name_ja,
-        name_ko=name_ko,
-        spec_type="감데지 / ST+時短",
-        risk_grade="1/99",
-        normal_prob=normal_prob,
-        high_prob=high_prob,
-        normal_hit_dist=[
-            Payout(balls=1080, weight=0.05, next_state="ST", st_spins=st_spins, jitan_spins=110),
-            Payout(balls=648, weight=0.30, next_state="ST", st_spins=st_spins, jitan_spins=50),
-            Payout(balls=432, weight=0.65, next_state="ST", st_spins=st_spins, jitan_spins=jitan_spins),
-        ],
-        st_hit_dist=[
-            Payout(balls=1080, weight=0.05, next_state="ST", st_spins=st_spins, jitan_spins=110),
-            Payout(balls=648, weight=0.30, next_state="ST", st_spins=st_spins, jitan_spins=50),
-            Payout(balls=432, weight=0.65, next_state="ST", st_spins=st_spins, jitan_spins=jitan_spins),
-        ],
-        jitan_hit_dist=[
-            Payout(balls=1080, weight=0.05, next_state="ST", st_spins=st_spins, jitan_spins=110),
-            Payout(balls=648, weight=0.30, next_state="ST", st_spins=st_spins, jitan_spins=50),
-            Payout(balls=432, weight=0.65, next_state="ST", st_spins=st_spins, jitan_spins=jitan_spins),
-        ],
-        kakuben_hit_dist=[],
-        lt_hit_dist=[],
-        simplification_notes="甘海 계열의 ST+時短 구조를 공통 모델화. 4R/6R/10R 지급 분포와 전サポ 회전 차이를 반영.",
-        spec_source=source,
-        confidence=confidence,
-        notes=note or "세부 라운드 비율이 완전히 확인되지 않은 기종은 감해 공통 분포로 근사.",
-        is_estimated=confidence != "high",
-    )
-
-
 def sea_light_st(
     machine_id: str,
     name_ja: str,
@@ -568,14 +523,6 @@ MACHINES = {
 MACHINES.update(
     {
         # DMM-confirmed Umi / Sea family additions.
-        "sea_5_agnes": sea_ama_st(
-            "sea_5_agnes",
-            "PA大海物語5 Withアグネス・ラム",
-            "PA 대해물어5 With 아그네스 램",
-            "DMMぱちタウン machines/4358",
-            confidence="high",
-            note="DMM: 1/99.9, 고확 1/19.5, ST 10회, 전サポ 25/50/120/遊タイム. 라운드 분포는 대표값.",
-        ),
         "sea_5": sea_kakuhen_10r(
             "sea_5",
             "P大海物語5",
@@ -851,17 +798,6 @@ MACHINES.update(
             confidence="high",
             notes="10R/일부5R 후 긴 전サポ는 ST5+時短299 후 遊タイム379까지 이어지는 실질 683회로 반영. 일반 시작回転 기반 遊タイム狙い는 별도 미반영.",
             is_estimated=False,
-        ),
-        "mediterranean_2_89": sea_ama_st(
-            "mediterranean_2_89",
-            "PAスーパー海物語IN地中海2",
-            "PA 슈퍼 바다이야기 IN 지중해2",
-            "DMMぱちタウン / manual rounded",
-            normal_prob=89.8,
-            high_prob=32.9,
-            st_spins=20,
-            jitan_spins=80,
-            confidence="medium",
         ),
         "ginpara_mugen_99": Machine(
             id="ginpara_mugen_99",
@@ -1167,9 +1103,6 @@ MACHINES["hokuto_10"] = Machine(
     fall_reserve_spins={"ST": 4, "LT": 4},
 )
 
-MACHINES["sea_5_black_lt"].spec_source = "P-WORLD database/10197 / DMMぱちタウン machines/4735"
-MACHINES["sea_5_black_lt"].confidence = "high"
-MACHINES["sea_5_black_lt"].is_estimated = False
 MACHINES["sea_5_agnes"] = Machine(
     id="sea_5_agnes",
     name_ja="PA大海物語5 Withアグネス・ラム",
@@ -1204,9 +1137,6 @@ MACHINES["sea_5_agnes"] = Machine(
     notes="ハピネスチャンス中 대당첨은 모두 120회 전サポ라는 예외는 별도 상태 없이 평균 분포로 근사.",
     is_estimated=False,
 )
-MACHINES["eva_15_roar"].spec_source = "P-WORLD / DMMぱちタウン / SANKYO"
-MACHINES["eva_15_roar"].confidence = "high"
-MACHINES["eva_15_roar"].is_estimated = False
 MACHINES["mediterranean_2_89"] = Machine(
     id="mediterranean_2_89",
     name_ja="PAスーパー海物語IN地中海2",

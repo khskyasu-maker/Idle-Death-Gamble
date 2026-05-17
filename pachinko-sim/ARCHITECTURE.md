@@ -67,6 +67,8 @@ Loads `../data/namba-actual-1yen-lineup.json` and builds store inventory.
 Responsibilities:
 
 - map DMM/manual lineup machine names to simulator model keys
+- keep `MACHINE_NAME_TO_SIM_ID` as the active selectable subset; `machines.py`
+  may retain extra reference models for deterministic spec checks
 - keep supported and unsupported machines separate
 - calculate local registered count, supported count, unsupported count, and DMM low-rate total gap
 - convert borderline values into `spins per 1000 yen`

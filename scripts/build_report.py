@@ -56,14 +56,14 @@ def is_eva_machine(machine):
     category = text(machine.get("category", ""))
     machine_name = text(machine.get("machine_name", ""))
     machine_name_ko = text(machine.get("machine_name_ko", ""))
-    return "eva" in category or "エヴァ" in machine_name or "에반게리온" in machine_name_ko
+    return category == "eva" or "エヴァ" in machine_name or "에반게리온" in machine_name_ko
 
 
 def is_umi_machine(machine):
     category = text(machine.get("category", ""))
     machine_name = text(machine.get("machine_name", ""))
     machine_name_ko = text(machine.get("machine_name_ko", ""))
-    return "umi" in category or "海物語" in machine_name or "바다" in machine_name_ko
+    return category == "daiumi" or "大海物語" in machine_name or "대해물어" in machine_name_ko
 
 
 def is_ama_like_machine(machine):
@@ -267,7 +267,7 @@ def build_markdown(latest):
         "현장 회전 단위",
         "전체 대수",
         "에바",
-        "바다",
+        "대해물어",
         "1/99·감데지",
         "보더 입력 대수",
         "보더 미입력 대수",
@@ -558,7 +558,7 @@ def family_tags(machine):
     if is_eva_machine(machine):
         tags.append("eva")
     if is_umi_machine(machine):
-        tags.append("umi")
+        tags.append("daiumi")
     if "Re:ゼロ" in machine_name:
         tags.append("re_zero")
     if "北斗" in machine_name:
@@ -593,7 +593,7 @@ def machine_aliases(machine):
     if "Type レイ" in name_ja:
         aliases.extend(["레이", "type_rei"])
     if is_umi_machine(machine):
-        aliases.extend(["바다", "海物語", "umi"])
+        aliases.extend(["대해물어", "大海物語", "daiumi"])
     if "大海物語5" in name_ja:
         aliases.extend(["대해5", "大海5"])
     if "沖縄" in name_ja:
@@ -1045,7 +1045,7 @@ def build_machine_data_table_html(latest):
                     <th>현장 회전 단위</th>
                     <th class="right">전체 대수</th>
                     <th class="right">에바</th>
-                    <th class="right">바다</th>
+                    <th class="right">대해물어</th>
                     <th class="right">1/99·감데지</th>
                     <th class="right">보더 입력 대수</th>
                     <th class="right">보더 미입력 대수</th>

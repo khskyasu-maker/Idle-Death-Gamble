@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13 14:54:41 KST",
+  "generated_at": "2026-05-17 15:05:24 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
@@ -23,12 +23,13 @@
       "checked_at": "Manual/public-source check date. Re-check onsite if stale."
     },
     "data_freshness": {
-      "generated_at": "2026-05-13 14:54:41 KST",
+      "generated_at": "2026-05-17 15:05:24 KST",
       "earliest_checked_at": "2026-05-10",
-      "latest_checked_at": "2026-05-12",
+      "latest_checked_at": "2026-05-17",
       "checked_dates": [
         "2026-05-10",
-        "2026-05-12"
+        "2026-05-12",
+        "2026-05-17"
       ]
     },
     "simulator_context_path": "simulator-ai-context.md",
@@ -157,17 +158,17 @@
       "aliases": [
         "PA大海物語5 Withアグネス・ラム",
         "PA 대해물어5 With 아그네스 램",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST",
       "initial_probability": "1/99.9",
@@ -198,17 +199,17 @@
       "aliases": [
         "P大海物語5",
         "P 대해물어5",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "確変/時短",
       "initial_probability": "1/319.6",
@@ -238,16 +239,12 @@
       "machine_name_ko": "PA 바다이야기 3R3",
       "aliases": [
         "PA海物語3R3",
-        "PA 바다이야기 3R3",
-        "바다",
-        "海物語",
-        "umi"
+        "PA 바다이야기 3R3"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -278,17 +275,13 @@
       "aliases": [
         "Pスーパー海物語IN沖縄6",
         "P 슈퍼 바다이야기 IN 오키나와6",
-        "바다",
-        "海物語",
-        "umi",
         "오키나와",
         "沖海"
       ],
       "tags": [
-        "umi",
         "middle"
       ],
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "確変/時短",
       "initial_probability": "1/319.6",
@@ -330,7 +323,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.7",
@@ -361,18 +354,14 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
         "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
-        "바다",
-        "海物語",
-        "umi",
         "오키나와",
         "沖海"
       ],
       "tags": [
-        "umi",
         "ama_like",
         "lt"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/超旋風RUSH",
       "initial_probability": "1/99.9",
@@ -403,17 +392,17 @@
       "aliases": [
         "P大海物語5 ブラック",
         "P 대해물어5 블랙",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.8",
@@ -444,15 +433,15 @@
       "aliases": [
         "P大海物語4スペシャルBLACK",
         "P 대해물어4 스페셜 블랙",
-        "바다",
-        "海物語",
-        "umi"
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.8",
@@ -482,16 +471,12 @@
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "aliases": [
         "P海物語 極JAPAN",
-        "P 바다이야기 극 JAPAN",
-        "바다",
-        "海物語",
-        "umi"
+        "P 바다이야기 극 JAPAN"
       ],
       "tags": [
-        "umi",
         "middle"
       ],
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST/時短",
       "initial_probability": "1/319.6",
@@ -522,18 +507,18 @@
       "aliases": [
         "PA大海物語5ブラックLT99ver.",
         "PA 대해물어5 블랙 LT99버전",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like",
         "lt"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/LT",
       "initial_probability": "1/99.9",
@@ -563,16 +548,12 @@
       "machine_name_ko": "PA 신 바다이야기",
       "aliases": [
         "PA新海物語",
-        "PA 신 바다이야기",
-        "바다",
-        "海物語",
-        "umi"
+        "PA 신 바다이야기"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -616,7 +597,7 @@
         "eva",
         "ama_like"
       ],
-      "category": "eva_ama_deji",
+      "category": "eva",
       "spec_type": "ama_deji",
       "rush_type": "ST",
       "initial_probability": "1/99.9",
@@ -660,7 +641,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.7",
@@ -698,7 +679,7 @@
         "re_zero",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "RUSH",
       "initial_probability": "1/99.9",
@@ -728,16 +709,12 @@
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "aliases": [
         "PAスーパー海物語IN地中海2",
-        "PA 슈퍼 바다이야기 IN 지중해2",
-        "바다",
-        "海物語",
-        "umi"
+        "PA 슈퍼 바다이야기 IN 지중해2"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/89.8",
@@ -768,15 +745,15 @@
       "aliases": [
         "P大海物語4スペシャル",
         "P 대해물어4 스페셜",
-        "바다",
-        "海物語",
-        "umi"
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "確変/時短",
       "initial_probability": "1/319.6",
@@ -820,7 +797,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/129.8",
@@ -864,7 +841,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.2",
@@ -900,10 +877,9 @@
       ],
       "tags": [
         "re_zero",
-        "middle",
-        "high_variance"
+        "middle"
       ],
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/349.9",
@@ -946,7 +922,7 @@
         "middle",
         "lt"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle_lt",
       "rush_type": "ST/LT",
       "initial_probability": "1/129.9",
@@ -982,10 +958,9 @@
       ],
       "tags": [
         "re_zero",
-        "middle",
-        "high_variance"
+        "middle"
       ],
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "RUSH",
       "initial_probability": "1/319.6",
@@ -1025,7 +1000,7 @@
         "middle",
         "lt"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle_lt",
       "rush_type": "LT",
       "initial_probability": "1/299.9",
@@ -1056,17 +1031,17 @@
       "aliases": [
         "PA大海物語5 Withアグネス・ラム",
         "PA 대해물어5 With 아그네스 램",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST",
       "initial_probability": "1/99.9",
@@ -1097,15 +1072,15 @@
       "aliases": [
         "P大海物語4スペシャルBLACK",
         "P 대해물어4 스페셜 블랙",
-        "바다",
-        "海物語",
-        "umi"
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.8",
@@ -1136,17 +1111,13 @@
       "aliases": [
         "Pスーパー海物語IN沖縄6",
         "P 슈퍼 바다이야기 IN 오키나와6",
-        "바다",
-        "海物語",
-        "umi",
         "오키나와",
         "沖海"
       ],
       "tags": [
-        "umi",
         "middle"
       ],
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "確変/時短",
       "initial_probability": "1/319.6",
@@ -1188,7 +1159,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.7",
@@ -1219,18 +1190,18 @@
       "aliases": [
         "PA大海物語5ブラックLT99ver.",
         "PA 대해물어5 블랙 LT99버전",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like",
         "lt"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/LT",
       "initial_probability": "1/99.9",
@@ -1266,10 +1237,9 @@
       ],
       "tags": [
         "re_zero",
-        "middle",
-        "high_variance"
+        "middle"
       ],
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/349.9",
@@ -1300,18 +1270,14 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
         "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
-        "바다",
-        "海物語",
-        "umi",
         "오키나와",
         "沖海"
       ],
       "tags": [
-        "umi",
         "ama_like",
         "lt"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/超旋風RUSH",
       "initial_probability": "1/99.9",
@@ -1342,15 +1308,15 @@
       "aliases": [
         "PA大海物語4スペシャル Withアグネス・ラム",
         "PA 대해물어4 스페셜 With 아그네스 램",
-        "바다",
-        "海物語",
-        "umi"
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/遊タイム",
       "initial_probability": "1/99.9",
@@ -1381,17 +1347,17 @@
       "aliases": [
         "P大海物語5スペシャル",
         "P 대해물어5 스페셜",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "確変/時短",
       "initial_probability": "1/319.6",
@@ -1407,9 +1373,9 @@
         "border_source": "dmm_pachitown",
         "spec_source_url": "",
         "border_reference_url": "https://p-town.dmm.com/machines/4646",
-        "checked_at": "2026-05-12"
+        "checked_at": "2026-05-17"
       },
-      "memo": "123 DMM 1円 섹션 보완. 바다 미들 관찰 후보."
+      "memo": "123 DMM 1円 섹션 재확인. P大海物語5スペシャル 4대 신규/관찰 후보."
     },
     {
       "store_id": "123_namba",
@@ -1434,7 +1400,7 @@
         "middle",
         "lt"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle_lt",
       "rush_type": "ST/LT",
       "initial_probability": "1/129.9",
@@ -1478,7 +1444,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.7",
@@ -1509,17 +1475,17 @@
       "aliases": [
         "P大海物語5 ブラック",
         "P 대해물어5 블랙",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.8",
@@ -1563,7 +1529,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.2",
@@ -1607,7 +1573,7 @@
         "eva",
         "ama_like"
       ],
-      "category": "eva_ama_deji",
+      "category": "eva",
       "spec_type": "ama_deji",
       "rush_type": "ST",
       "initial_probability": "1/99.9",
@@ -1637,16 +1603,12 @@
       "machine_name_ko": "PA 바다이야기 극 JAPAN With 나기나미",
       "aliases": [
         "PA海物語 極JAPAN Withナギナミ",
-        "PA 바다이야기 극 JAPAN With 나기나미",
-        "바다",
-        "海物語",
-        "umi"
+        "PA 바다이야기 극 JAPAN With 나기나미"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -1690,7 +1652,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/129.8",
@@ -1720,16 +1682,12 @@
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "aliases": [
         "P海物語 極JAPAN",
-        "P 바다이야기 극 JAPAN",
-        "바다",
-        "海物語",
-        "umi"
+        "P 바다이야기 극 JAPAN"
       ],
       "tags": [
-        "umi",
         "middle"
       ],
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST/時短",
       "initial_probability": "1/319.6",
@@ -1769,7 +1727,7 @@
         "middle",
         "lt"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle_lt",
       "rush_type": "LT",
       "initial_probability": "1/299.9",
@@ -1795,6 +1753,77 @@
       "store_name_ko": "123 난바점",
       "rate": "1yen",
       "onsite_unit": "200玉",
+      "machine_name": "e東京喰種",
+      "machine_name_ko": "e 도쿄구울",
+      "aliases": [
+        "e東京喰種",
+        "e 도쿄구울"
+      ],
+      "tags": [
+        "lt",
+        "high_variance"
+      ],
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "rush_type": "RUSH/LT",
+      "initial_probability": "1/399",
+      "machine_count": 2,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "dmm_pachitown",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "aliases": [
+        "e甲鉄城のカバネリ2 咲かせや燦然",
+        "e 갑철성의 카바네리2 사카세야 산젠"
+      ],
+      "tags": [
+        "lt"
+      ],
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "rush_type": "RUSH/LT",
+      "initial_probability": "1/319.7",
+      "machine_count": 2,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "dmm_pachitown",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
       "machine_name": "P Re:ゼロから始める異世界生活 鬼がかり 199ver.",
       "machine_name_ko": "P 리제로 귀신들린 199버전",
       "aliases": [
@@ -1807,7 +1836,7 @@
         "re_zero",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "other",
       "spec_type": "light_middle",
       "rush_type": "RUSH",
       "initial_probability": "1/199.8",
@@ -1845,7 +1874,7 @@
         "re_zero",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "RUSH",
       "initial_probability": "1/99.9",
@@ -1876,17 +1905,13 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 with アイマリン",
         "PA 슈퍼 바다이야기 IN 오키나와5 with 아이마린",
-        "바다",
-        "海物語",
-        "umi",
         "오키나와",
         "沖海"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -1916,16 +1941,12 @@
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "aliases": [
         "PAスーパー海物語IN地中海2",
-        "PA 슈퍼 바다이야기 IN 지중해2",
-        "바다",
-        "海物語",
-        "umi"
+        "PA 슈퍼 바다이야기 IN 지중해2"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/89.8",
@@ -1955,16 +1976,12 @@
       "machine_name_ko": "PA 바다이야기 3R3",
       "aliases": [
         "PA海物語3R3",
-        "PA 바다이야기 3R3",
-        "바다",
-        "海物語",
-        "umi"
+        "PA 바다이야기 3R3"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -1990,6 +2007,151 @@
       "store_name_ko": "123 난바점",
       "rate": "1yen",
       "onsite_unit": "200玉",
+      "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
+      "machine_name_ko": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
+      "aliases": [
+        "Pルパン三世 銭形からの招待状 77Sweet Ver.",
+        "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver."
+      ],
+      "tags": [
+        "ama_like"
+      ],
+      "category": "other",
+      "spec_type": "sweet",
+      "rush_type": "RUSH",
+      "initial_probability": "1/77.7",
+      "machine_count": 1,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "dmm_pachitown",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
+      "machine_name": "P閃乱カグラ189大入りver.",
+      "machine_name_ko": "P 섬란카구라 189 대입 ver.",
+      "aliases": [
+        "P閃乱カグラ189大入りver.",
+        "P 섬란카구라 189 대입 ver."
+      ],
+      "tags": [
+        "middle",
+        "lt"
+      ],
+      "category": "other",
+      "spec_type": "light_middle_lt",
+      "rush_type": "RUSH/LT",
+      "initial_probability": "1/189.4",
+      "machine_count": 1,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "dmm_pachitown",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
+      "machine_name": "eアズールレーン2 THE ANIMATION 超次元",
+      "machine_name_ko": "e 아주르레인2 THE ANIMATION 초차원",
+      "aliases": [
+        "eアズールレーン2 THE ANIMATION 超次元",
+        "e 아주르레인2 THE ANIMATION 초차원"
+      ],
+      "tags": [
+        "lt"
+      ],
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "rush_type": "RUSH/LT",
+      "initial_probability": "1/169.9",
+      "machine_count": 1,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "dmm_pachitown",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
+      "machine_name": "e北斗の拳11 暴凶星",
+      "machine_name_ko": "e 북두의 권11 폭흉성",
+      "aliases": [
+        "e北斗の拳11 暴凶星",
+        "e 북두의 권11 폭흉성",
+        "북두",
+        "hokuto"
+      ],
+      "tags": [
+        "hokuto",
+        "lt",
+        "high_variance"
+      ],
+      "category": "other",
+      "spec_type": "smart_pachinko_lt",
+      "rush_type": "RUSH/LT",
+      "initial_probability": "1/399.8",
+      "machine_count": 1,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "dmm_pachitown",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
       "machine_name": "e新世紀エヴァンゲリオン ～はじまりの記憶～",
       "machine_name_ko": "e 신세기 에반게리온 시작의 기억",
       "aliases": [
@@ -2004,7 +2166,7 @@
         "lt",
         "high_variance"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "high_variance_lt",
       "rush_type": "ST/LT",
       "initial_probability": "1/399.9",
@@ -2025,6 +2187,43 @@
       "memo": "123 난바 1円パチ 실제 설치 후보. 1대 고위험 체험 후보."
     },
     {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "onsite_unit": "200玉",
+      "machine_name": "e真・北斗無双 第5章 夢幻闘双",
+      "machine_name_ko": "e 진 북두무쌍 제5장 몽환투쌍",
+      "aliases": [
+        "e真・北斗無双 第5章 夢幻闘双",
+        "e 진 북두무쌍 제5장 몽환투쌍",
+        "북두",
+        "hokuto"
+      ],
+      "tags": [
+        "hokuto"
+      ],
+      "category": "other",
+      "spec_type": "smart_pachinko",
+      "rush_type": "RUSH",
+      "initial_probability": "1/159.8",
+      "machine_count": 1,
+      "border_spins_per_1000yen": null,
+      "border_unit": null,
+      "border_unit_value": null,
+      "border_confidence": "unknown",
+      "onsite_judgment": "-",
+      "source": {
+        "install_source": "dmm_pachitown",
+        "spec_source": "dmm_pachitown",
+        "border_source": "",
+        "spec_source_url": "",
+        "border_reference_url": "",
+        "checked_at": "2026-05-17"
+      },
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
       "store_id": "arrow_namba_hips",
       "store_name": "ARROW namBa HIPS",
       "store_name_ko": "애로우 난바 HIPS",
@@ -2035,15 +2234,15 @@
       "aliases": [
         "P大海物語4スペシャルBLACK",
         "P 대해물어4 스페셜 BLACK",
-        "바다",
-        "海物語",
-        "umi"
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.8",
@@ -2074,18 +2273,14 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
         "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
-        "바다",
-        "海物語",
-        "umi",
         "오키나와",
         "沖海"
       ],
       "tags": [
-        "umi",
         "ama_like",
         "lt"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/超旋風RUSH",
       "initial_probability": "1/99.9",
@@ -2115,16 +2310,12 @@
       "machine_name_ko": "PA 신 바다이야기",
       "aliases": [
         "PA新海物語",
-        "PA 신 바다이야기",
-        "바다",
-        "海物語",
-        "umi"
+        "PA 신 바다이야기"
       ],
       "tags": [
-        "umi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -2155,17 +2346,17 @@
       "aliases": [
         "P大海物語5",
         "P 대해물어5",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.6",
@@ -2196,17 +2387,17 @@
       "aliases": [
         "P大海物語5 ブラック",
         "P 대해물어5 블랙",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.8",
@@ -2248,7 +2439,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.7",
@@ -2279,17 +2470,17 @@
       "aliases": [
         "PA大海物語5 Withアグネス・ラム",
         "PA 대해물어5 With 아그네스 램",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST",
       "initial_probability": "1/99.9",
@@ -2320,17 +2511,13 @@
       "aliases": [
         "Pスーパー海物語 IN 沖縄5 夜桜超旋風",
         "P 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍",
-        "바다",
-        "海物語",
-        "umi",
         "오키나와",
         "沖海"
       ],
       "tags": [
-        "umi",
         "middle"
       ],
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.6",
@@ -2366,10 +2553,9 @@
       ],
       "tags": [
         "re_zero",
-        "middle",
-        "high_variance"
+        "middle"
       ],
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/349.9",
@@ -2407,7 +2593,7 @@
         "re_zero",
         "middle"
       ],
-      "category": "light_middle",
+      "category": "other",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/129.8",
@@ -2445,7 +2631,7 @@
         "re_zero",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "RUSH",
       "initial_probability": "1/99.9",
@@ -2480,7 +2666,7 @@
       "tags": [
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -2511,18 +2697,18 @@
       "aliases": [
         "PA大海物語5ブラックLT99ver.",
         "PA 대해물어5 블랙 LT99버전",
-        "바다",
-        "海物語",
-        "umi",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "대해5",
         "大海5"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like",
         "lt"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/LT",
       "initial_probability": "1/99.9",
@@ -2553,15 +2739,15 @@
       "aliases": [
         "Pまわるん大海物語4スペシャル Withアグネス・ラム 119ver.",
         "P 마와룽 대해물어4 스페셜 With 아그네스 램 119",
-        "바다",
-        "海物語",
-        "umi"
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
-        "umi",
+        "daiumi",
         "ama_like"
       ],
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "light129",
       "rush_type": "ST/時短",
       "initial_probability": "1/119.8",
@@ -2605,7 +2791,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/129.8",
@@ -2649,7 +2835,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "rush_type": "ST",
       "initial_probability": "1/199.2",
@@ -2679,16 +2865,12 @@
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "aliases": [
         "P海物語 極JAPAN",
-        "P 바다이야기 극 JAPAN",
-        "바다",
-        "海物語",
-        "umi"
+        "P 바다이야기 극 JAPAN"
       ],
       "tags": [
-        "umi",
         "middle"
       ],
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST/時短",
       "initial_probability": "1/319.6",
@@ -2732,7 +2914,7 @@
         "eva",
         "middle"
       ],
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.7",
@@ -2769,10 +2951,9 @@
       "tags": [
         "hokuto",
         "middle",
-        "lt",
-        "high_variance"
+        "lt"
       ],
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "rush_type": "ST/LT",
       "initial_probability": "1/348.6",
@@ -2816,7 +2997,7 @@
         "eva",
         "ama_like"
       ],
-      "category": "eva_ama_deji",
+      "category": "eva",
       "spec_type": "ama_deji",
       "rush_type": "ST",
       "initial_probability": "1/99.9",
@@ -2850,7 +3031,7 @@
       "store_name": "123難波店",
       "store_name_ko": "123 난바점",
       "rate": "1yen",
-      "total_machine_count": 85
+      "total_machine_count": 94
     },
     {
       "store_id": "arrow_namba_hips",
@@ -2893,7 +3074,7 @@
       "entry_count": 22,
       "total_machine_count": 87,
       "eva_machine_count": 19,
-      "umi_machine_count": 63,
+      "umi_machine_count": 34,
       "ama_like_machine_count": 36,
       "border_entry_count": 22,
       "border_machine_count": 87,
@@ -2905,14 +3086,14 @@
       "store_name_ko": "123 난바점",
       "rate": "1yen",
       "onsite_unit": "200玉",
-      "entry_count": 24,
-      "total_machine_count": 85,
+      "entry_count": 31,
+      "total_machine_count": 94,
       "eva_machine_count": 25,
-      "umi_machine_count": 53,
-      "ama_like_machine_count": 32,
+      "umi_machine_count": 36,
+      "ama_like_machine_count": 33,
       "border_entry_count": 24,
       "border_machine_count": 85,
-      "missing_border_machine_count": 0
+      "missing_border_machine_count": 9
     },
     {
       "store_id": "arrow_namba_hips",
@@ -2923,7 +3104,7 @@
       "entry_count": 20,
       "total_machine_count": 54,
       "eva_machine_count": 11,
-      "umi_machine_count": 33,
+      "umi_machine_count": 20,
       "ama_like_machine_count": 20,
       "border_entry_count": 20,
       "border_machine_count": 54,
@@ -3324,10 +3505,180 @@
       "checked_at": "2026-05-12"
     }
   ],
-  "missing_border_machines_by_count": [],
+  "missing_border_machines_by_count": [
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "machine_name": "e東京喰種",
+      "machine_name_ko": "e 도쿄구울",
+      "initial_probability": "1/399",
+      "machine_count": 2,
+      "onsite_unit": "200玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "initial_probability": "1/319.7",
+      "machine_count": 2,
+      "onsite_unit": "200玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
+      "machine_name_ko": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
+      "initial_probability": "1/77.7",
+      "machine_count": 1,
+      "onsite_unit": "200玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "machine_name": "P閃乱カグラ189大入りver.",
+      "machine_name_ko": "P 섬란카구라 189 대입 ver.",
+      "initial_probability": "1/189.4",
+      "machine_count": 1,
+      "onsite_unit": "200玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "machine_name": "eアズールレーン2 THE ANIMATION 超次元",
+      "machine_name_ko": "e 아주르레인2 THE ANIMATION 초차원",
+      "initial_probability": "1/169.9",
+      "machine_count": 1,
+      "onsite_unit": "200玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "machine_name": "e北斗の拳11 暴凶星",
+      "machine_name_ko": "e 북두의 권11 폭흉성",
+      "initial_probability": "1/399.8",
+      "machine_count": 1,
+      "onsite_unit": "200玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "machine_name": "e真・北斗無双 第5章 夢幻闘双",
+      "machine_name_ko": "e 진 북두무쌍 제5장 몽환투쌍",
+      "initial_probability": "1/159.8",
+      "machine_count": 1,
+      "onsite_unit": "200玉",
+      "onsite_judgment": "-",
+      "checked_at": "2026-05-17"
+    }
+  ],
   "border_ready_machine_count": 66,
-  "missing_border_machine_count": 0,
-  "missing_border_machines": [],
+  "missing_border_machine_count": 7,
+  "missing_border_machines": [
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "rate": "1yen",
+      "machine_count": 2,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
+      "machine_name_ko": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
+      "rate": "1yen",
+      "machine_count": 1,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "eアズールレーン2 THE ANIMATION 超次元",
+      "machine_name_ko": "e 아주르레인2 THE ANIMATION 초차원",
+      "rate": "1yen",
+      "machine_count": 1,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "e北斗の拳11 暴凶星",
+      "machine_name_ko": "e 북두의 권11 폭흉성",
+      "rate": "1yen",
+      "machine_count": 1,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "P閃乱カグラ189大入りver.",
+      "machine_name_ko": "P 섬란카구라 189 대입 ver.",
+      "rate": "1yen",
+      "machine_count": 1,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "e真・北斗無双 第5章 夢幻闘双",
+      "machine_name_ko": "e 진 북두무쌍 제5장 몽환투쌍",
+      "rate": "1yen",
+      "machine_count": 1,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "machine_name": "e東京喰種",
+      "machine_name_ko": "e 도쿄구울",
+      "rate": "1yen",
+      "machine_count": 2,
+      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
+    }
+  ],
   "machine_info": [
     {
       "store_id": "rakuen_namba",
@@ -3336,7 +3687,7 @@
       "machine_name": "PA大海物語5 Withアグネス・ラム",
       "machine_name_ko": "PA 대해물어5 With 아그네스 램",
       "rate": "1.111yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST",
@@ -3362,7 +3713,7 @@
       "machine_name": "P大海物語5",
       "machine_name_ko": "P 대해물어5",
       "rate": "1.111yen",
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "確変/時短",
@@ -3388,7 +3739,7 @@
       "machine_name": "PA海物語3R3",
       "machine_name_ko": "PA 바다이야기 3R3",
       "rate": "1.111yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -3415,7 +3766,7 @@
       "machine_name": "Pスーパー海物語IN沖縄6",
       "machine_name_ko": "P 슈퍼 바다이야기 IN 오키나와6",
       "rate": "1.111yen",
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "確変/時短",
@@ -3442,7 +3793,7 @@
       "machine_name": "新世紀エヴァンゲリオン〜未来への咆哮〜",
       "machine_name_ko": "신세기 에반게리온 미래로의 포효",
       "rate": "1.111yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "initial_probability": "1/319.7",
       "rush_type": "ST",
@@ -3468,7 +3819,7 @@
       "machine_name": "P大海物語5 ブラック",
       "machine_name_ko": "P 대해물어5 블랙",
       "rate": "1.111yen",
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "initial_probability": "1/199.8",
       "rush_type": "ST",
@@ -3494,7 +3845,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
       "rate": "1.111yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/超旋風RUSH",
@@ -3521,7 +3872,7 @@
       "machine_name": "P海物語 極JAPAN",
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "rate": "1.111yen",
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST/時短",
@@ -3548,7 +3899,7 @@
       "machine_name": "P大海物語4スペシャルBLACK",
       "machine_name_ko": "P 대해물어4 스페셜 블랙",
       "rate": "1.111yen",
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "initial_probability": "1/199.8",
       "rush_type": "ST",
@@ -3575,7 +3926,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン PREMIUM MODEL",
       "machine_name_ko": "P 신 에반게리온 프리미엄 모델",
       "rate": "1.111yen",
-      "category": "eva_ama_deji",
+      "category": "eva",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST",
@@ -3601,7 +3952,7 @@
       "machine_name": "PA大海物語5ブラックLT99ver.",
       "machine_name_ko": "PA 대해물어5 블랙 LT99버전",
       "rate": "1.111yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/LT",
@@ -3627,7 +3978,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン Type レイ",
       "machine_name_ko": "P 신 에반게리온 Type 레이",
       "rate": "1.111yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "initial_probability": "1/319.7",
       "rush_type": "ST",
@@ -3653,7 +4004,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン 129 LT ver.",
       "machine_name_ko": "P 신 에반게리온 129 LT 버전",
       "rate": "1.111yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle_lt",
       "initial_probability": "1/129.9",
       "rush_type": "ST/LT",
@@ -3679,7 +4030,7 @@
       "machine_name": "P Re:ゼロから始める異世界生活 鬼がかり 99ver.",
       "machine_name_ko": "P 리제로 귀신들린 99버전",
       "rate": "1.111yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "RUSH",
@@ -3706,7 +4057,7 @@
       "machine_name": "e Re:ゼロから始める異世界生活 season2",
       "machine_name_ko": "e 리제로 시즌2",
       "rate": "1.111yen",
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/349.9",
       "rush_type": "ST",
@@ -3733,7 +4084,7 @@
       "machine_name": "P新世紀エヴァンゲリオン〜未来への咆哮〜SPECIAL EDITION",
       "machine_name_ko": "P 신세기 에반게리온 미래로의 포효 스페셜 에디션",
       "rate": "1.111yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "initial_probability": "1/199.2",
       "rush_type": "ST",
@@ -3759,7 +4110,7 @@
       "machine_name": "P新世紀エヴァンゲリオン〜未来への咆哮〜PREMIUM MODEL",
       "machine_name_ko": "P 신세기 에반게리온 미래로의 포효 프리미엄 모델",
       "rate": "1.111yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "initial_probability": "1/129.8",
       "rush_type": "ST",
@@ -3786,7 +4137,7 @@
       "machine_name": "eゴジラ対エヴァンゲリオン2 超デカゴールド",
       "machine_name_ko": "e 고질라 대 에반게리온2 초 데카 골드",
       "rate": "1.111yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle_lt",
       "initial_probability": "1/299.9",
       "rush_type": "LT",
@@ -3813,7 +4164,7 @@
       "machine_name": "P Re:ゼロから始める異世界生活 鬼がかりver.",
       "machine_name_ko": "P 리제로 귀신들린 버전",
       "rate": "1.111yen",
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "RUSH",
@@ -3840,7 +4191,7 @@
       "machine_name": "P大海物語4スペシャルBLACK",
       "machine_name_ko": "P 대해물어4 스페셜 블랙",
       "rate": "1yen",
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "initial_probability": "1/199.8",
       "rush_type": "ST",
@@ -3866,7 +4217,7 @@
       "machine_name": "PA大海物語5 Withアグネス・ラム",
       "machine_name_ko": "PA 대해물어5 With 아그네스 램",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST",
@@ -3891,7 +4242,7 @@
       "machine_name": "Pスーパー海物語IN沖縄6",
       "machine_name_ko": "P 슈퍼 바다이야기 IN 오키나와6",
       "rate": "1yen",
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "確変/時短",
@@ -3917,7 +4268,7 @@
       "machine_name": "PA大海物語5ブラックLT99ver.",
       "machine_name_ko": "PA 대해물어5 블랙 LT99버전",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/LT",
@@ -3942,7 +4293,7 @@
       "machine_name": "PA大海物語4スペシャル Withアグネス・ラム",
       "machine_name_ko": "PA 대해물어4 스페셜 With 아그네스 램",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/遊タイム",
@@ -3968,7 +4319,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/超旋風RUSH",
@@ -3994,7 +4345,7 @@
       "machine_name": "P大海物語5 ブラック",
       "machine_name_ko": "P 대해물어5 블랙",
       "rate": "1yen",
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "initial_probability": "1/199.8",
       "rush_type": "ST",
@@ -4019,7 +4370,7 @@
       "machine_name": "PA海物語3R3",
       "machine_name_ko": "PA 바다이야기 3R3",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4045,7 +4396,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 with アイマリン",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 with 아이마린",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4071,7 +4422,7 @@
       "machine_name": "PAスーパー海物語IN地中海2",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/89.8",
       "rush_type": "ST/時短",
@@ -4097,7 +4448,7 @@
       "machine_name": "P Re:ゼロから始める異世界生活 鬼がかり 99ver.",
       "machine_name_ko": "P 리제로 귀신들린 99버전",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "RUSH",
@@ -4123,7 +4474,7 @@
       "machine_name": "P Re:ゼロから始める異世界生活 鬼がかり 199ver.",
       "machine_name_ko": "P 리제로 귀신들린 199버전",
       "rate": "1yen",
-      "category": "light_middle",
+      "category": "other",
       "spec_type": "light_middle",
       "initial_probability": "1/199.8",
       "rush_type": "RUSH",
@@ -4149,7 +4500,7 @@
       "machine_name": "新世紀エヴァンゲリオン〜未来への咆哮〜",
       "machine_name_ko": "신세기 에반게리온 미래로의 포효",
       "rate": "1yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "initial_probability": "1/319.7",
       "rush_type": "ST",
@@ -4174,7 +4525,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン Type レイ",
       "machine_name_ko": "P 신 에반게리온 Type 레이",
       "rate": "1yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "initial_probability": "1/319.7",
       "rush_type": "ST",
@@ -4199,7 +4550,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン 129 LT ver.",
       "machine_name_ko": "P 신 에반게리온 129 LT 버전",
       "rate": "1yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle_lt",
       "initial_probability": "1/129.9",
       "rush_type": "ST/LT",
@@ -4224,7 +4575,7 @@
       "machine_name": "P新世紀エヴァンゲリオン〜未来への咆哮〜SPECIAL EDITION",
       "machine_name_ko": "P 신세기 에반게리온 미래로의 포효 스페셜 에디션",
       "rate": "1yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "initial_probability": "1/199.2",
       "rush_type": "ST",
@@ -4249,7 +4600,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン PREMIUM MODEL",
       "machine_name_ko": "P 신 에반게리온 프리미엄 모델",
       "rate": "1yen",
-      "category": "eva_ama_deji",
+      "category": "eva",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST",
@@ -4274,7 +4625,7 @@
       "machine_name": "eゴジラ対エヴァンゲリオン2 超デカゴールド",
       "machine_name_ko": "e 고질라 대 에반게리온2 초 데카 골드",
       "rate": "1yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle_lt",
       "initial_probability": "1/299.9",
       "rush_type": "LT",
@@ -4300,7 +4651,7 @@
       "machine_name": "e新世紀エヴァンゲリオン ～はじまりの記憶～",
       "machine_name_ko": "e 신세기 에반게리온 시작의 기억",
       "rate": "1yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "high_variance_lt",
       "initial_probability": "1/399.9",
       "rush_type": "ST/LT",
@@ -4326,7 +4677,7 @@
       "machine_name": "新世紀エヴァンゲリオン〜未来への咆哮〜",
       "machine_name_ko": "신세기 에반게리온 미래로의 포효",
       "rate": "1yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "initial_probability": "1/319.7",
       "rush_type": "ST",
@@ -4351,7 +4702,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン Type レイ",
       "machine_name_ko": "P 신 에반게리온 Type 레이",
       "rate": "1yen",
-      "category": "eva_middle",
+      "category": "eva",
       "spec_type": "middle",
       "initial_probability": "1/319.7",
       "rush_type": "ST",
@@ -4376,7 +4727,7 @@
       "machine_name": "P新世紀エヴァンゲリオン〜未来への咆哮〜SPECIAL EDITION",
       "machine_name_ko": "P 신세기 에반게리온 미래로의 포효 스페셜 에디션",
       "rate": "1yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "initial_probability": "1/199.2",
       "rush_type": "ST",
@@ -4401,7 +4752,7 @@
       "machine_name": "ぱちんこ シン・エヴァンゲリオン PREMIUM MODEL",
       "machine_name_ko": "P 신 에반게리온 프리미엄 모델",
       "rate": "1yen",
-      "category": "eva_ama_deji",
+      "category": "eva",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST",
@@ -4426,7 +4777,7 @@
       "machine_name": "P新世紀エヴァンゲリオン〜未来への咆哮〜PREMIUM MODEL",
       "machine_name_ko": "P 신세기 에반게리온 미래로의 포효 프리미엄 모델",
       "rate": "1yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "initial_probability": "1/129.8",
       "rush_type": "ST",
@@ -4452,7 +4803,7 @@
       "machine_name": "e Re:ゼロから始める異世界生活 season2",
       "machine_name_ko": "e 리제로 시즌2",
       "rate": "1yen",
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/349.9",
       "rush_type": "ST",
@@ -4478,7 +4829,7 @@
       "machine_name": "P Re:ゼロから始める異世界生活 season2 129ver.",
       "machine_name_ko": "P 리제로 시즌2 129버전",
       "rate": "1yen",
-      "category": "light_middle",
+      "category": "other",
       "spec_type": "light_middle",
       "initial_probability": "1/129.8",
       "rush_type": "ST",
@@ -4504,7 +4855,7 @@
       "machine_name": "e北斗の拳10",
       "machine_name_ko": "e 북두의 권 10",
       "rate": "1yen",
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/348.6",
       "rush_type": "ST/LT",
@@ -4531,7 +4882,7 @@
       "machine_name": "P大海物語5",
       "machine_name_ko": "P 대해물어5",
       "rate": "1yen",
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST",
@@ -4556,7 +4907,7 @@
       "machine_name": "PA大海物語5 Withアグネス・ラム",
       "machine_name_ko": "PA 대해물어5 With 아그네스 램",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST",
@@ -4581,7 +4932,7 @@
       "machine_name": "P大海物語5 ブラック",
       "machine_name_ko": "P 대해물어5 블랙",
       "rate": "1yen",
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "initial_probability": "1/199.8",
       "rush_type": "ST",
@@ -4606,7 +4957,7 @@
       "machine_name": "PA大海物語5ブラックLT99ver.",
       "machine_name_ko": "PA 대해물어5 블랙 LT99버전",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/LT",
@@ -4631,7 +4982,7 @@
       "machine_name": "PA新海物語",
       "machine_name_ko": "PA 신 바다이야기",
       "rate": "1.111yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4658,7 +5009,7 @@
       "machine_name": "PAスーパー海物語IN地中海2",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "rate": "1.111yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/89.8",
       "rush_type": "ST/時短",
@@ -4685,7 +5036,7 @@
       "machine_name": "P大海物語4スペシャル",
       "machine_name_ko": "P 대해물어4 스페셜",
       "rate": "1.111yen",
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "確変/時短",
@@ -4712,7 +5063,7 @@
       "machine_name": "PA海物語 極JAPAN Withナギナミ",
       "machine_name_ko": "PA 바다이야기 극 JAPAN With 나기나미",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4738,7 +5089,7 @@
       "machine_name": "P海物語 極JAPAN",
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "rate": "1yen",
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST/時短",
@@ -4764,15 +5115,15 @@
       "machine_name": "P大海物語5スペシャル",
       "machine_name_ko": "P 대해물어5 스페셜",
       "rate": "1yen",
-      "category": "umi",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "確変/時短",
       "machine_count": 4,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
-      "memo": "123 DMM 1円 섹션 보완. 바다 미들 관찰 후보.",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 재확인. P大海物語5スペシャル 4대 신규/관찰 후보.",
       "spec_source": "manual_note",
       "border_source": "dmm_pachitown",
       "border_note": "DMM 1円/200玉 14.2.",
@@ -4790,7 +5141,7 @@
       "machine_name": "e Re:ゼロから始める異世界生活 season2",
       "machine_name_ko": "e 리제로 시즌2",
       "rate": "1yen",
-      "category": "popular_high_variance",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/349.9",
       "rush_type": "ST",
@@ -4816,7 +5167,7 @@
       "machine_name": "P新世紀エヴァンゲリオン〜未来への咆哮〜PREMIUM MODEL",
       "machine_name_ko": "P 신세기 에반게리온 미래로의 포효 프리미엄 모델",
       "rate": "1yen",
-      "category": "eva_light_middle",
+      "category": "eva",
       "spec_type": "light_middle",
       "initial_probability": "1/129.8",
       "rush_type": "ST",
@@ -4836,13 +5187,195 @@
       "border_1yen_per_200": 13.9
     },
     {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "category": "other",
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
+      "spec_source": "dmm_pachitown",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+      "machine_name_ko": "e 갑철성의 카바네리2 사카세야 산젠",
+      "spec_type": "smart_pachinko_lt",
+      "initial_probability": "1/319.7",
+      "rush_type": "RUSH/LT",
+      "machine_count": 2
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "category": "other",
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
+      "spec_source": "dmm_pachitown",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
+      "machine_name_ko": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
+      "spec_type": "sweet",
+      "initial_probability": "1/77.7",
+      "rush_type": "RUSH",
+      "machine_count": 1
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "category": "other",
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
+      "spec_source": "dmm_pachitown",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "machine_name": "eアズールレーン2 THE ANIMATION 超次元",
+      "machine_name_ko": "e 아주르레인2 THE ANIMATION 초차원",
+      "spec_type": "smart_pachinko_lt",
+      "initial_probability": "1/169.9",
+      "rush_type": "RUSH/LT",
+      "machine_count": 1
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "category": "other",
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
+      "spec_source": "dmm_pachitown",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "machine_name": "e北斗の拳11 暴凶星",
+      "machine_name_ko": "e 북두의 권11 폭흉성",
+      "spec_type": "smart_pachinko_lt",
+      "initial_probability": "1/399.8",
+      "rush_type": "RUSH/LT",
+      "machine_count": 1
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "category": "other",
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
+      "spec_source": "dmm_pachitown",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "machine_name": "P閃乱カグラ189大入りver.",
+      "machine_name_ko": "P 섬란카구라 189 대입 ver.",
+      "spec_type": "light_middle_lt",
+      "initial_probability": "1/189.4",
+      "rush_type": "RUSH/LT",
+      "machine_count": 1
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "category": "other",
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
+      "spec_source": "dmm_pachitown",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "machine_name": "e真・北斗無双 第5章 夢幻闘双",
+      "machine_name_ko": "e 진 북두무쌍 제5장 몽환투쌍",
+      "spec_type": "smart_pachinko",
+      "initial_probability": "1/159.8",
+      "rush_type": "RUSH",
+      "machine_count": 1
+    },
+    {
+      "store_id": "123_namba",
+      "store_name": "123難波店",
+      "store_name_ko": "123 난바점",
+      "rate": "1yen",
+      "category": "other",
+      "source_type": "dmm",
+      "install_source": "dmm_pachitown",
+      "checked_at": "2026-05-17",
+      "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
+      "spec_source": "dmm_pachitown",
+      "border_source": "",
+      "border_1yen_per_200": null,
+      "border_1_111yen_per_180": null,
+      "border_spins_per_1000yen": null,
+      "border_unit_value": null,
+      "border_unit": null,
+      "border_confidence": "unknown",
+      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "machine_name": "e東京喰種",
+      "machine_name_ko": "e 도쿄구울",
+      "spec_type": "smart_pachinko_lt",
+      "initial_probability": "1/399",
+      "rush_type": "RUSH/LT",
+      "machine_count": 2
+    },
+    {
       "store_id": "arrow_namba_hips",
       "store_name": "ARROW namBa HIPS",
       "store_name_ko": "애로우 난바 HIPS",
       "machine_name": "P海物語 極JAPAN",
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "rate": "1yen",
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST/時短",
@@ -4868,7 +5401,7 @@
       "machine_name": "PA新海物語",
       "machine_name_ko": "PA 신 바다이야기",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4894,7 +5427,7 @@
       "machine_name": "PAギンギラパラダイス 夢幻カーニバル 強99ver.",
       "machine_name_ko": "PA 긴기라 파라다이스 몽환 카니발 강99",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4920,7 +5453,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/超旋風RUSH",
@@ -4946,7 +5479,7 @@
       "machine_name": "Pまわるん大海物語4スペシャル Withアグネス・ラム 119ver.",
       "machine_name_ko": "P 마와룽 대해물어4 스페셜 With 아그네스 램 119",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "daiumi",
       "spec_type": "light129",
       "initial_probability": "1/119.8",
       "rush_type": "ST/時短",
@@ -4972,7 +5505,7 @@
       "machine_name": "Pスーパー海物語 IN 沖縄5 夜桜超旋風",
       "machine_name_ko": "P 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍",
       "rate": "1yen",
-      "category": "umi",
+      "category": "other",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST",
@@ -4998,7 +5531,7 @@
       "machine_name": "P大海物語4スペシャルBLACK",
       "machine_name_ko": "P 대해물어4 스페셜 BLACK",
       "rate": "1yen",
-      "category": "light_middle",
+      "category": "daiumi",
       "spec_type": "light_middle",
       "initial_probability": "1/199.8",
       "rush_type": "ST",
@@ -5024,7 +5557,7 @@
       "machine_name": "P Re:ゼロから始める異世界生活 鬼がかり 99ver.",
       "machine_name_ko": "P 리제로 귀신들린 99버전",
       "rate": "1yen",
-      "category": "ama_deji",
+      "category": "other",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "RUSH",

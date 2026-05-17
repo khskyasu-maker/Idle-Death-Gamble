@@ -110,7 +110,7 @@ def main():
         store_machine_totals_dict[store_key]["total_machine_count"] += count
 
         category = m.get("category", "")
-        if category.startswith("eva"):
+        if category == "eva":
             if store_key not in eva_machine_totals_dict:
                 eva_machine_totals_dict[store_key] = {
                     "store_id": sid,

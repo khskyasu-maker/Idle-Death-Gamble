@@ -44,25 +44,17 @@ STORE_SHORT_LABELS = {
 
 STORE_ORDER = ("rakuen_namba", "123_namba", "arrow_namba_hips")
 
+# Only names in this map become selectable simulator models from the current
+# store lineup. Extra reference models may remain in machines.py for spec checks.
 MACHINE_NAME_TO_SIM_ID = {
     "PA大海物語5 Withアグネス・ラム": "sea_5_agnes",
     "P大海物語5": "sea_5",
     "P大海物語5スペシャル": "sea_5_special",
-    "PA海物語3R3": "sea_3r3",
-    "Pスーパー海物語IN沖縄6": "oki_sea_6",
-    "PAスーパー海物語 IN 沖縄5 with アイマリン": "oki_sea_5_imarine",
-    "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.": "oki_sea_5_yozakura_99",
-    "Pスーパー海物語 IN 沖縄5 夜桜超旋風": "oki_sea_5_yozakura",
     "P大海物語5 ブラック": "sea_5_black_199",
     "PA大海物語5ブラックLT99ver.": "sea_5_black_lt",
-    "P海物語 極JAPAN": "sea_extreme_japan",
     "P大海物語4スペシャルBLACK": "sea_4_special_black",
     "P大海物語4スペシャル": "sea_4_special",
     "PA大海物語4スペシャル Withアグネス・ラム": "sea_4_agnes",
-    "PA海物語 極JAPAN Withナギナミ": "sea_extreme_japan_naginami",
-    "PA新海物語": "shinsea_99",
-    "PAスーパー海物語IN地中海2": "mediterranean_2_89",
-    "PAギンギラパラダイス 夢幻カーニバル 強99ver.": "ginpara_mugen_99",
     "Pまわるん大海物語4スペシャル Withアグネス・ラム 119ver.": "mawarun_sea_4_agnes_119",
     "新世紀エヴァンゲリオン〜未来への咆哮〜": "eva_15_roar",
     "P新世紀エヴァンゲリオン〜未来への咆哮〜PREMIUM MODEL": "eva_15_premium",
@@ -73,7 +65,6 @@ MACHINE_NAME_TO_SIM_ID = {
     "e新世紀エヴァンゲリオン ～はじまりの記憶～": "eva_beginning",
     "P Re:ゼロから始める異世界生活 鬼がかり 99ver.": "re_zero_99",
     "P Re:ゼロから始める異世界生活 鬼がかり 199ver.": "re_zero_199",
-    "P Re:ゼロから始める異世界生活 鬼がかりver.": "re_zero_319",
     "e Re:ゼロから始める異世界生活 season2": "re_zero_s2_349",
     "P Re:ゼロから始める異世界生活 season2 129ver.": "re_zero_s2_129",
     "e北斗の拳10": "hokuto_10",

@@ -12,18 +12,12 @@ MACHINE_INFO_FILES = [
 ]
 
 ALLOWED_MACHINE_INFO_CATEGORIES = {
-    "eva_middle",
-    "eva_light_middle",
-    "eva_ama_deji",
     "eva",
-    "umi",
-    "ama_deji",
-    "light_middle",
-    "popular_high_variance",
+    "daiumi",
     "other",
 }
 
-ALLOWED_MACHINE_INFO_RATES = {"1yen", "1.111yen", "4yen", "mixed", "unknown", ""}
+ALLOWED_MACHINE_INFO_RATES = {"1yen", "1.111yen"}
 ALLOWED_MACHINE_INFO_SOURCES = {"pworld", "dmm", "app", "onsite", "manual_note"}
 ALLOWED_MACHINE_INFO_INSTALL_SOURCES = {"dmm_pachitown", "pworld", "manual_note"}
 ALLOWED_MACHINE_INFO_SPEC_SOURCES = {"chonborista", "dmm_pachitown", "manual_note"}
