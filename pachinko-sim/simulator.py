@@ -956,34 +956,44 @@ def simulate_multiple(
     session_time_limit_minutes: float = HARD_SESSION_TIME_LIMIT_MINUTES,
     cash_input_cutoff_minutes: float = LAST_CASH_INPUT_CUTOFF_MINUTES,
     soft_stop_minutes: float = SESSION_TIME_LIMIT_MINUTES,
+    seed: int | None = None,
 ) -> List[Dict[str, Any]]:
     """반복 시뮬레이션을 수행하고 결과 리스트를 반환"""
+    previous_random_state = None
+    if seed is not None:
+        previous_random_state = random.getstate()
+        random.seed(seed)
+
     results = []
-    for _ in range(iterations):
-        res = simulate_single(
-            machine,
-            budget,
-            lend_rate,
-            spins_per_1000y,
-            exchange_rate,
-            strategy=strategy,
-            card_reuse=card_reuse,
-            stop_loss_spin_threshold=stop_loss_spin_threshold,
-            stop_loss_probe_yen=stop_loss_probe_yen,
-            record_events=record_events,
-            session_policy=session_policy,
-            max_normal_spins=max_normal_spins,
-            start_variance=start_variance,
-            border_spins_per_1000y=border_spins_per_1000y,
-            spin_rate_quality_stddev=spin_rate_quality_stddev,
-            spin_rate_min=spin_rate_min,
-            spin_rate_max=spin_rate_max,
-            time_assumptions=time_assumptions,
-            session_time_limit_minutes=session_time_limit_minutes,
-            cash_input_cutoff_minutes=cash_input_cutoff_minutes,
-            soft_stop_minutes=soft_stop_minutes,
-        )
-        results.append(res)
+    try:
+        for _ in range(iterations):
+            res = simulate_single(
+                machine,
+                budget,
+                lend_rate,
+                spins_per_1000y,
+                exchange_rate,
+                strategy=strategy,
+                card_reuse=card_reuse,
+                stop_loss_spin_threshold=stop_loss_spin_threshold,
+                stop_loss_probe_yen=stop_loss_probe_yen,
+                record_events=record_events,
+                session_policy=session_policy,
+                max_normal_spins=max_normal_spins,
+                start_variance=start_variance,
+                border_spins_per_1000y=border_spins_per_1000y,
+                spin_rate_quality_stddev=spin_rate_quality_stddev,
+                spin_rate_min=spin_rate_min,
+                spin_rate_max=spin_rate_max,
+                time_assumptions=time_assumptions,
+                session_time_limit_minutes=session_time_limit_minutes,
+                cash_input_cutoff_minutes=cash_input_cutoff_minutes,
+                soft_stop_minutes=soft_stop_minutes,
+            )
+            results.append(res)
+    finally:
+        if previous_random_state is not None:
+            random.setstate(previous_random_state)
     return results
 
 def run_matrix_simulation(

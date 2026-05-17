@@ -44,24 +44,108 @@ def clean_legacy_public_sim_results(docs_dir: Path) -> None:
 
 def simulation_method_summary() -> Dict[str, Any]:
     return {
-        "summary": "Public machine specs are encoded as Monte Carlo state transitions, then run against visible budget, rotation, exchange, and stop-rule assumptions.",
-        "inputs": [
-            "machine probability and payout distributions from public specs",
-            "low-rate store installation context and converted border spins per 1000円",
-            "runtime budget, exchange rate, rotation assumption, strategy, and session policy",
+        "summary": "공개 기종 스펙을 상태 전이 모델로 옮긴 뒤, 공개된 예산/회전수/교환율/중단 규칙 조건에서 Monte Carlo로 반복 집계합니다.",
+        "model_structure": [
+            "기종 스펙은 Machine/Payout 데이터로 보관하고 통상, RUSH/ST, LT, 루프, 転落(전락) 상태를 분리합니다",
+            "에바와 大海物語(대해물어)처럼 흐름이 비슷한 계열은 공통 템플릿을 재사용하고 확률/출옥/전이값만 기종별로 교체합니다",
+            "짧은 챌린지나 時短(시단)은 실제 RUSH 진입 지표와 섞이지 않도록 Payout.counts_as_rush로 분리합니다",
         ],
-        "runtime_model": [
-            "normal-start spins are sampled from a ball-to-start gate model around the input rotation",
-            "held balls can be reused for normal play before adding new cash",
-            "right-side RUSH/LT/時短 time and average ball spend are modeled by machine family",
-            "sessions use a 9-hour soft stop and an 11-hour hard cap",
+        "stochastic_model": [
+            "통상 회전은 구슬이 ヘソ(헤소)에 들어가는 표본 과정을 거친 뒤, 각 회전을 독립 大当り(대당첨) 시행으로 처리합니다",
+            "RUSH/ST/LT는 단일 베르누이 지름길이 아니라 통상→우타치→종료/상위 상태의 전이로 시뮬레이션합니다",
+            "지원되는 기종은 우타치 계속, 転落(전락) 선착순, 残保留(잔보류) 복귀 경로를 기종 계열별로 반영합니다",
+        ],
+        "ball_and_time_model": [
+            "보유구슬은 새 현금 투입 전에 재사용하므로, 당첨으로 얻은 구슬은 추가 현금 없이 체류 시간을 늘릴 수 있습니다",
+            "통상 플레이는 순소모 구슬과 총발사 구슬을 분리하고 계열별 ベース(반환) 가정을 사용합니다",
+            "시간 추정은 발사 속도, 변동 표시 시간, 우타치 시간, 출옥/연출 시간, 보류 대기 효과를 합산합니다",
+            "표준 공개 실행은 9시간 소프트 스톱과 11시간 하드 캡을 사용합니다",
+        ],
+        "inputs": [
+            "공개 스펙의 확률과 출옥 분포",
+            "저대여 설치 맥락과 1000円당 회전수로 환산한 보더",
+            "실행 시점의 예산, 교환율, 회전수 가정, 전략, 세션 정책",
+        ],
+        "statistics": [
+            "공개 표는 평균, 중앙값, 꼬리 손실, 체류 시간, 당첨, RUSH, 플러스 마감, 연속 지표를 보여줍니다",
+            "플러스 마감률은 Wilson 방식 95% 신뢰구간을 함께 표시합니다",
+            "평균 손익은 표준오차를 함께 공개해 불안정한 행과 안정적인 행을 구분할 수 있게 합니다",
+            "JSON에는 행별 simulation_seed를 저장해 같은 조건을 재현할 수 있게 합니다",
+        ],
+        "pre_sim_vs_actual_reading": [
+            "시뮬 전 정성 유추는 라이트 기종은 체류가 길고 LT/e기 계열은 꼬리가 넓다는 식의 가설로만 사용합니다",
+            "실제 판단은 Monte Carlo 표에서 중앙 체류 시간, 플러스율 신뢰구간, 손익 표준오차가 함께 움직이는지로 확인합니다",
+            "최대연과 상위 꼬리값은 스트레스 지표로만 보며, 당첨률/중앙 체류/표준오차보다 수렴이 느립니다",
         ],
         "limits": [
-            "aggregate estimate only, not jackpot prediction or a visit instruction",
-            "no raw sample sessions, personal trip data, or actual spending/profit records are published",
-            "store labels are representative installation/rate context, not store ranking",
+            "집계 추정치일 뿐 당첨 예측이나 방문 지시가 아닙니다",
+            "원시 표본 세션, 개인 여행 데이터, 실제 지출/손익 기록은 공개하지 않습니다",
+            "점포 표기는 설치/레이트 대표 맥락이며 점포 순위가 아닙니다",
+            "현장 회전율, 대기, 착석 가능성, 점포 규칙 차이는 모델 가정보다 더 크게 작용할 수 있습니다",
         ],
     }
+
+
+def method_items(method: Dict[str, Any], key: str) -> List[str]:
+    items = method.get(key, [])
+    if isinstance(items, list):
+        return [str(item) for item in items]
+    if items:
+        return [str(items)]
+    return []
+
+
+def build_public_method_markdown(method: Dict[str, Any]) -> str:
+    if not method:
+        return ""
+
+    section_labels = [
+        ("model_structure", "모델 구성"),
+        ("stochastic_model", "확률 처리"),
+        ("ball_and_time_model", "구슬/시간 처리"),
+        ("statistics", "통계 지표"),
+        ("pre_sim_vs_actual_reading", "사전 유추와 실제 결과 비교 기준"),
+        ("limits", "한계"),
+    ]
+
+    md = "## 시뮬 설계와 구성\n\n"
+    md += f"- 요약: {method.get('summary', '')}\n"
+    for key, label in section_labels:
+        items = method_items(method, key)
+        if not items:
+            continue
+        md += f"- {label}: " + "; ".join(items) + "\n"
+    md += "\n"
+    return md
+
+
+def build_public_method_html(method: Dict[str, Any]) -> str:
+    if not method:
+        return ""
+
+    section_labels = [
+        ("model_structure", "모델 구성"),
+        ("stochastic_model", "확률 처리"),
+        ("ball_and_time_model", "구슬/시간 처리"),
+        ("statistics", "통계 지표"),
+        ("pre_sim_vs_actual_reading", "사전 유추와 실제 결과 비교 기준"),
+        ("limits", "한계"),
+    ]
+    html = [
+        '<section class="note">',
+        "<h2>시뮬 설계와 구성</h2>",
+        f"<p>{escape(str(method.get('summary', '')))}</p>",
+    ]
+    for key, label in section_labels:
+        items = method_items(method, key)
+        if not items:
+            continue
+        html.append(f"<h3>{escape(label)}</h3>")
+        html.append("<ul>")
+        html.extend(f"<li>{escape(item)}</li>" for item in items)
+        html.append("</ul>")
+    html.append("</section>")
+    return "\n".join(html)
 
 
 def public_case_label(row: Dict[str, Any]) -> str:
@@ -114,6 +198,7 @@ def public_result_rows(
                 "store": row.get("store_short_label", row.get("store_name", "")),
                 "case": public_case_label(row),
                 "status": "simulated",
+                "simulation_seed": row.get("simulation_seed"),
                 "assumption_budget_yen": row.get("budget"),
                 "assumption_spins_per_1000yen": row.get("spins_per_1000y"),
                 "border_spins_per_1000yen": row.get("border_spins_per_1000yen"),
@@ -123,6 +208,10 @@ def public_result_rows(
                 "no_hit_rate_pct": round(metrics["ruin_rate"], 1),
                 "rush_rate_pct": round(metrics["rush_rate"], 1),
                 "positive_close_rate_pct": round(metrics["positive_close_rate"], 1),
+                "positive_close_rate_ci_low_pct": round(metrics["positive_close_rate_ci_low"], 1),
+                "positive_close_rate_ci_high_pct": round(metrics["positive_close_rate_ci_high"], 1),
+                "avg_profit_standard_error_yen": metrics["avg_profit_standard_error"],
+                "avg_profit_se_budget_pct": round(metrics["avg_profit_se_budget_pct"], 2),
                 "avg_play_minutes": round(metrics["avg_play_minutes"], 2),
                 "median_play_minutes": round(metrics.get("median_play_minutes", 0.0), 2),
                 f"{SESSION_TIME_LIMIT_HOURS}h_reach_rate_pct": round(
@@ -207,6 +296,8 @@ def markdown_row_text(row: Dict[str, Any]) -> List[str]:
             "-",
             "-",
             "-",
+            "-",
+            "-",
         ]
     return [
         row.get("category", ""),
@@ -219,12 +310,14 @@ def markdown_row_text(row: Dict[str, Any]) -> List[str]:
         pct(row.get("no_hit_rate_pct", 0.0)),
         pct(row.get("rush_rate_pct", 0.0)),
         pct(row.get("positive_close_rate_pct", 0.0)),
+        f"{pct(row.get('positive_close_rate_ci_low_pct', 0.0))}-{pct(row.get('positive_close_rate_ci_high_pct', 0.0))}",
         minutes_text(row.get("avg_play_minutes", 0.0)),
         minutes_text(row.get("median_play_minutes", 0.0)),
         pct(row.get(f"{SESSION_TIME_LIMIT_HOURS}h_reach_rate_pct", 0.0)),
         pct(row.get("funds_exhausted_stop_rate_pct", 0.0)),
         yen(row.get("avg_final_remaining_value_yen", 0)),
         yen(row.get("median_profit_yen", 0), signed=True),
+        yen(row.get("avg_profit_standard_error_yen", 0)),
         f"{row.get('avg_hits', 0.0):.2f}",
         f"{row.get('avg_streak', 0.0):.2f}",
         str(row.get("p90_streak", 0)),
@@ -245,12 +338,14 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
         "0회",
         "RUSH",
         "플러스",
+        "플러스95%CI",
         "평균시간",
         "P50시간",
         f"{SESSION_TIME_LIMIT_HOURS}h+",
         "완전소진",
         "잔류액",
         "중앙손익",
+        "손익SE",
         "평균당첨",
         "평균최대연",
         "P90연",
@@ -263,13 +358,7 @@ def build_public_sim_result_markdown(payload: Dict[str, Any]) -> str:
     md += f"- 기종: {machine['name_ko']} / {machine['name_ja']}\n"
     md += f"- 반복: {payload['iterations']}회\n"
     md += "- 범위: 공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.\n\n"
-    method = payload.get("simulation_method", {})
-    if method:
-        md += "## 시뮬 구현 요약\n\n"
-        md += f"- 방식: {method.get('summary', '')}\n"
-        md += "- 입력: 기종 스펙, 설치/레이트/보더, 예산, 회전수, 교환율, 중단 규칙\n"
-        md += "- 구슬/시간: 헤소 입상 표본, 보유구슬 재사용, 우타치/RUSH/LT 시간, 9시간 소프트 스톱을 반영\n"
-        md += "- 한계: 집계 추정치일 뿐 당첨 예측, 방문 지시, 점포 순위가 아닙니다.\n\n"
+    md += build_public_method_markdown(payload.get("simulation_method", {}))
     md += "|" + "|".join(headers) + "|\n"
     md += "|" + "|".join("---" for _ in headers) + "|\n"
     for row in payload["rows"]:
@@ -291,12 +380,14 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
         "0회",
         "RUSH",
         "플러스",
+        "플러스95%CI",
         "평균시간",
         "P50시간",
         f"{SESSION_TIME_LIMIT_HOURS}h+",
         "완전소진",
         "잔류액",
         "중앙손익",
+        "손익SE",
         "평균당첨",
         "평균최대연",
         "P90연",
@@ -308,6 +399,7 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
         body_rows.append("<tr>" + "".join(f"<td>{escape(str(value))}</td>" for value in row) + "</tr>")
 
     machine = payload["machine"]
+    method_html = build_public_method_html(payload.get("simulation_method", {}))
     return f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -321,6 +413,9 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
     th {{ background: #f3f4f6; }}
     .meta {{ color: #4b5563; font-size: 14px; line-height: 1.5; }}
     .note {{ background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; margin: 12px 0; }}
+    .note h2 {{ margin: 0 0 8px; font-size: 18px; }}
+    .note h3 {{ margin: 12px 0 4px; font-size: 15px; }}
+    .note ul {{ margin: 6px 0 0 20px; padding: 0; }}
   </style>
 </head>
 <body>
@@ -333,12 +428,7 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
     <p><strong>반복:</strong> {escape(str(payload['iterations']))}회</p>
   </div>
   <div class="note">공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.</div>
-  <section class="note">
-    <strong>시뮬 구현 요약:</strong>
-    공개 스펙의 확률/출옥 분포를 상태 전이로 모델링하고, 보더+회전수, 예산, 교환율, 보유구슬 재사용,
-    우타치/RUSH/LT 시간, 9시간 소프트 스톱을 적용한 Monte Carlo 집계입니다.
-    당첨 예측, 방문 지시, 점포 순위가 아닙니다.
-  </section>
+  {method_html}
   <table>
     <thead><tr>{head_cells}</tr></thead>
     <tbody>{''.join(body_rows)}</tbody>

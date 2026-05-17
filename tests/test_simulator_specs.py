@@ -42,7 +42,7 @@ from rotation import (  # noqa: E402
     spins_from_border_margin,
     spins_from_yen_observation,
 )
-from simulator import sample_payout_balls, simulate_single, spins_until_hit  # noqa: E402
+from simulator import sample_payout_balls, simulate_multiple, simulate_single, spins_until_hit  # noqa: E402
 from simulator import run_budget_matrix  # noqa: E402
 from session_limits import SESSION_TIME_LIMIT_HOURS  # noqa: E402
 from spec_benchmarks import PUBLIC_BENCHMARKS  # noqa: E402
@@ -469,6 +469,30 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual("분모 1배", tail_rows[0][0])
         self.assertEqual("100회", tail_rows[0][1])
         self.assertIn("36.", tail_rows[0][2])
+
+    def test_simulate_multiple_seed_is_reproducible_and_restores_global_random_state(self):
+        kwargs = {
+            "budget": 1000,
+            "lend_rate": 1.0,
+            "spins_per_1000y": 70,
+            "exchange_rate": 0.89,
+            "iterations": 5,
+            "session_policy": "fixed_spin_cap",
+            "seed": 12345,
+        }
+
+        first = simulate_multiple(MACHINES["sea_5"], **kwargs)
+        second = simulate_multiple(MACHINES["sea_5"], **kwargs)
+        self.assertEqual(
+            [result["net_profit"] for result in first],
+            [result["net_profit"] for result in second],
+        )
+
+        random.seed(999)
+        expected_next = random.random()
+        random.seed(999)
+        simulate_multiple(MACHINES["sea_5"], **kwargs)
+        self.assertEqual(expected_next, random.random())
 
     def test_basic_stop_uses_probe_rotation_and_charges_failed_probe(self):
         slow_machine = Machine(

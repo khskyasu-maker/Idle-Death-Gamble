@@ -130,6 +130,7 @@ Do not store or publish dynamic decision data in GitHub:
     ├── build_report.py           # Report generation; this is the real report builder
     ├── check.py                  # Local syntax/JSON/test/validation/dev-tool check runner
     ├── clean.py                  # Dry-run by default local generated artifact cleaner
+    ├── publish_sim_results.py    # Latest-only public simulator aggregate generation
     ├── validate_data.py          # Public data and simulator consistency validation
     └── utils.py                  # Shared paths, JSON/text I/O, logging, KST time
 ```
@@ -166,6 +167,7 @@ The normal data and report pipeline is:
 - Do not store simulator scores, visit rankings, recommended machines, keep/quit decisions, or strategy outcomes in public `data/` files. In public `docs/`, only the explicit latest sanitized aggregate table is allowed.
 - Do not accumulate simulator result history. If the user explicitly chooses CSV save in the CLI, overwrite local gitignored `results.csv` with the latest run only.
 - If the user explicitly chooses public simulator sharing, overwrite only `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, and `docs/latest-sim-results.html` with sanitized aggregate metrics. Do not create timestamped result files.
+- Use `scripts/publish_sim_results.py` for the standard public simulator aggregate. It uses fixed per-row seeds so the same machine/budget/rotation condition can be reproduced without depending on execution order.
 - For CLI smoke runs that must not touch public `docs/`, set `PACHINKO_SIM_PUBLIC_DOCS_DIR` to a temporary directory.
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
 - When changing simulator assumptions, update `pachinko-sim/ARCHITECTURE.md` and keep `pachinko-sim/README.md` aligned.

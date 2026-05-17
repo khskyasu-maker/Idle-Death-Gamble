@@ -132,7 +132,12 @@ class ResultExportTests(unittest.TestCase):
                 "ruin_rate": 50.0,
                 "rush_rate": 25.0,
                 "positive_close_rate": 20.0,
+                "positive_close_rate_ci_low": 10.0,
+                "positive_close_rate_ci_high": 35.0,
+                "avg_profit_standard_error": 321,
+                "avg_profit_se_budget_pct": 3.21,
                 "avg_play_minutes": 90.0,
+                "median_play_minutes": 80.0,
                 "stay_reach_rates": {SESSION_TIME_LIMIT_HOURS: 10.0},
                 "avg_final_remaining_value": 8000,
                 "avg_profit": -2000,
@@ -172,10 +177,16 @@ class ResultExportTests(unittest.TestCase):
         self.assertFalse(payload["privacy_policy"]["raw_sample_sessions_included"])
         self.assertEqual(2, payload["schema_version"])
         self.assertIn("simulation_method", payload)
+        self.assertIn("model_structure", payload["simulation_method"])
+        self.assertIn("statistics", payload["simulation_method"])
         self.assertNotIn("results", payload["rows"][0])
         self.assertIn("최신 공개 시뮬 결과", markdown)
+        self.assertIn("시뮬 설계와 구성", markdown)
+        self.assertIn("사전 유추와 실제 결과 비교 기준", markdown)
         self.assertIn("기종", markdown)
         self.assertIn("평균최대연", markdown)
+        self.assertIn("플러스95%CI", markdown)
+        self.assertIn("손익SE", markdown)
         self.assertIn("보더+5", markdown)
 
         with tempfile.TemporaryDirectory() as tmpdir:
