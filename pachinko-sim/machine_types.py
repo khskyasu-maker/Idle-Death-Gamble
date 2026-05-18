@@ -6,7 +6,7 @@ from typing import Dict, List
 class Payout:
     balls: int
     weight: float
-    next_state: str  # 'NORMAL', 'ST', 'JITAN', 'KAKUBEN', 'LT', 'LT_JITAN', 'UPPER', 'JINBEE', 'JINBEE_JITAN'
+    next_state: str  # 'NORMAL', 'ST', 'JITAN', 'KAKUBEN', 'LT', 'LT_JITAN', 'UPPER', 'UPPER_JITAN', 'JINBEE', 'JINBEE_JITAN'
     st_spins: int = 0
     jitan_spins: int = 0
     is_lt: bool = False
@@ -47,6 +47,7 @@ class Machine:
             "LT": 0.25,
             "LT_JITAN": 0.25,
             "UPPER": 0.25,
+            "UPPER_JITAN": 0.35,
             "KAKUBEN": 0.15,
             "JINBEE": 0.15,
             "JINBEE_JITAN": 0.35,

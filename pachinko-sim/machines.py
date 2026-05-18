@@ -59,18 +59,18 @@ MACHINES = {
         high_prob=9.9,
         normal_hit_dist=[
             Payout(balls=1100, weight=0.10, next_state='ST', st_spins=5, jitan_spins=95),
-            Payout(balls=550, weight=0.33, next_state='ST', st_spins=5, jitan_spins=45),
-            Payout(balls=550, weight=0.57, next_state='ST', st_spins=5, jitan_spins=20)
+            Payout(balls=550, weight=0.57, next_state='ST', st_spins=5, jitan_spins=45),
+            Payout(balls=550, weight=0.33, next_state='ST', st_spins=5, jitan_spins=20)
         ],
         st_hit_dist=[
             Payout(balls=1100, weight=0.10, next_state='ST', st_spins=5, jitan_spins=95),
-            Payout(balls=550, weight=0.33, next_state='ST', st_spins=5, jitan_spins=45),
-            Payout(balls=550, weight=0.57, next_state='ST', st_spins=5, jitan_spins=20)
+            Payout(balls=550, weight=0.57, next_state='ST', st_spins=5, jitan_spins=45),
+            Payout(balls=550, weight=0.33, next_state='ST', st_spins=5, jitan_spins=20)
         ],
         jitan_hit_dist=[
             Payout(balls=1100, weight=0.10, next_state='ST', st_spins=5, jitan_spins=95),
-            Payout(balls=550, weight=0.33, next_state='ST', st_spins=5, jitan_spins=45),
-            Payout(balls=550, weight=0.57, next_state='ST', st_spins=5, jitan_spins=20)
+            Payout(balls=550, weight=0.57, next_state='ST', st_spins=5, jitan_spins=45),
+            Payout(balls=550, weight=0.33, next_state='ST', st_spins=5, jitan_spins=20)
         ],
         kakuben_hit_dist=[],
         lt_hit_dist=[],
@@ -512,16 +512,17 @@ MACHINES.update(
                 Payout(balls=240, weight=0.50, next_state="ST", st_spins=20, counts_as_rush=False),
             ],
             st_hit_dist=[
-                Payout(balls=800, weight=0.05, next_state="ST", st_spins=74),
-                Payout(balls=240, weight=0.95, next_state="ST", st_spins=74),
+                Payout(balls=1600, weight=0.05, next_state="ST", st_spins=74),
+                Payout(balls=800, weight=0.70, next_state="ST", st_spins=74),
+                Payout(balls=240, weight=0.25, next_state="ST", st_spins=74),
             ],
             jitan_hit_dist=[],
             kakuben_hit_dist=[],
             lt_hit_dist=[],
-            simplification_notes="初回은 ロングST70+残保留4 50%, ショートST16+残保留4 50%. ショートST 중 당첨은 ロングST로 승격.",
-            spec_source="Pachiseven machines/7264 / なな徹",
+            simplification_notes="初回은 ロングST70+残保留4 50%, ショートST16+残保留4 50%. 特図2는 1600個+α 5% / 800個 70% / 240個 25%, +α 상乗せ는 1600개 대표값으로 보수화.",
+            spec_source="DMMぱちタウン machines/4899 / なな徹 machines/1054 / Pachiseven machines/7264",
             confidence="high",
-            notes="P-WORLD/Pachiseven의 3R/10R 출옥 표기를 기준으로 10R 5%, 3R 95%를 반영.",
+            notes="DMM/なな徹의 約1600個+α 5%, 約800個 70%, 約240個 25% 振分을 반영. 火鈴連発ボーナス 추가 상乗せ는 별도 루프로 만들지 않고 1600개로 근사.",
             is_estimated=False,
         ),
         "shinsea_99": Machine(
@@ -974,23 +975,44 @@ MACHINES["hokuto_10"] = Machine(
     fall_reserve_spins={"ST": 4, "LT": 4},
 )
 
-MACHINES["sea_5_agnes"] = sea_st_jitan(
-    machine_id="sea_5_agnes",
+MACHINES["sea_5_agnes"] = Machine(
+    id="sea_5_agnes",
     name_ja="PA大海物語5 Withアグネス・ラム",
     name_ko="PA 대해물어5 With 아그네스 램",
-    source="P-WORLD database/9833 / DMMぱちタウン machines/4358",
+    spec_type="감데지 / ST+時短+ハピネスチャンス",
+    risk_grade="1/99",
     normal_prob=99.9,
     high_prob=19.5,
-    payout_rows=[
-        (1080, 0.04, 10, 110),
-        (648, 0.60, 10, 40),
-        (432, 0.06, 10, 40),
-        (432, 0.30, 10, 15),
+    normal_hit_dist=[
+        Payout(balls=1000, weight=0.04, next_state="UPPER", st_spins=10, jitan_spins=110, ball_variance=0.03),
+        Payout(balls=600, weight=0.60, next_state="ST", st_spins=10, jitan_spins=40, ball_variance=0.03),
+        Payout(balls=400, weight=0.06, next_state="ST", st_spins=10, jitan_spins=40, ball_variance=0.03),
+        Payout(balls=400, weight=0.30, next_state="ST", st_spins=10, jitan_spins=15, ball_variance=0.03),
     ],
-    risk_grade="1/99",
+    st_hit_dist=[
+        Payout(balls=1000, weight=0.04, next_state="UPPER", st_spins=10, jitan_spins=110, ball_variance=0.03),
+        Payout(balls=600, weight=0.60, next_state="ST", st_spins=10, jitan_spins=40, ball_variance=0.03),
+        Payout(balls=400, weight=0.06, next_state="ST", st_spins=10, jitan_spins=40, ball_variance=0.03),
+        Payout(balls=400, weight=0.30, next_state="ST", st_spins=10, jitan_spins=15, ball_variance=0.03),
+    ],
+    jitan_hit_dist=[
+        Payout(balls=1000, weight=0.04, next_state="UPPER", st_spins=10, jitan_spins=110, ball_variance=0.03),
+        Payout(balls=600, weight=0.60, next_state="ST", st_spins=10, jitan_spins=40, ball_variance=0.03),
+        Payout(balls=400, weight=0.06, next_state="ST", st_spins=10, jitan_spins=40, ball_variance=0.03),
+        Payout(balls=400, weight=0.30, next_state="ST", st_spins=10, jitan_spins=15, ball_variance=0.03),
+    ],
+    kakuben_hit_dist=[],
+    lt_hit_dist=[],
+    upper_hit_dist=[
+        Payout(balls=1000, weight=0.04, next_state="UPPER", st_spins=10, jitan_spins=110, ball_variance=0.03),
+        Payout(balls=600, weight=0.60, next_state="UPPER", st_spins=10, jitan_spins=110, ball_variance=0.03),
+        Payout(balls=400, weight=0.36, next_state="UPPER", st_spins=10, jitan_spins=110, ball_variance=0.03),
+    ],
+    simplification_notes="10R後はハピネスチャンス(상위 전サポ120회)로 전이. ハピネスチャンス 중 대당첨은 라운드와 무관하게 다시 ST10+時短110으로 유지.",
+    spec_source="P-WORLD database/9833 / DMMぱちタウン machines/4358 / なな徹 machines/567",
     confidence="high",
-    simplification_notes="ST10회 + 時短15/40/110회. P-WORLD 공개振分(10R 4%, 6R 60%, 4R 6%/30%)을 반영.",
-    notes="1080/648/432払出은 예산 계산용 실전 근사 1000/600/400발로 사용. ハピネスチャンス中 대당첨은 모두 120회 전サポ라는 예외는 별도 상태 없이 평균 분포로 근사.",
+    notes="1080/648/432払出은 예산 계산용 실전 근사 1000/600/400발로 사용. 遊タイム299회는 시작回転 입력이 없어 미반영.",
+    is_estimated=False,
 )
 MACHINES["mediterranean_2_89"] = Machine(
     id="mediterranean_2_89",
@@ -1012,13 +1034,13 @@ MACHINES["mediterranean_2_89"] = Machine(
     jitan_hit_dist=[],
     kakuben_hit_dist=[],
     lt_hit_dist=[
-        Payout(balls=800, weight=0.02, next_state="LT", st_spins=100, is_lt=True),
-        Payout(balls=480, weight=0.48, next_state="LT", st_spins=100, is_lt=True),
-        Payout(balls=320, weight=0.50, next_state="LT", st_spins=100, is_lt=True),
+        Payout(balls=800, weight=0.02, next_state="LT", st_spins=104, is_lt=True),
+        Payout(balls=480, weight=0.48, next_state="LT", st_spins=104, is_lt=True),
+        Payout(balls=320, weight=0.50, next_state="LT", st_spins=104, is_lt=True),
     ],
-    simplification_notes="チャンスタイム은 20회+残保留4개, 地中海JOURNEY는 44회+残保留4개로 합산. PREMIUM VACATION(LT)은 공개 継続率 약94.5%에 맞춰 100회로 모델링.",
+    simplification_notes="チャンスタイム은 20회+残保留4개, 地中海JOURNEY는 44회+残保留4개로 합산. PREMIUM VACATION(LT)은 100회+残保留4개를 104회로 합산.",
     spec_source="P-WORLD database/10055 / Dechau / 海まにあ",
     confidence="high",
-    notes="PREMIUM VACATION 종료 후 残保留 당첨이 地中海JOURNEY振分으로 돌아가는 예외는 공개継続率에 맞춰 100회 모델로 보수화.",
+    notes="PREMIUM VACATION 종료 후 残保留 당첨이 地中海JOURNEY振分으로 돌아가는 예외는 공개継続率 약95.2%에 맞춰 LT 104회 모델로 근사.",
     is_estimated=False,
 )

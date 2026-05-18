@@ -391,7 +391,7 @@ def public_result_rows(
             )
             continue
 
-        metrics = calculate_metrics_fn(row["results"], iterations)
+        metrics = row.get("_metrics") or calculate_metrics_fn(row["results"], iterations)
         has_lt = bool(row.get("has_lt")) if "has_lt" in row else default_has_lt
         has_upper_rush = (
             bool(row.get("has_upper_rush"))

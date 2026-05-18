@@ -267,6 +267,7 @@ def build_result_rows(
                 "session_policy_label": SESSION_POLICIES["play_until_budget_and_balls_gone"],
                 "simulation_seed": seed,
                 "results": results,
+                "_metrics": metrics,
             }
             sort_items.append((row, metrics))
             print(
@@ -389,7 +390,7 @@ def build_tail_risk_review(
     for row in result_rows:
         if row.get("budget") != budget:
             continue
-        metrics = calculate_metrics(row["results"], iterations)
+        metrics = row.get("_metrics") or calculate_metrics(row["results"], iterations)
         mean_median_gap = metrics["avg_profit"] - metrics["median_profit"]
         has_lt = bool(row.get("has_lt"))
         rows.append(

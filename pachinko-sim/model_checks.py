@@ -5,7 +5,18 @@ from machines import Machine
 from machine_traits import DISTRIBUTION_FIELDS
 
 
-VALID_STATES = {"NORMAL", "ST", "JITAN", "KAKUBEN", "LT", "LT_JITAN", "UPPER", "JINBEE", "JINBEE_JITAN"}
+VALID_STATES = {
+    "NORMAL",
+    "ST",
+    "JITAN",
+    "KAKUBEN",
+    "LT",
+    "LT_JITAN",
+    "UPPER",
+    "UPPER_JITAN",
+    "JINBEE",
+    "JINBEE_JITAN",
+}
 VALID_CONFIDENCE_LEVELS = {"high", "medium", "low"}
 
 KNOWN_SPEC_EXPECTATIONS = {
@@ -89,7 +100,7 @@ KNOWN_SPEC_EXPECTATIONS = {
         "normal_weights": [0.50, 0.50],
         "normal_states": ["ST", "ST"],
         "normal_counts_as_rush": [True, False],
-        "st_weights": [0.05, 0.95],
+        "st_weights": [0.05, 0.70, 0.25],
     },
     "shinsea_99": {
         "normal_prob": 99.9,
@@ -147,17 +158,18 @@ KNOWN_SPEC_EXPECTATIONS = {
         "normal_prob": 99.9,
         "high_prob": 19.5,
         "normal_weights": [0.04, 0.60, 0.06, 0.30],
-        "normal_states": ["ST", "ST", "ST", "ST"],
+        "normal_states": ["UPPER", "ST", "ST", "ST"],
         "st_weights": [0.04, 0.60, 0.06, 0.30],
         "jitan_weights": [0.04, 0.60, 0.06, 0.30],
+        "upper_weights": [0.04, 0.60, 0.36],
     },
     "oki_sea_5_imarine": {
         "normal_prob": 99.9,
         "high_prob": 9.9,
-        "normal_weights": [0.10, 0.33, 0.57],
+        "normal_weights": [0.10, 0.57, 0.33],
         "normal_states": ["ST", "ST", "ST"],
-        "st_weights": [0.10, 0.33, 0.57],
-        "jitan_weights": [0.10, 0.33, 0.57],
+        "st_weights": [0.10, 0.57, 0.33],
+        "jitan_weights": [0.10, 0.57, 0.33],
     },
     "ginpara_mugen_99": {
         "normal_prob": 99.9,

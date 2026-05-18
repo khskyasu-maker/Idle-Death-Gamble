@@ -34,6 +34,7 @@ JAPANESE_TERM_NOTES = [
     ("ジンベェタイム", "진베에 타임"),
     ("ジンベェ", "진베에"),
     ("GOLDパールRUSH", "골드 펄 러시"),
+    ("ハピネスチャンス", "해피니스 찬스"),
     ("超強欲PREMIUM BONUS", "초강욕 프리미엄 보너스"),
     ("RUSH", "러시"),
     ("LT", "러키 트리거"),
@@ -52,6 +53,7 @@ STATE_LABELS = {
     "LT": "LT(러키 트리거)",
     "LT_JITAN": "LT_JITAN/時短(러키 트리거 시단)",
     "UPPER": "UPPER/上位RUSH(상위 러시)",
+    "UPPER_JITAN": "UPPER_JITAN/上位RUSH時短(상위 러시 시단)",
     "JINBEE": "JINBEE/ジンベェ確変(진베에 확변)",
     "JINBEE_JITAN": "JINBEE_JITAN/ジンベェ時短200(진베에 시단200)",
 }

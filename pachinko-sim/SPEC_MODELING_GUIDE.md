@@ -57,7 +57,7 @@ Use this table while reading DMM or official pages.
 | `次回まで` | 다음 당첨까지 | `KAKUBEN` or fall/race state | Avoid pretending it is fixed ST |
 | `転落小当り` | 전락 소당첨 | `fall_prob`, `fall_reserve_spins` | Use race model when available |
 | `LT`, `ラッキートリガー` | 럭키 트리거 | `LT`, `lt_hit_dist`, `Payout.is_lt` | Must be official LT, not just strong RUSH |
-| `上位RUSH` | 상위 러시 | `UPPER`, `upper_hit_dist` | Separate from LT when not official LT |
+| `上位RUSH` | 상위 러시 | `UPPER`, `UPPER_JITAN`, `upper_hit_dist` | Use `UPPER_JITAN` when the upper mode has a low-probability time-short segment that still returns to the upper distribution |
 | `出玉`, `獲得` | 실획득/출옥 | `Payout.balls` | Preferred payout basis |
 | `払出` | 지급/불출 | `Payout.balls` with note | Can be optimistic versus net obtained balls |
 | `賞球`, `ラウンド`, `カウント` | 상구/라운드/카운트 | payout calculation input | Calculate only when no direct payout value exists |
@@ -75,7 +75,7 @@ Choose the category first, then write code.
 | 確変ループ | `確変`, `次回まで`, normal after fail | `KAKUBEN`, `JITAN` | low/medium depending on round split |
 | 転落 type | `転落`, `転落小当り` | `fall_prob` race | high if fall denominator is missing |
 | LT | `LT`, `ラッキートリガー` | `LT`, `is_lt=True` | high if confused with upper RUSH |
-| Non-LT upper RUSH | `上位RUSH`, named upper mode | `UPPER` | medium if public continuation is aggregate only |
+| Non-LT upper RUSH | `上位RUSH`, named upper mode | `UPPER`, optional `UPPER_JITAN` | medium if public continuation is aggregate only |
 | Charge / C-Time | `チャージ`, `Cタイム` | `normal_support_dist` or note | high if counted as jackpot differently by provider |
 
 ## Current Local Family Mapping
@@ -271,6 +271,7 @@ are not officially LT.
 Python mapping:
 
 - `UPPER` state
+- `UPPER_JITAN` when the named upper mode continues through a normal-probability 時短 segment
 - `upper_hit_dist`
 - `machine_has_upper()` for output
 - keep LT output as `해당없음` when the machine has no official LT path

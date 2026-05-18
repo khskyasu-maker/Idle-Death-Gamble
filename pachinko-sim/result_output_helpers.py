@@ -116,6 +116,15 @@ def rush_combo_hit_chance(machine: Machine) -> float:
     return (1.0 - (high_miss * normal_miss)) * 100.0
 
 
+def upper_combo_hit_chance(machine: Machine) -> float:
+    if not machine.upper_hit_dist:
+        return 0.0
+    payout = machine.upper_hit_dist[0]
+    high_miss = (1.0 - (1.0 / machine.high_prob)) ** max(0, payout.st_spins)
+    normal_miss = (1.0 - (1.0 / machine.normal_prob)) ** max(0, payout.jitan_spins)
+    return (1.0 - (high_miss * normal_miss)) * 100.0
+
+
 def st_lt_event_weight(machine: Machine) -> float:
     return sum(p.weight for p in machine.st_hit_dist if p.is_lt) * 100.0
 
@@ -165,6 +174,8 @@ def benchmark_model_value(machine: Machine, benchmark: Dict[str, Any]) -> float:
         return normal_rush_with_jitan(machine, benchmark["rush_states"])
     if metric == "rush_combo_hit_chance":
         return rush_combo_hit_chance(machine)
+    if metric == "upper_combo_hit_chance":
+        return upper_combo_hit_chance(machine)
     if metric == "st_lt_event_weight":
         return st_lt_event_weight(machine)
     if metric == "fall_state_continue_chance":

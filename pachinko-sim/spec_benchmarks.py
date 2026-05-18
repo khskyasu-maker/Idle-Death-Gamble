@@ -11,6 +11,7 @@ PUBLIC_BENCHMARKS = {
         {"label_ja": "高確率中", "label_ko": "고확률 중", "public": 19.5, "metric": "high_prob", "unit": "denom", "source": "P-WORLD"},
         {"label_ja": "10R割合", "label_ko": "10R 비율", "public": 4.0, "metric": "normal_balls_weight", "balls": 1000, "unit": "pct", "source": "P-WORLD"},
         {"label_ja": "6R割合", "label_ko": "6R 비율", "public": 60.0, "metric": "normal_balls_weight", "balls": 600, "unit": "pct", "source": "P-WORLD"},
+        {"label_ja": "ハピネスチャンス継続率", "label_ko": "해피니스 찬스 계속률", "public": 80.5, "metric": "upper_combo_hit_chance", "unit": "pct", "source": "DMM/P-WORLD/なな徹"},
     ],
     "oki_sea_6": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 319.6, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD"},
@@ -73,6 +74,9 @@ PUBLIC_BENCHMARKS = {
         {"label_ja": "極チャンス期待度", "label_ko": "극 찬스 기대도", "public": 30.0, "metric": "high_hit_chance", "spins": 20, "unit": "pct", "source": "Pachiseven/なな徹"},
         {"label_ja": "極ノ刻継続率", "label_ko": "극의 때 계속률", "public": 74.0, "metric": "high_hit_chance", "spins": 74, "unit": "pct", "source": "Pachiseven/なな徹"},
         {"label_ja": "ロングST直行", "label_ko": "롱 ST 직행", "public": 50.0, "metric": "normal_counted_rush_weight", "unit": "pct", "source": "Pachiseven/なな徹"},
+        {"label_ja": "火鈴連発ボーナス", "label_ko": "화령 연발 보너스", "public": 5.0, "metric": "st_balls_weight", "balls": 1600, "unit": "pct", "source": "DMM/なな徹"},
+        {"label_ja": "10R通常", "label_ko": "10R 일반", "public": 70.0, "metric": "st_balls_weight", "balls": 800, "unit": "pct", "source": "DMM/なな徹"},
+        {"label_ja": "3R通常", "label_ko": "3R 일반", "public": 25.0, "metric": "st_balls_weight", "balls": 240, "unit": "pct", "source": "DMM/なな徹"},
     ],
     "shinsea_99": [
         {"label_ja": "大当り確率 通常時", "label_ko": "초당첨 확률", "public": 99.9, "metric": "normal_prob", "unit": "denom", "source": "P-WORLD/なな徹"},
@@ -116,7 +120,7 @@ PUBLIC_BENCHMARKS = {
         {"label_ja": "RUSH中", "label_ko": "러시 중", "public": 34.8, "metric": "high_prob", "unit": "denom", "source": "P-WORLD/Dechau"},
         {"label_ja": "チャンスタイム突破率", "label_ko": "찬스 타임 돌파율", "public": 50.0, "metric": "high_hit_chance", "spins": 24, "unit": "pct", "source": "P-WORLD/Dechau"},
         {"label_ja": "地中海JOURNEY継続率", "label_ko": "지중해 저니 계속률", "public": 75.0, "metric": "high_hit_chance", "spins": 48, "unit": "pct", "source": "P-WORLD/Dechau"},
-        {"label_ja": "PREMIUM VACATION継続率", "label_ko": "프리미엄 베케이션 계속률", "public": 94.5, "metric": "high_hit_chance", "spins": 100, "unit": "pct", "source": "P-WORLD/Dechau"},
+        {"label_ja": "PREMIUM VACATION継続率", "label_ko": "프리미엄 베케이션 계속률", "public": 95.2, "metric": "high_hit_chance", "spins": 104, "unit": "pct", "source": "DMM/P-WORLD/Dechau"},
         {"label_ja": "LT突入契機", "label_ko": "LT 돌입 계기", "public": 2.0, "metric": "st_state_weight", "states": ["LT"], "unit": "pct", "source": "Dechau/海まにあ"},
     ],
     "eva_15_roar": [

@@ -51,6 +51,7 @@ HIT_LABELS = {
     "LT": ("LT当り", "LT 당첨"),
     "LT_JITAN": ("LT時短当り", "LT 시단 당첨"),
     "UPPER": ("上位RUSH当り", "상위 러시 당첨"),
+    "UPPER_JITAN": ("上位RUSH時短当り", "상위 러시 시단 당첨"),
     "JINBEE": ("ジンベェ当り", "진베에 타임 당첨"),
     "JINBEE_JITAN": ("ジンベェ当り", "진베에 시단 당첨"),
 }
@@ -603,7 +604,7 @@ def simulate_single(
                 if state in ['ST', 'LT', 'UPPER']:
                     spins_left = payout.st_spins
                     jitan_reserve = payout.jitan_spins
-                elif state in ['JITAN', 'JINBEE_JITAN']:
+                elif state in ['JITAN', 'UPPER_JITAN', 'JINBEE_JITAN']:
                     spins_left = payout.jitan_spins or payout.st_spins
                     jitan_reserve = 0
                 elif state in ['KAKUBEN', 'JINBEE']:
@@ -658,7 +659,12 @@ def simulate_single(
                     continue
             else:
                 if jitan_reserve > 0:
-                    state = 'LT_JITAN' if state == 'LT' else 'JITAN'
+                    if state == 'LT':
+                        state = 'LT_JITAN'
+                    elif state == 'UPPER':
+                        state = 'UPPER_JITAN'
+                    else:
+                        state = 'JITAN'
                     spins_left = jitan_reserve
                     jitan_reserve = 0
                     continue # 이번 턴은 당첨 추첨 없이 상태 전환만 처리
@@ -668,7 +674,7 @@ def simulate_single(
                     rush_active = False
                     continue
 
-        elif state in ['JITAN', 'LT_JITAN', 'JINBEE_JITAN']:
+        elif state in ['JITAN', 'LT_JITAN', 'UPPER_JITAN', 'JINBEE_JITAN']:
             current_prob = machine.normal_prob
             if spins_left > 0:
                 wait_to_hit = spins_until_hit(machine.normal_prob)
@@ -717,7 +723,7 @@ def simulate_single(
                 payout = get_payout(machine.kakuben_hit_dist)
             elif state == 'LT':
                 payout = get_payout(machine.lt_hit_dist)
-            elif state == 'UPPER':
+            elif state in ['UPPER', 'UPPER_JITAN']:
                 payout = get_payout(machine.upper_hit_dist)
             elif state in ['JINBEE', 'JINBEE_JITAN']:
                 payout = get_payout(machine.jinbee_hit_dist)
@@ -741,7 +747,7 @@ def simulate_single(
                     rush_entries += 1
                     rush_entry_event = True
                     rush_active = True
-                if state == 'UPPER' and previous_state != 'UPPER':
+                if state == 'UPPER' and previous_state not in ['UPPER', 'UPPER_JITAN']:
                     upper_entries += 1
                     upper_entry_event = True
                 spins_left = payout.st_spins
@@ -750,6 +756,9 @@ def simulate_single(
                 spins_left = payout.jitan_spins
                 jitan_reserve = 0
             elif state == 'LT_JITAN':
+                spins_left = payout.jitan_spins or payout.st_spins
+                jitan_reserve = 0
+            elif state == 'UPPER_JITAN':
                 spins_left = payout.jitan_spins or payout.st_spins
                 jitan_reserve = 0
             elif state == 'KAKUBEN':

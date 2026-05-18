@@ -163,7 +163,7 @@ class SimulatorSpecTests(unittest.TestCase):
             {48, 100},
             {p.st_spins for p in mediterranean.st_hit_dist},
         )
-        self.assertEqual({100}, {p.st_spins for p in mediterranean.lt_hit_dist})
+        self.assertEqual({104}, {p.st_spins for p in mediterranean.lt_hit_dist})
 
         re_zero_s2_129 = MACHINES["re_zero_s2_129"]
         self.assertTrue(machine_has_lt(re_zero_s2_129))
@@ -214,12 +214,15 @@ class SimulatorSpecTests(unittest.TestCase):
 
         sea5_agnes = MACHINES["sea_5_agnes"]
         self.assertEqual([1000, 600, 400, 400], [p.balls for p in sea5_agnes.normal_hit_dist])
+        self.assertEqual("UPPER", sea5_agnes.normal_hit_dist[0].next_state)
         self.assertEqual([10], sorted({p.st_spins for p in sea5_agnes.normal_hit_dist}))
         self.assertEqual([15, 40, 110], sorted({p.jitan_spins for p in sea5_agnes.normal_hit_dist}))
         self.assertEqual(
             [p.jitan_spins for p in sea5_agnes.normal_hit_dist],
             [p.jitan_spins for p in sea5_agnes.jitan_hit_dist],
         )
+        self.assertEqual([1000, 600, 400], [p.balls for p in sea5_agnes.upper_hit_dist])
+        self.assertEqual({110}, {p.jitan_spins for p in sea5_agnes.upper_hit_dist})
 
         black4 = MACHINES["sea_4_special_black"]
         self.assertEqual([1400, 700, 420], [p.balls for p in black4.normal_hit_dist])
@@ -248,8 +251,9 @@ class SimulatorSpecTests(unittest.TestCase):
 
         naginami = MACHINES["sea_extreme_japan_naginami"]
         self.assertEqual({20, 74}, {p.st_spins for p in naginami.normal_hit_dist})
-        self.assertAlmostEqual(0.05, sum(p.weight for p in naginami.st_hit_dist if p.balls == 800))
-        self.assertAlmostEqual(0.95, sum(p.weight for p in naginami.st_hit_dist if p.balls == 240))
+        self.assertAlmostEqual(0.05, sum(p.weight for p in naginami.st_hit_dist if p.balls == 1600))
+        self.assertAlmostEqual(0.70, sum(p.weight for p in naginami.st_hit_dist if p.balls == 800))
+        self.assertAlmostEqual(0.25, sum(p.weight for p in naginami.st_hit_dist if p.balls == 240))
 
     def test_other_candidate_models_match_public_step_specs(self):
         lupin = MACHINES["lupin_77_sweet"]
