@@ -15,6 +15,7 @@
 - 기종별 `confidence`가 `low`인 모델은 세부 스펙 확인 전의 보수적 추정값이며, 점수 상한과 주의 문구가 적용됩니다.
 - CSV 저장은 사용자가 명시적으로 선택할 때만 로컬 gitignored `results.csv`에 최신 결과로 덮어씁니다. 누적 실행 이력은 남기지 않습니다.
 - 공개 공유를 선택하면 `../docs/latest-sim-results.*` 고정 파일 3개(JSON/Markdown/HTML)에 최신 집계표만 덮어씁니다. 시간별 결과 파일은 만들지 않습니다.
+- 공개 집계표 일부만 다시 계산할 때는 프로젝트 루트에서 `python3 scripts/publish_sim_results.py --machine-id <id> --merge-existing`을 실행해 기존 표의 해당 기종 행만 교체할 수 있습니다.
 - CLI smoke 확인처럼 실제 `docs/`를 건드리면 안 되는 경우에는 `PACHINKO_SIM_PUBLIC_DOCS_DIR=/tmp/sim-export` 환경변수로 export 위치를 바꿀 수 있습니다.
 - CLI 출력에서 일본어 기종명, 상태명, 당첨 종류, 스펙 용어가 나오면 한국어 번역을 함께 표시합니다.
 

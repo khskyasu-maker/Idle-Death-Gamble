@@ -105,6 +105,7 @@ python scripts/build_report.py
 
 - 최신 집계표는 `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, `docs/latest-sim-results.html` 3개 파일만 사용하며 누적 기록을 만들지 않습니다.
 - 최신 집계표는 `python scripts/publish_sim_results.py`로 재생성합니다. 기본값은 10,000/15,000/20,000엔, 각 조건 5,000회, 행별 고정 seed, 보더±0 회전 가정입니다.
+- 일부 기종의 보더/스펙만 고친 경우에는 `python scripts/publish_sim_results.py --machine-id oki_sea_5_yozakura_99 --merge-existing`처럼 실행해 기존 공개 표에서 해당 기종 행만 교체할 수 있습니다.
 - 공개 표의 각 행은 대표 저대여 설치 조건에서 `예산`, `회전수`, `교환율`, `전략`, `세션 중단 규칙`을 고정해 Monte Carlo로 집계한 값입니다.
 - 기종 스펙은 `Machine`/`Payout` 데이터로 관리하며, 통상, ST/RUSH, LT, 確変(확변), 時短(시단), 転落(전락) 계열 상태를 분리합니다.
 - 같은 계열 기종은 템플릿을 재사용하고, 확률/출옥/상태 전이값만 기종별로 바꿔 코드 중복을 줄입니다.

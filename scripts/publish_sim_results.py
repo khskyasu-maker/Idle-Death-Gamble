@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -12,7 +13,13 @@ from machine_types import Machine  # noqa: E402
 from machine_traits import machine_has_lt, machine_has_upper  # noqa: E402
 from machines import MACHINES  # noqa: E402
 from result_metrics import calculate_metrics  # noqa: E402
-from result_public_export import save_public_sim_results  # noqa: E402
+from result_public_export import (  # noqa: E402
+    LATEST_SIM_RESULT_BASENAME,
+    build_public_sim_result_payload,
+    public_docs_dir_from_env,
+    save_public_sim_payload,
+    save_public_sim_results,
+)
 from simulator import SESSION_POLICIES, STRATEGIES, simulate_multiple  # noqa: E402
 from stores import STORE_INVENTORY, store_contexts_for_machine  # noqa: E402
 
@@ -49,6 +56,18 @@ def parse_budgets(value: str) -> list[int]:
     return budgets
 
 
+def parse_machine_ids(values: list[str] | None) -> list[str] | None:
+    if not values:
+        return None
+    machine_ids = []
+    for value in values:
+        for part in value.split(","):
+            machine_id = part.strip()
+            if machine_id and machine_id not in machine_ids:
+                machine_ids.append(machine_id)
+    return machine_ids or None
+
+
 def row_seed(base_seed: int, machine_id: str, budget: int, spins_per_1000y: float) -> int:
     payload = f"{base_seed}:{machine_id}:{budget}:{spins_per_1000y:.3f}".encode("utf-8")
     return int.from_bytes(hashlib.blake2b(payload, digest_size=8).digest(), "big")
@@ -67,6 +86,18 @@ def active_model_ids() -> list[str]:
             if model_id not in model_ids:
                 model_ids.append(model_id)
     return model_ids
+
+
+def selected_active_model_ids(machine_ids: list[str] | None) -> list[str]:
+    active_ids = active_model_ids()
+    if not machine_ids:
+        return active_ids
+    active_id_set = set(active_ids)
+    unknown_ids = [machine_id for machine_id in machine_ids if machine_id not in active_id_set]
+    if unknown_ids:
+        unknown_text = ", ".join(unknown_ids)
+        raise ValueError(f"unknown or inactive machine id: {unknown_text}")
+    return [machine_id for machine_id in active_ids if machine_id in machine_ids]
 
 
 def preferred_context(machine_id: str) -> dict:
@@ -220,9 +251,10 @@ def build_result_rows(
     exchange_rate: float,
     base_seed: int,
     field_rotation_margin: float,
+    machine_ids: list[str] | None = None,
 ) -> list[dict]:
     sort_items = []
-    for machine_id in active_model_ids():
+    for machine_id in selected_active_model_ids(machine_ids):
         machine = MACHINES[machine_id]
         context = preferred_context(machine_id)
         category = row_category(context)
@@ -296,9 +328,10 @@ def build_rotation_sensitivity(
     iterations: int,
     exchange_rate: float,
     base_seed: int,
+    machine_ids: list[str] | None = None,
 ) -> dict:
     rows = []
-    for machine_id in active_model_ids():
+    for machine_id in selected_active_model_ids(machine_ids):
         machine = MACHINES[machine_id]
         context = preferred_context(machine_id)
         category = row_category(context)
@@ -353,6 +386,7 @@ def build_rotation_sensitivity(
         rows.append(
             {
                 "category": category,
+                "machine_id": machine_id,
                 "machine": machine_label(machine),
                 "store": f"{store}/{count}대",
                 "budget_yen": budget,
@@ -380,6 +414,137 @@ def build_rotation_sensitivity(
     }
 
 
+def public_row_key(row: dict) -> tuple:
+    return (
+        row.get("machine_id"),
+        row.get("assumption_budget_yen"),
+        row.get("strategy"),
+        row.get("session_policy"),
+        row.get("case"),
+    )
+
+
+def sort_public_rows(rows: list[dict]) -> list[dict]:
+    return sorted(
+        rows,
+        key=lambda row: (
+            CATEGORY_ORDER.get(row.get("category", ""), 99),
+            row.get("machine", ""),
+            row.get("assumption_budget_yen") or 0,
+        ),
+    )
+
+
+def merge_public_rows(existing_rows: list[dict], new_rows: list[dict]) -> list[dict]:
+    new_keys = {public_row_key(row) for row in new_rows}
+    merged_rows = [row for row in existing_rows if public_row_key(row) not in new_keys]
+    merged_rows.extend(new_rows)
+    return sort_public_rows(merged_rows)
+
+
+def merge_named_analysis_rows(
+    existing_section: dict | None,
+    new_section: dict,
+    *,
+    sort_key,
+) -> dict:
+    if not existing_section:
+        return new_section
+    new_machine_ids = {
+        row.get("machine_id")
+        for row in new_section.get("rows", [])
+        if row.get("machine_id")
+    }
+    new_machine_names = {
+        row.get("machine")
+        for row in new_section.get("rows", [])
+        if row.get("machine")
+    }
+    merged_rows = [
+        row
+        for row in existing_section.get("rows", [])
+        if row.get("machine_id") not in new_machine_ids
+        and row.get("machine") not in new_machine_names
+    ]
+    merged_rows.extend(new_section.get("rows", []))
+    merged_section = dict(existing_section)
+    merged_section.update({key: value for key, value in new_section.items() if key != "rows"})
+    merged_section["rows"] = sorted(merged_rows, key=sort_key)
+    return merged_section
+
+
+def sort_tail_risk_rows(rows: list[dict]) -> list[dict]:
+    return sorted(rows, key=tail_risk_sort_key)
+
+
+def tail_risk_sort_key(row: dict) -> tuple:
+    risk_order = {"LT꼬리의존": 0, "하방큼": 1, "소진주의": 2, "꼬리의존": 3, "보통": 4}
+    return (
+        risk_order.get(row.get("risk_label", ""), 99),
+        row.get("p25_play_minutes", 0),
+        row.get("median_profit_yen", 0),
+    )
+
+
+def merge_extra_analysis(existing_analysis: dict, new_analysis: dict) -> dict:
+    merged_analysis = dict(existing_analysis or {})
+    if "rotation_sensitivity" in new_analysis:
+        merged_analysis["rotation_sensitivity"] = merge_named_analysis_rows(
+            merged_analysis.get("rotation_sensitivity"),
+            new_analysis["rotation_sensitivity"],
+            sort_key=lambda row: (
+                CATEGORY_ORDER.get(row.get("category", ""), 99),
+                row.get("machine", ""),
+            ),
+        )
+    if "tail_risk_review" in new_analysis:
+        merged_analysis["tail_risk_review"] = merge_named_analysis_rows(
+            merged_analysis.get("tail_risk_review"),
+            new_analysis["tail_risk_review"],
+            sort_key=tail_risk_sort_key,
+        )
+        merged_analysis["tail_risk_review"]["rows"] = sort_tail_risk_rows(
+            merged_analysis["tail_risk_review"].get("rows", [])
+        )
+    return merged_analysis
+
+
+def merge_existing_payload(existing_payload: dict, new_payload: dict) -> dict:
+    if existing_payload.get("iterations") != new_payload.get("iterations"):
+        raise ValueError(
+            "existing latest-sim-results.json uses a different iterations value; "
+            "rerun without --merge-existing or match --iterations"
+        )
+    merged_payload = dict(existing_payload)
+    for key in (
+        "generated_at",
+        "publication_scope",
+        "simulation_method",
+        "privacy_policy",
+        "mode",
+        "store_name",
+        "machine",
+        "iterations",
+    ):
+        merged_payload[key] = new_payload.get(key)
+    merged_payload["rows"] = merge_public_rows(
+        existing_payload.get("rows", []),
+        new_payload.get("rows", []),
+    )
+    merged_payload["analysis"] = merge_extra_analysis(
+        existing_payload.get("analysis", {}),
+        new_payload.get("analysis", {}),
+    )
+    return merged_payload
+
+
+def load_existing_public_payload() -> dict:
+    json_path = public_docs_dir_from_env() / f"{LATEST_SIM_RESULT_BASENAME}.json"
+    if not json_path.exists():
+        raise FileNotFoundError(f"{json_path} does not exist")
+    return json.loads(json_path.read_text(encoding="utf-8"))
+
+
 def build_tail_risk_review(
     *,
     result_rows: list[dict],
@@ -396,6 +561,7 @@ def build_tail_risk_review(
         rows.append(
             {
                 "category": row.get("category", ""),
+                "machine_id": row.get("machine_id", ""),
                 "machine": row.get("machine_label", ""),
                 "store": row.get("store_short_label", ""),
                 "budget_yen": budget,
@@ -457,7 +623,23 @@ def main() -> int:
     parser.add_argument("--skip-risk-review", action="store_true")
     parser.add_argument("--exchange-rate", type=float, default=DEFAULT_EXCHANGE_RATE)
     parser.add_argument("--base-seed", type=int, default=DEFAULT_BASE_SEED)
+    parser.add_argument(
+        "--machine-id",
+        action="append",
+        dest="machine_id_values",
+        help="Limit regeneration to one active machine id. Repeat or comma-separate for multiple ids.",
+    )
+    parser.add_argument(
+        "--merge-existing",
+        action="store_true",
+        help="Replace only regenerated machine rows inside existing latest-sim-results output.",
+    )
     args = parser.parse_args()
+    machine_ids = parse_machine_ids(args.machine_id_values)
+    if args.merge_existing and not machine_ids:
+        raise SystemExit("--merge-existing requires at least one --machine-id")
+    if machine_ids and not args.merge_existing:
+        raise SystemExit("--machine-id requires --merge-existing to avoid publishing a partial table")
 
     rows = build_result_rows(
         budgets=args.budgets,
@@ -465,6 +647,7 @@ def main() -> int:
         exchange_rate=args.exchange_rate,
         base_seed=args.base_seed,
         field_rotation_margin=args.field_rotation_margin,
+        machine_ids=machine_ids,
     )
     extra_analysis = {}
     if not args.skip_sensitivity:
@@ -473,6 +656,7 @@ def main() -> int:
             iterations=args.sensitivity_iterations,
             exchange_rate=args.exchange_rate,
             base_seed=args.base_seed,
+            machine_ids=machine_ids,
         )
     if not args.skip_risk_review:
         extra_analysis["tail_risk_review"] = build_tail_risk_review(
@@ -480,15 +664,33 @@ def main() -> int:
             budget=args.risk_review_budget,
             iterations=args.iterations,
         )
-    paths = save_public_sim_results(
-        "대표 저대여 설치 조건(점포 순위 아님)",
-        f"대해물어/에바/기타 활성 모델 예산별 10k/15k/20k 비교 ({rotation_margin_label(args.field_rotation_margin)} 기준)",
-        summary_machine(),
-        rows,
-        args.iterations,
-        calculate_metrics,
-        extra_analysis=extra_analysis,
+    store_name = "대표 저대여 설치 조건(점포 순위 아님)"
+    mode_label = (
+        "대해물어/에바/기타 활성 모델 예산별 10k/15k/20k 비교 "
+        f"({rotation_margin_label(args.field_rotation_margin)} 기준)"
     )
+    if args.merge_existing:
+        new_payload = build_public_sim_result_payload(
+            store_name,
+            mode_label,
+            summary_machine(),
+            rows,
+            args.iterations,
+            calculate_metrics,
+            extra_analysis=extra_analysis,
+        )
+        merged_payload = merge_existing_payload(load_existing_public_payload(), new_payload)
+        paths = save_public_sim_payload(merged_payload)
+    else:
+        paths = save_public_sim_results(
+            store_name,
+            mode_label,
+            summary_machine(),
+            rows,
+            args.iterations,
+            calculate_metrics,
+            extra_analysis=extra_analysis,
+        )
     print(f"saved {paths}", flush=True)
     return 0
 

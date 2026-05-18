@@ -691,6 +691,16 @@ def save_public_sim_results(
         generated_at=generated_at,
         extra_analysis=extra_analysis,
     )
+    return save_public_sim_payload(payload, docs_dir=docs_dir)
+
+
+def save_public_sim_payload(
+    payload: Dict[str, Any],
+    docs_dir: Path | None = None,
+) -> Dict[str, Path]:
+    docs_dir = docs_dir or public_docs_dir_from_env()
+    docs_dir.mkdir(parents=True, exist_ok=True)
+    clean_legacy_public_sim_results(docs_dir)
     json_path = docs_dir / f"{LATEST_SIM_RESULT_BASENAME}.json"
     md_path = docs_dir / f"{LATEST_SIM_RESULT_BASENAME}.md"
     html_path = docs_dir / f"{LATEST_SIM_RESULT_BASENAME}.html"
