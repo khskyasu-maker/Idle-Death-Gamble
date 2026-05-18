@@ -140,7 +140,11 @@ class ResultExportTests(unittest.TestCase):
                 "median_play_minutes": 80.0,
                 "p10_play_minutes": 30.0,
                 "p25_play_minutes": 50.0,
-                "stay_reach_rates": {SESSION_TIME_LIMIT_HOURS: 10.0},
+                "stay_reach_rates": {1: 90.0, 2: 70.0, 3: 40.0, SESSION_TIME_LIMIT_HOURS: 10.0},
+                "first_hit_miss_funds_exhausted_rate": 45.0,
+                "avg_first_hit_cash_spent": 4200,
+                "median_first_hit_cash_spent": 3500,
+                "avg_first_hit_play_minutes": 55.5,
                 "avg_final_remaining_value": 8000,
                 "avg_profit": -2000,
                 "median_profit": -3000,
@@ -220,8 +224,11 @@ class ResultExportTests(unittest.TestCase):
         markdown = build_public_sim_result_markdown(payload)
 
         self.assertFalse(payload["privacy_policy"]["raw_sample_sessions_included"])
-        self.assertEqual(4, payload["schema_version"])
+        self.assertEqual(5, payload["schema_version"])
         self.assertFalse(payload["rows"][0]["has_lt"])
+        self.assertEqual(90.0, payload["rows"][0]["1h_reach_rate_pct"])
+        self.assertEqual(45.0, payload["rows"][0]["first_hit_miss_funds_exhausted_rate_pct"])
+        self.assertEqual(4200, payload["rows"][0]["avg_first_hit_cash_spent_yen"])
         lt_payload = build_public_sim_result_payload(
             "123難波店",
             "테스트 모드",
@@ -249,6 +256,8 @@ class ResultExportTests(unittest.TestCase):
         self.assertIn("평균최대연", markdown)
         self.assertIn("플러스95%CI", markdown)
         self.assertIn("손익SE", markdown)
+        self.assertIn("초당첨전소진", markdown)
+        self.assertIn("초당첨평균현금", markdown)
         self.assertIn("보더+5", markdown)
 
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -417,6 +417,7 @@ Primary outputs:
 - rank-based 95% confidence intervals for median/lower-10%/upper-10% quantiles
 - CVaR10-style lower-tail average for downside risk
 - P10/P25 stay-time, mean-minus-median profit gap, and LT entry rate as a lower-tail review, so high-variance LT/e-machine rows are not judged by average profit alone
+- 1/2/3-hour reach rates, first-hit-miss funds-exhausted rate, and average/median cash spent before first hit for early-session risk diagnosis
 - independent-trial tail probabilities for denominator-overrun interpretation
 - first-hit total-spin metrics that include 時短(시단)/right-side spins before the first jackpot
 - budget comparison for 10,000 / 20,000 / 30,000 / 40,000 / 50,000 yen inputs

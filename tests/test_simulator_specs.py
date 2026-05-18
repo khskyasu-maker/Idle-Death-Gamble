@@ -817,6 +817,8 @@ class SimulatorSpecTests(unittest.TestCase):
                 "upper_entries": 0,
                 "first_hit_spin": 80,
                 "first_hit_total_spins": 95,
+                "first_hit_cash_spent": 1200,
+                "first_hit_play_minutes": 8.5,
                 "experienced_rush": False,
                 "start_variance": False,
                 "start_probability": 0.08,
@@ -829,6 +831,8 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual("t", metrics["mean_ci_method"])
         self.assertGreater(metrics["avg_profit_se_budget_pct"], 0)
         self.assertEqual(95, metrics["median_first_hit_total_spins"])
+        self.assertEqual(1200, metrics["median_first_hit_cash_spent"])
+        self.assertEqual(8.5, metrics["median_first_hit_play_minutes"])
         self.assertLessEqual(metrics["median_profit_ci_low"], metrics["median_profit"])
         self.assertGreaterEqual(metrics["median_profit_ci_high"], metrics["median_profit"])
         self.assertLessEqual(metrics["cvar_10_profit"], metrics["worst_10_profit"])
@@ -855,6 +859,9 @@ class SimulatorSpecTests(unittest.TestCase):
                 "upper_entries": 0,
                 "first_hit_spin": 80 if total_hits else None,
                 "first_hit_total_spins": 95 if total_hits else None,
+                "first_hit_cash_spent": 1200 if total_hits else None,
+                "first_hit_play_minutes": 8.5 if total_hits else None,
+                "funds_exhausted_triggered": not total_hits,
                 "experienced_rush": total_hits >= 2,
                 "start_variance": False,
                 "start_probability": 0.08,
@@ -876,6 +883,7 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertEqual(100.0, hit_two["positive_rate"])
         self.assertEqual("플러스우세", hit_two["judgement"])
         self.assertIn("2당+", metrics["profit_condition_summary"])
+        self.assertEqual(40.0, metrics["first_hit_miss_funds_exhausted_rate"])
 
     def test_mean_interval_uses_small_sample_t_critical_value(self):
         low, high = mean_interval([0, 10])

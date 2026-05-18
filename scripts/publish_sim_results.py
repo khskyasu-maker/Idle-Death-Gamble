@@ -517,6 +517,7 @@ def merge_existing_payload(existing_payload: dict, new_payload: dict) -> dict:
         )
     merged_payload = dict(existing_payload)
     for key in (
+        "schema_version",
         "generated_at",
         "publication_scope",
         "simulation_method",

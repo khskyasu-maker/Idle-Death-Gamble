@@ -75,6 +75,16 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         for r in results
         if r.get("first_hit_total_spins", r.get("first_hit_spin")) is not None
     ]
+    first_hit_cash_spent = [
+        int(r.get("first_hit_cash_spent", 0) or 0)
+        for r in results
+        if r.get("first_hit_spin") is not None
+    ]
+    first_hit_play_minutes = [
+        float(r.get("first_hit_play_minutes", 0.0) or 0.0)
+        for r in results
+        if r.get("first_hit_spin") is not None
+    ]
 
     avg_profit = int(statistics.mean(profits))
     median_profit = int(statistics.median(profits))
@@ -88,6 +98,11 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
 
     positive_count = sum(1 for p in profits if p > 0)
     ruin_count = sum(1 for r in results if r["total_hits"] == 0)
+    first_hit_miss_funds_exhausted_count = sum(
+        1
+        for r in results
+        if r["total_hits"] == 0 and r.get("funds_exhausted_triggered")
+    )
     rush_count = sum(1 for r in results if r["experienced_rush"])
     lt_count = sum(1 for r in results if r.get("lt_entries", 0) > 0)
     upper_count = sum(1 for r in results if r.get("upper_entries", 0) > 0)
@@ -128,6 +143,11 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     avg_first_hit_total_spins = statistics.mean(first_hit_total_spins) if first_hit_total_spins else 0
     median_first_hit_total_spins = percentile_value(first_hit_total_spins, 0.5) if first_hit_total_spins else 0
     p90_first_hit_total_spins = percentile_value(first_hit_total_spins, 0.9) if first_hit_total_spins else 0
+    avg_first_hit_cash_spent = statistics.mean(first_hit_cash_spent) if first_hit_cash_spent else 0
+    median_first_hit_cash_spent = percentile_value(first_hit_cash_spent, 0.5) if first_hit_cash_spent else 0
+    p90_first_hit_cash_spent = percentile_value(first_hit_cash_spent, 0.9) if first_hit_cash_spent else 0
+    avg_first_hit_play_minutes = statistics.mean(first_hit_play_minutes) if first_hit_play_minutes else 0.0
+    median_first_hit_play_minutes = percentile_float(first_hit_play_minutes, 0.5) if first_hit_play_minutes else 0.0
     hit_session_hits = [r["total_hits"] for r in results if r["total_hits"] > 0]
     avg_hits_when_hit = statistics.mean(hit_session_hits) if hit_session_hits else 0
     avg_after_first_hits = statistics.mean(max(0, hits - 1) for hits in hit_session_hits) if hit_session_hits else 0
@@ -204,6 +224,9 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "ruin_rate": ruin_rate,
         "ruin_rate_ci_low": ruin_ci_low,
         "ruin_rate_ci_high": ruin_ci_high,
+        "first_hit_miss_funds_exhausted_rate": (
+            first_hit_miss_funds_exhausted_count / iterations
+        ) * 100.0,
         "hit_rate": hit_rate,
         "rush_rate": rush_rate,
         "rush_rate_ci_low": rush_ci_low,
@@ -240,6 +263,11 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         "avg_first_hit_total_spins": int(avg_first_hit_total_spins),
         "median_first_hit_total_spins": median_first_hit_total_spins,
         "p90_first_hit_total_spins": p90_first_hit_total_spins,
+        "avg_first_hit_cash_spent": int(avg_first_hit_cash_spent),
+        "median_first_hit_cash_spent": median_first_hit_cash_spent,
+        "p90_first_hit_cash_spent": p90_first_hit_cash_spent,
+        "avg_first_hit_play_minutes": avg_first_hit_play_minutes,
+        "median_first_hit_play_minutes": median_first_hit_play_minutes,
         "avg_hits_when_hit": avg_hits_when_hit,
         "avg_after_first_hits": avg_after_first_hits,
         "avg_cash_spent": int(statistics.mean(cash_spent)),

@@ -271,6 +271,8 @@ def simulate_single(
 
     first_hit_spin = None
     first_hit_total_spins = None
+    first_hit_cash_spent = None
+    first_hit_play_seconds = None
     total_hits = 0
     max_streak = 0
     streak = 0
@@ -707,6 +709,8 @@ def simulate_single(
             total_hits += 1
             if first_hit_spin is None:
                 first_hit_spin = spins_used
+                first_hit_cash_spent = int(cash_spent)
+                first_hit_play_seconds = elapsed_seconds()
             if first_hit_total_spins is None:
                 first_hit_total_spins = spins_used + right_spins
 
@@ -882,6 +886,8 @@ def simulate_single(
         "stop_loss_normal_spin_cap": stop_loss_normal_spin_cap,
         "first_hit_spin": first_hit_spin,
         "first_hit_total_spins": first_hit_total_spins,
+        "first_hit_cash_spent": first_hit_cash_spent,
+        "first_hit_play_minutes": minutes(first_hit_play_seconds or 0.0),
         "total_hits": total_hits,
         "max_streak": max_streak,
         "total_out_balls": int(total_out_balls),
