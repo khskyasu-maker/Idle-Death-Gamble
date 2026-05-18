@@ -56,6 +56,48 @@ def sample_payout_balls(payout: Payout) -> int:
     return int(round(sample_truncated_normal(payout.balls, stddev, low, high)))
 
 
+def effective_support_spins(machine: Machine, state: str, spins: int) -> int:
+    """Apply a coarse public-spec approximation for hidden hold/symbol constraints.
+
+    Public specs often publish ST/RUSH plus 残保留(잔보류) as a chance count, but
+    not the exact 特図1/特図2(특도1/특도2) hold queue. Keep the model lightweight
+    by reducing long right-side support counts through a small efficiency factor.
+    """
+    if spins <= 0:
+        return 0
+    factor = float(machine.support_spin_efficiency.get(state, 1.0) or 1.0)
+    factor = max(0.0, min(1.0, factor))
+    return max(1, int(round(spins * factor)))
+
+
+def sample_right_spend_balls(machine: Machine, state: str, spins: int, assumptions) -> float:
+    if spins <= 0:
+        return 0.0
+    average_spend = machine.right_spend_per_spin.get(state, 0.0) * spins
+    if average_spend <= 0:
+        return 0.0
+
+    variance = max(0.0, float(getattr(assumptions, "right_spend_error_pct", 0.0) or 0.0))
+    if variance <= 0:
+        return average_spend
+    low = max(0.0, average_spend * (1.0 - variance))
+    high = max(low, average_spend * (1.0 + variance))
+    stddev = max(0.01, (average_spend * variance) / 2.0)
+    return sample_truncated_normal(average_spend, stddev, low, high)
+
+
+def sample_hit_effect_seconds(base_seconds: float, assumptions) -> float:
+    if base_seconds <= 0:
+        return 0.0
+    variance = max(0.0, float(getattr(assumptions, "hit_effect_variance_pct", 0.0) or 0.0))
+    if variance <= 0:
+        return base_seconds
+    low = max(0.0, base_seconds * (1.0 - variance))
+    high = max(low, base_seconds * (1.0 + variance))
+    stddev = max(0.01, (base_seconds * variance) / 2.0)
+    return sample_truncated_normal(base_seconds, stddev, low, high)
+
+
 def spins_until_hit(probability_denominator: float) -> int:
     """Sample the spin count until the next hit for independent Bernoulli spins."""
     hit_probability = 1.0 / probability_denominator
@@ -67,8 +109,11 @@ def spins_until_hit(probability_denominator: float) -> int:
 __all__ = [
     "HIT_LABELS",
     "bilingual_hit_label",
+    "effective_support_spins",
     "get_payout",
     "jitan_denominator",
+    "sample_hit_effect_seconds",
     "sample_payout_balls",
+    "sample_right_spend_balls",
     "spins_until_hit",
 ]

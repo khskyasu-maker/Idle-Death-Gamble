@@ -442,6 +442,11 @@ Session accounting:
   profiles. It does not change sampled outcomes; it tells readers how much
   absolute stay-time estimates can drift from individual machine effects,
   right-side pacing, and shop conditions.
+- `support_spin_efficiency` is a coarse approximation for hidden 特図1/特図2
+  hold and symbol-selection constraints. It slightly reduces finite right-side
+  support counts without creating a full internal hold queue.
+- `right_spend_error_pct` and `hit_effect_variance_pct` add bounded session
+  variance around average right-side ball loss and hit/effect time.
 - `cashless_play_minutes` estimates time continuing without new cash input,
   including right-side play, hit effects, and normal spins paid by reusable balls.
 - `stay_reach_rates` reports the share of sampled sessions reaching each hour
@@ -617,8 +622,8 @@ Not yet fully modeled:
 - 遊タイム(유타임) targeting
 - residual保留(잔보류) exceptions by machine
 - exact 特図1/特図2(특도1/특도2) hold queues and symbol-selection constraints
-- per-machine right-side ball loss calibration
-- forced presentation delays not exposed by public specs
+- per-machine right-side ball loss calibration beyond bounded average variance
+- forced presentation delays beyond bounded family-level variance
 - time-of-day or closing-time constraints
 - actual unit-by-unit data, jackpot history, slump graph, or app-only data
 

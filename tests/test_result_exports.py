@@ -231,6 +231,7 @@ class ResultExportTests(unittest.TestCase):
         self.assertEqual(4200, payload["rows"][0]["avg_first_hit_cash_spent_yen"])
         self.assertIn("model_reliability_summary", payload)
         self.assertIn("modeling_notes", payload["machine"])
+        self.assertIn("support_spin_efficiency", payload["rows"][0])
         self.assertIn("play_time_uncertainty_pct", payload["rows"][0])
         lt_payload = build_public_sim_result_payload(
             "123難波店",

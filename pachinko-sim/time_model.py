@@ -20,6 +20,7 @@ class TimeAssumptions:
     normal_support_event_seconds: float = 5.0
     play_time_error_pct: float = 0.25
     right_spend_error_pct: float = 0.25
+    hit_effect_variance_pct: float = 0.10
     source_note: str = "범용 시간 예산 프로파일"
 
 

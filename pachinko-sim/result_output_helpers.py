@@ -189,6 +189,9 @@ def time_profile_text(results: List[Dict[str, Any]]) -> str:
     parts = [note] if note else []
     if error_pct > 0:
         parts.append(f"체류 시간 추정 오차 가이드 ±{error_pct:.0f}%")
+    right_spend_error_pct = float(assumptions.get("right_spend_error_pct", 0.0) or 0.0) * 100.0
+    if right_spend_error_pct > 0:
+        parts.append(f"우측 소비 근사 흔들림 ±{right_spend_error_pct:.0f}%")
     return f"{profile} ({'; '.join(parts)})" if parts else profile
 
 

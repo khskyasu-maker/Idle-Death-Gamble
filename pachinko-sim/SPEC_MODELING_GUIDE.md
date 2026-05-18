@@ -43,8 +43,10 @@ explain the ambiguity in `notes`.
 Do not silently patch over missing internal mechanics. If the public source does
 not expose exact 特図1/特図2(특도1/특도2) hold queues, symbol-selection
 constraints, right-side pocket loss, or forced effect waits, keep the probability
-model anchored to public distributions and describe the gap through
-`simplification_notes`, `confidence`, and `modeling_assumptions.py`.
+model anchored to public distributions. Coarse approximations such as
+`support_spin_efficiency`, `right_spend_error_pct`, or `hit_effect_variance_pct`
+are allowed only when labeled through `simplification_notes`, `confidence`, and
+`modeling_assumptions.py`.
 
 ## Source Term To Python Field Map
 

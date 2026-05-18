@@ -30,6 +30,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
     observed_spin_rates = [float(r.get("observed_spins_per_1000y", r.get("spins_per_1000y", 0)) or 0) for r in results]
     start_probabilities = [float(r.get("start_probability", 0.0) or 0.0) for r in results]
     right_spins = [r.get("right_spins", 0) for r in results]
+    right_balls_spent = [r.get("right_balls_spent", 0) for r in results]
     normal_balls_fired = [r.get("normal_balls_fired", 0) for r in results]
     normal_net_balls_consumed = [
         r.get("normal_net_balls_consumed", r.get("normal_balls_fired", 0))
@@ -261,6 +262,7 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
             int(statistics.mean(normal_net_balls_consumed)) if normal_net_balls_consumed else 0
         ),
         "avg_right_spins": int(statistics.mean(right_spins)),
+        "avg_right_balls_spent": int(statistics.mean(right_balls_spent)) if right_balls_spent else 0,
         "avg_total_out_balls": int(statistics.mean(total_out_balls)),
         "avg_first_hit": int(avg_first_hit),
         "median_first_hit": median_first_hit,

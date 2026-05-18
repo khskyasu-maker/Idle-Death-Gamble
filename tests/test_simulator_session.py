@@ -14,6 +14,7 @@ from result_metrics import calculate_metrics  # noqa: E402
 from result_output_helpers import denominator_tail_rows  # noqa: E402
 from rotation import rotation_reality_label  # noqa: E402
 from session_limits import SESSION_TIME_LIMIT_HOURS  # noqa: E402
+from session_sampling import effective_support_spins, sample_right_spend_balls  # noqa: E402
 from simulator import (  # noqa: E402
     run_budget_matrix,
     sample_payout_balls,
@@ -216,6 +217,17 @@ class SimulatorSessionTests(unittest.TestCase):
         self.assertEqual("sea_classic", time_assumptions_for_machine(MACHINES["sea_5_agnes"]).profile_name)
         self.assertEqual("eva_vst", time_assumptions_for_machine(MACHINES["eva_15_roar"]).profile_name)
         self.assertEqual("rezero_fast", time_assumptions_for_machine(MACHINES["re_zero_99"]).profile_name)
+        self.assertEqual(98, effective_support_spins(MACHINES["sea_5_agnes"], "ST", 100))
+        self.assertEqual(4, effective_support_spins(MACHINES["sea_5_agnes"], "ST", 4))
+        random.seed(20260519)
+        right_spend = sample_right_spend_balls(
+            MACHINES["sea_5_agnes"],
+            "ST",
+            100,
+            time_assumptions_for_machine(MACHINES["sea_5_agnes"]),
+        )
+        self.assertGreaterEqual(right_spend, 15.0)
+        self.assertLessEqual(right_spend, 25.0)
 
         result = simulate_single(
             MACHINES["sea_5_agnes"],
@@ -230,8 +242,11 @@ class SimulatorSessionTests(unittest.TestCase):
         self.assertIn("unused_cash", result)
         self.assertIn("final_remaining_value", result)
         self.assertIn("time_assumptions", result)
+        self.assertIn("right_balls_spent", result)
         self.assertEqual("sea_classic", result["time_assumptions"]["profile_name"])
         self.assertEqual(0.20, result["time_assumptions"]["play_time_error_pct"])
+        self.assertEqual(0.25, result["time_assumptions"]["right_spend_error_pct"])
+        self.assertEqual(0.10, result["time_assumptions"]["hit_effect_variance_pct"])
         self.assertGreater(result["normal_balls_fired"], result["normal_net_balls_consumed"])
         self.assertAlmostEqual(0.0525, result["start_probability"], delta=0.0001)
         metrics = calculate_metrics([result], 1)
@@ -239,6 +254,7 @@ class SimulatorSessionTests(unittest.TestCase):
         self.assertNotIn(SESSION_TIME_LIMIT_HOURS + 1, metrics["stay_reach_rates"])
         self.assertIn("avg_final_remaining_value", metrics)
         self.assertIn("avg_post_budget_play_minutes", metrics)
+        self.assertIn("avg_right_balls_spent", metrics)
         self.assertEqual(20.0, metrics["play_time_uncertainty_pct"])
         self.assertLess(metrics["median_play_minutes_low_estimate"], metrics["median_play_minutes"])
         self.assertGreater(metrics["median_play_minutes_high_estimate"], metrics["median_play_minutes"])

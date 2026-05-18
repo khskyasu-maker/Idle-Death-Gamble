@@ -34,6 +34,7 @@ def simulation_method_summary() -> dict[str, Any]:
             "통상 플레이는 순소모 구슬과 총발사 구슬을 분리하고 계열별 ベース(반환) 가정을 사용합니다",
             "시간 추정은 발사 속도, 변동 표시 시간, 우타치 시간, 출옥/연출 시간, 보류 대기 효과를 합산합니다",
             "공개 JSON에는 시간 추정 오차 가이드(play_time_uncertainty_pct)를 함께 둡니다",
+            "보류 큐/상구/연출 세부가 공개되지 않은 영역은 support_spin_efficiency, right_spend_error_pct, hit_effect_variance_pct로 경량 근사합니다",
             "표준 공개 실행은 9시간 소프트 스톱과 11시간 하드 캡을 사용합니다",
         ],
         "reliability_summary": reliability_summary_text(),

@@ -53,6 +53,19 @@ class Machine:
             "JINBEE_JITAN": 0.35,
         }
     )
+    support_spin_efficiency: Dict[str, float] = field(
+        default_factory=lambda: {
+            "ST": 0.98,
+            "JITAN": 0.98,
+            "LT": 0.98,
+            "LT_JITAN": 0.98,
+            "UPPER": 0.98,
+            "UPPER_JITAN": 0.98,
+            "KAKUBEN": 1.0,
+            "JINBEE": 1.0,
+            "JINBEE_JITAN": 0.98,
+        }
+    )
     fall_prob: Dict[str, float] = field(default_factory=dict)
     fall_reserve_spins: Dict[str, int] = field(default_factory=dict)
     jitan_prob: float = 0.0

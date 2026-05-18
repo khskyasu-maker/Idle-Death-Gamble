@@ -11,9 +11,12 @@ from session_accounting import (
 )
 from session_sampling import (
     HIT_LABELS,  # noqa: F401
+    effective_support_spins,
     get_payout,
     jitan_denominator,
+    sample_hit_effect_seconds,
     sample_payout_balls,
+    sample_right_spend_balls,
     spins_until_hit,
 )
 from session_events import build_hit_event
@@ -107,6 +110,7 @@ def simulate_single(
     normal_display_seconds = 0.0
     reserve_wait_seconds = 0.0
     right_play_seconds = 0.0
+    right_balls_spent = 0.0
     hit_effect_seconds_total = 0.0
     support_event_seconds = 0.0
     cashless_play_seconds = 0.0
@@ -209,8 +213,20 @@ def simulate_single(
         right_play_seconds += seconds
         cashless_play_seconds += seconds
 
+    def support_spins(state_name: str, spin_count: int) -> int:
+        return effective_support_spins(machine, state_name, spin_count)
+
+    def reserve_state_for(state_name: str) -> str:
+        if state_name == 'LT':
+            return 'LT_JITAN'
+        if state_name == 'UPPER':
+            return 'UPPER_JITAN'
+        if state_name == 'JINBEE':
+            return 'JINBEE_JITAN'
+        return 'JITAN'
+
     def take_right_spins(state_name: str, spin_count: int) -> tuple[int, bool]:
-        nonlocal bank_balls, right_spins
+        nonlocal bank_balls, right_spins, right_balls_spent
         capped_spins, limited_by_time = cap_spins_by_time(
             spin_count,
             right_seconds(state_name, 1, time_assumptions),
@@ -223,10 +239,9 @@ def simulate_single(
             flags["time_limit_triggered"] = True
         right_spins += capped_spins
         add_right_time(state_name, capped_spins)
-        bank_balls = max(
-            0.0,
-            bank_balls - (machine.right_spend_per_spin.get(state_name, 0.0) * capped_spins),
-        )
+        spend_balls = sample_right_spend_balls(machine, state_name, capped_spins, time_assumptions)
+        right_balls_spent += spend_balls
+        bank_balls = max(0.0, bank_balls - spend_balls)
         return capped_spins, limited_by_time
 
     def pay_normal_spins(spin_count: int) -> int:
@@ -413,10 +428,10 @@ def simulate_single(
                 cashless_play_seconds += time_assumptions.normal_support_event_seconds
                 state = payout.next_state
                 if state in ['ST', 'LT', 'UPPER']:
-                    spins_left = payout.st_spins
-                    jitan_reserve = payout.jitan_spins
+                    spins_left = support_spins(state, payout.st_spins)
+                    jitan_reserve = support_spins(reserve_state_for(state), payout.jitan_spins)
                 elif state in ['JITAN', 'UPPER_JITAN', 'JINBEE_JITAN']:
-                    spins_left = payout.jitan_spins or payout.st_spins
+                    spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
                     jitan_reserve = 0
                 elif state in ['KAKUBEN', 'JINBEE']:
                     spins_left = 0
@@ -443,6 +458,7 @@ def simulate_single(
                         break
 
                     reserve_spins = machine.fall_reserve_spins.get(state, 0)
+                    reserve_spins = support_spins(state, reserve_spins)
                     if reserve_spins <= 0:
                         state = 'NORMAL'
                         streak = 0
@@ -545,7 +561,10 @@ def simulate_single(
             payout_balls = sample_payout_balls(payout)
             total_out_balls += payout_balls
             bank_balls += payout_balls
-            hit_seconds = hit_effect_time_seconds(payout_balls, previous_state, time_assumptions)
+            hit_seconds = sample_hit_effect_seconds(
+                hit_effect_time_seconds(payout_balls, previous_state, time_assumptions),
+                time_assumptions,
+            )
             hit_effect_seconds_total += hit_seconds
             cashless_play_seconds += hit_seconds
 
@@ -563,16 +582,16 @@ def simulate_single(
                 if state == 'UPPER' and previous_state not in ['UPPER', 'UPPER_JITAN']:
                     upper_entries += 1
                     upper_entry_event = True
-                spins_left = payout.st_spins
-                jitan_reserve = payout.jitan_spins
+                spins_left = support_spins(state, payout.st_spins)
+                jitan_reserve = support_spins(reserve_state_for(state), payout.jitan_spins)
             elif state == 'JITAN':
-                spins_left = payout.jitan_spins
+                spins_left = support_spins(state, payout.jitan_spins)
                 jitan_reserve = 0
             elif state == 'LT_JITAN':
-                spins_left = payout.jitan_spins or payout.st_spins
+                spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
                 jitan_reserve = 0
             elif state == 'UPPER_JITAN':
-                spins_left = payout.jitan_spins or payout.st_spins
+                spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
                 jitan_reserve = 0
             elif state == 'KAKUBEN':
                 if payout.counts_as_rush and not rush_active:
@@ -593,7 +612,7 @@ def simulate_single(
                     rush_entries += 1
                     rush_entry_event = True
                     rush_active = True
-                spins_left = payout.jitan_spins or payout.st_spins
+                spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
                 jitan_reserve = 0
             elif state == 'NORMAL':
                 spins_left = 0
@@ -672,6 +691,7 @@ def simulate_single(
         normal_display_seconds=normal_display_seconds,
         reserve_wait_seconds=reserve_wait_seconds,
         right_play_seconds=right_play_seconds,
+        right_balls_spent=right_balls_spent,
         hit_effect_seconds_total=hit_effect_seconds_total,
         support_event_seconds=support_event_seconds,
         cashless_play_seconds=cashless_play_seconds,

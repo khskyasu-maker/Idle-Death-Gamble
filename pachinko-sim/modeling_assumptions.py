@@ -30,20 +30,20 @@ RELIABILITY_SUMMARY = [
     {
         "area": "우측 소비 구슬",
         "confidence": "medium_low",
-        "note": "right_spend_per_spin은 상태별 평균값이며, 기종별 상구/오버입상/전동 패턴은 세부 반영하지 않습니다.",
+        "note": "right_spend_per_spin은 상태별 평균값이며, 실행 시 소폭 흔들림으로 상구/오버입상 차이를 근사합니다.",
     },
     {
         "area": "보류 심볼/특図 제약",
         "confidence": "low",
-        "note": "공개 스펙에서 확인 가능한 잔보류 회전수는 반영하지만, 특図1/특図2 보류 큐와 심볼 선택 제약은 명시 큐로 모델링하지 않습니다.",
+        "note": "정확한 보류 큐는 만들지 않고 support_spin_efficiency로 유효 우타치 회전수를 소폭 낮춰 근사합니다.",
     },
 ]
 
 
 MODEL_LIMITATIONS = [
-    "보류 심볼 제약: 일부 기종의 特図1/特図2 보류 우선순위와 심볼 선택 제약은 공개 스펙만으로 확정하기 어렵기 때문에, 현재는 상태별 분포와 잔보류 회전수로 근사합니다.",
-    "우측 소비 구슬: right_spend_per_spin은 ST/時短(시단)/確変(확변)/LT 상태별 평균값입니다. 기종별 상구 수, 오버입상, 전동 패턴 차이는 시간·잔류 구슬 오차로 남습니다.",
-    "연출 강제 대기 시간: TimeAssumptions는 기종족별 평균 프로파일입니다. 개별 기기의 당첨 고지, 라운드 전후 대기, 특수 모드 연출 시간은 별도 확정값이 있을 때만 반영해야 합니다.",
+    "보류 심볼 제약: 일부 기종의 特図1/特図2 보류 우선순위와 심볼 선택 제약은 공개 스펙만으로 확정하기 어렵기 때문에, 정확한 큐 대신 support_spin_efficiency로 유효 우타치 회전수를 소폭 낮춰 근사합니다.",
+    "우측 소비 구슬: right_spend_per_spin은 ST/時短(시단)/確変(확변)/LT 상태별 평균값입니다. 실행 시 right_spend_error_pct 범위의 작은 흔들림으로 기종별 상구 수, 오버입상, 전동 패턴 차이를 근사합니다.",
+    "연출 강제 대기 시간: TimeAssumptions는 기종족별 평균 프로파일입니다. 당첨 고지, 라운드 전후 대기, 특수 모드 연출 시간은 hit_effect_variance_pct로 소폭 흔들어 반영합니다.",
 ]
 
 
@@ -92,12 +92,12 @@ def machine_modeling_notes(machine: Any) -> list[str]:
         for payout in distribution
     )
     if has_right_state:
-        notes.append("우타치/잔보류는 상태별 회전수와 분포로 근사하며, 특図 보류 큐를 별도 시뮬레이션하지 않습니다.")
+        notes.append("우타치/잔보류는 상태별 회전수와 분포에 support_spin_efficiency를 적용해 보수적으로 근사합니다.")
 
     if getattr(machine, "right_spend_per_spin", None):
-        notes.append("우측 소비는 상태별 평균 구슬 소모값이며, 기기별 오버입상 차이는 포함하지 않습니다.")
+        notes.append("우측 소비는 상태별 평균 구슬 소모값에 작은 랜덤 흔들림을 더한 근사값입니다.")
 
-    notes.append("체류 시간은 기종족별 평균 시간 프로파일이므로 개별 연출 속도에 따라 흔들릴 수 있습니다.")
+    notes.append("체류 시간은 기종족별 평균 시간 프로파일과 당첨 연출 시간 흔들림으로 근사합니다.")
     return notes
 
 

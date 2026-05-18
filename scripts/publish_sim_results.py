@@ -288,6 +288,7 @@ def build_result_rows(
                 "machine_label": machine_label(machine),
                 "has_lt": machine_has_lt(machine),
                 "has_upper_rush": machine_has_upper(machine),
+                "support_spin_efficiency": machine.support_spin_efficiency,
                 "store_short_label": f"{store}/{count}대",
                 "case_label": f"{rotation_label} / 노룰 / 9h정리",
                 "budget": budget,
