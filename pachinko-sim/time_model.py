@@ -18,6 +18,8 @@ class TimeAssumptions:
     payout_balls_per_minute: float = 900.0
     min_hit_seconds: float = 10.0
     normal_support_event_seconds: float = 5.0
+    play_time_error_pct: float = 0.25
+    right_spend_error_pct: float = 0.25
     source_note: str = "범용 시간 예산 프로파일"
 
 
@@ -34,6 +36,7 @@ SEA_TIME_ASSUMPTIONS = TimeAssumptions(
     hit_base_seconds=18.0,
     rush_hit_base_seconds=12.0,
     payout_balls_per_minute=850.0,
+    play_time_error_pct=0.20,
     source_note="바다 계열: 전통 확변/시단 소화와 당첨 출옥을 보수적으로 느리게 반영",
 )
 EVA_TIME_ASSUMPTIONS = TimeAssumptions(
@@ -48,6 +51,7 @@ EVA_TIME_ASSUMPTIONS = TimeAssumptions(
     hit_base_seconds=16.0,
     rush_hit_base_seconds=10.0,
     payout_balls_per_minute=1000.0,
+    play_time_error_pct=0.20,
     source_note="에바 V-ST 계열: 우타치 약 2.5만발/시급 보도·후기 기준 중간 속도",
 )
 REZERO_TIME_ASSUMPTIONS = TimeAssumptions(
@@ -63,6 +67,7 @@ REZERO_TIME_ASSUMPTIONS = TimeAssumptions(
     rush_hit_base_seconds=4.0,
     payout_balls_per_minute=1600.0,
     min_hit_seconds=5.0,
+    play_time_error_pct=0.20,
     source_note="리제로 계열: 최단 0.76초 변동과 약 2분 RUSH 종료 후기 기준 고속",
 )
 BATTLE_TIME_ASSUMPTIONS = TimeAssumptions(
@@ -78,6 +83,7 @@ BATTLE_TIME_ASSUMPTIONS = TimeAssumptions(
     rush_hit_base_seconds=6.0,
     payout_balls_per_minute=1300.0,
     min_hit_seconds=6.0,
+    play_time_error_pct=0.25,
     source_note="현대 배틀/LT 계열: 전통기보다 빠른 우타치와 출옥 속도",
 )
 

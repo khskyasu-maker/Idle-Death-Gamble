@@ -192,7 +192,12 @@
       "strategy": "no_rule",
       "session_policy": "play_until_budget_and_balls_gone",
       "session_policy_note": "현금과 재사용 가능한 보유구슬이 모두 부족할 때까지 진행하되, 9시간 이후에는 진행 중인 우타치/RUSH 상태 종료 시 정리하고 11시간 하드 캡을 둡니다.",
-      "scope": "여행 전 가정 기반의 정제된 집계만 공개합니다. 시뮬 점포 범위는 123難波店과 楽園なんば店의 저대여 조건으로 제한하고, HIPS/마루한 나니와는 대화 중 비교·참조용으로만 둡니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다."
+      "scope": "여행 전 가정 기반의 정제된 집계만 공개합니다. 시뮬 점포 범위는 123難波店과 楽園なんば店의 저대여 조건으로 제한하고, HIPS/마루한 나니와는 대화 중 비교·참조용으로만 둡니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다.",
+      "modeling_limitations": [
+        "보류 심볼 제약: 일부 기종의 特図1/特図2 보류 우선순위와 심볼 선택 제약은 공개 스펙만으로 확정하기 어렵기 때문에, 현재는 상태별 분포와 잔보류 회전수로 근사합니다.",
+        "우측 소비 구슬: right_spend_per_spin은 ST/時短(시단)/確変(확변)/LT 상태별 평균값입니다. 기종별 상구 수, 오버입상, 전동 패턴 차이는 시간·잔류 구슬 오차로 남습니다.",
+        "연출 강제 대기 시간: TimeAssumptions는 기종족별 평균 프로파일입니다. 개별 기기의 당첨 고지, 라운드 전후 대기, 특수 모드 연출 시간은 별도 확정값이 있을 때만 반영해야 합니다."
+      ]
     },
     "default_assumptions": {
       "exchange_rate_yen_per_ball": 0.89,
@@ -226,8 +231,18 @@
         "profile_selection": "machine family: sea_classic / eva_vst / rezero_fast / battle_fast / generic",
         "right_seconds_per_spin": "0.85~3.20 by machine family and state",
         "payout_balls_per_minute": "850~1600 by machine family",
-        "reserve_wait": "normal display time beyond active launch time"
-      }
+        "reserve_wait": "normal display time beyond active launch time",
+        "play_time_uncertainty": "family profile guidance, generally ±20~25%"
+      },
+      "model_reliability_summary": [
+        "확률 분모/공식 스펙: very_high - DMM/스펙 사이트의 공개 확률과 보더를 그대로 옮긴 영역입니다.",
+        "상태 전이 분포: high - NORMAL/ST/時短(시단)/確変(확변)/LT/UPPER 계열 전이는 공개 분포와 벤치마크로 검증합니다.",
+        "예산/환율/재사용 구슬 회계: very_high - 고정 레이트, 교환율, 보유구슬 재사용 규칙에 따른 산술 영역입니다.",
+        "호기 품질/입상 분포: medium - 1000円당 회전수와 보더 마진으로 제약하지만, 실제 못 상태는 현장 관찰값에 의존합니다.",
+        "체류 시간: medium - 기종족별 시간 프로파일로 추정하며, 개별 기기의 연출/소화 속도 차이는 오차로 남습니다.",
+        "우측 소비 구슬: medium_low - right_spend_per_spin은 상태별 평균값이며, 기종별 상구/오버입상/전동 패턴은 세부 반영하지 않습니다.",
+        "보류 심볼/특図 제약: low - 공개 스펙에서 확인 가능한 잔보류 회전수는 반영하지만, 특図1/특図2 보류 큐와 심볼 선택 제약은 명시 큐로 모델링하지 않습니다."
+      ]
     },
     "rate_rules": [
       "1yen uses 200玉 per 200円 and 1000玉 per 1000円.",

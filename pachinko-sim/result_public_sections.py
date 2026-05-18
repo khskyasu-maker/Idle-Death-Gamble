@@ -1,6 +1,7 @@
 from html import escape
 from typing import Any
 
+from modeling_assumptions import public_model_limitations, reliability_summary_text
 from result_formatting import yen
 
 
@@ -8,6 +9,7 @@ SECTION_LABELS = [
     ("model_structure", "모델 구성"),
     ("stochastic_model", "확률 처리"),
     ("ball_and_time_model", "구슬/시간 처리"),
+    ("reliability_summary", "신뢰도 해석"),
     ("statistics", "통계 지표"),
     ("pre_sim_vs_actual_reading", "사전 유추와 실제 결과 비교 기준"),
     ("limits", "한계"),
@@ -31,8 +33,10 @@ def simulation_method_summary() -> dict[str, Any]:
             "보유구슬은 새 현금 투입 전에 재사용하므로, 당첨으로 얻은 구슬은 추가 현금 없이 체류 시간을 늘릴 수 있습니다",
             "통상 플레이는 순소모 구슬과 총발사 구슬을 분리하고 계열별 ベース(반환) 가정을 사용합니다",
             "시간 추정은 발사 속도, 변동 표시 시간, 우타치 시간, 출옥/연출 시간, 보류 대기 효과를 합산합니다",
+            "공개 JSON에는 시간 추정 오차 가이드(play_time_uncertainty_pct)를 함께 둡니다",
             "표준 공개 실행은 9시간 소프트 스톱과 11시간 하드 캡을 사용합니다",
         ],
+        "reliability_summary": reliability_summary_text(),
         "inputs": [
             "공개 스펙의 확률과 출옥 분포",
             "저대여 설치 맥락과 1000円당 회전수로 환산한 보더",
@@ -57,6 +61,7 @@ def simulation_method_summary() -> dict[str, Any]:
             "원시 표본 세션, 개인 여행 데이터, 실제 지출/손익 기록은 공개하지 않습니다",
             "점포 표기는 설치/레이트 대표 맥락이며 점포 순위가 아닙니다",
             "현장 회전율, 대기, 착석 가능성, 점포 규칙 차이는 모델 가정보다 더 크게 작용할 수 있습니다",
+            *public_model_limitations(),
         ],
     }
 

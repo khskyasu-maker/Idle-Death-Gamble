@@ -281,6 +281,7 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - **`low` confidence**: Rough temporary model; ranking should be capped or treated as observation only.
 - **Payout `balls`**: Practical budgeting value. When public source shows only `払出`, model uses ~93% obtained-ball approximation (conversion basis must be visible in `notes`).
 - **Selectable machines**: `STORE_CHOICES` in `stores.py` limits the simulator to 123難波店 and 楽園なんば店; `ACTIVE_*_SIM_MODEL_IDS` limits which modeled machines can appear there. Unsupported or out-of-scope models remain in `machine_definitions/` for reference/test only.
+- **Hidden mechanics**: exact 特図1/特図2 hold queues, symbol-selection constraints, right-side pocket loss, and forced effect waits should not be guessed from incomplete public specs. Keep those as explicit limitations in `modeling_assumptions.py`, `simplification_notes`, and public output notes unless a source confirms the mechanic.
 
 ### Session & Strategy Semantics
 

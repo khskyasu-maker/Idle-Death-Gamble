@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from machine_traits import machine_has_lt, machine_has_upper
 from machines import Machine
+from modeling_assumptions import machine_modeling_notes, reliability_summary_rows
 from result_formatting import spins_text
 from result_public_rendering import build_public_sim_result_html, build_public_sim_result_markdown
 from result_public_sections import simulation_method_summary
@@ -120,7 +121,12 @@ def public_result_rows(
                 "avg_profit_standard_error_yen": metrics["avg_profit_standard_error"],
                 "avg_profit_se_budget_pct": round(metrics["avg_profit_se_budget_pct"], 2),
                 "avg_play_minutes": round(metrics["avg_play_minutes"], 2),
+                "play_time_uncertainty_pct": round(metrics.get("play_time_uncertainty_pct", 0.0), 1),
+                "avg_play_minutes_low_estimate": round(metrics.get("avg_play_minutes_low_estimate", 0.0), 2),
+                "avg_play_minutes_high_estimate": round(metrics.get("avg_play_minutes_high_estimate", 0.0), 2),
                 "median_play_minutes": round(metrics.get("median_play_minutes", 0.0), 2),
+                "median_play_minutes_low_estimate": round(metrics.get("median_play_minutes_low_estimate", 0.0), 2),
+                "median_play_minutes_high_estimate": round(metrics.get("median_play_minutes_high_estimate", 0.0), 2),
                 "1h_reach_rate_pct": round(metrics.get("stay_reach_rates", {}).get(1, 0.0), 1),
                 "2h_reach_rate_pct": round(metrics.get("stay_reach_rates", {}).get(2, 0.0), 1),
                 "3h_reach_rate_pct": round(metrics.get("stay_reach_rates", {}).get(3, 0.0), 1),
@@ -171,7 +177,7 @@ def build_public_sim_result_payload(
     extra_analysis: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     return {
-        "schema_version": 5,
+        "schema_version": 6,
         "generated_at": generated_at or kst_now_text(),
         "publication_scope": "latest sanitized aggregate simulator result only",
         "simulation_method": simulation_method_summary(),
@@ -193,7 +199,9 @@ def build_public_sim_result_payload(
             "name_ja": machine.name_ja,
             "spec_type": machine.spec_type,
             "confidence": machine.confidence,
+            "modeling_notes": machine_modeling_notes(machine),
         },
+        "model_reliability_summary": reliability_summary_rows(),
         "iterations": iterations,
         "analysis": extra_analysis or {},
         "rows": public_result_rows(machine, result_rows, iterations, calculate_metrics_fn),

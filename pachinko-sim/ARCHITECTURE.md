@@ -438,6 +438,10 @@ Session accounting:
   first jackpot for field-like "how long until it hit" interpretation.
 - `play_minutes` estimates stay/play time from normal launch time, display time,
   保留(보류) full/effect waiting, right-side spins, and 大当り(대당첨) payout/effect time.
+- `play_time_error_pct` is an explicit uncertainty guide for family-level time
+  profiles. It does not change sampled outcomes; it tells readers how much
+  absolute stay-time estimates can drift from individual machine effects,
+  right-side pacing, and shop conditions.
 - `cashless_play_minutes` estimates time continuing without new cash input,
   including right-side play, hit effects, and normal spins paid by reusable balls.
 - `stay_reach_rates` reports the share of sampled sessions reaching each hour
@@ -612,7 +616,9 @@ Not yet fully modeled:
 - start rotation already sitting on the machine
 - 遊タイム(유타임) targeting
 - residual保留(잔보류) exceptions by machine
+- exact 特図1/特図2(특도1/특도2) hold queues and symbol-selection constraints
 - per-machine right-side ball loss calibration
+- forced presentation delays not exposed by public specs
 - time-of-day or closing-time constraints
 - actual unit-by-unit data, jackpot history, slump graph, or app-only data
 

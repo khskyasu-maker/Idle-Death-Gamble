@@ -1,9 +1,15 @@
 import json
+import sys
 from html import escape
+from pathlib import Path
 
 from utils import logger, get_data_path, get_docs_path, load_json, write_text, save_json
 from term_notes import annotate_japanese_terms, term_glossary
 
+
+SIM_DIR = Path(__file__).resolve().parents[1] / "pachinko-sim"
+sys.path.insert(0, str(SIM_DIR))
+from modeling_assumptions import public_model_limitations, reliability_summary_text  # noqa: E402
 
 PUBLIC_PAGES_BASE_URL = "https://khskyasu-maker.github.io/Idle-Death-Gamble/"
 
@@ -846,6 +852,7 @@ def build_simulator_context():
             "session_policy": "play_until_budget_and_balls_gone",
             "session_policy_note": "현금과 재사용 가능한 보유구슬이 모두 부족할 때까지 진행하되, 9시간 이후에는 진행 중인 우타치/RUSH 상태 종료 시 정리하고 11시간 하드 캡을 둡니다.",
             "scope": "여행 전 가정 기반의 정제된 집계만 공개합니다. 시뮬 점포 범위는 123難波店과 楽園なんば店의 저대여 조건으로 제한하고, HIPS/마루한 나니와는 대화 중 비교·참조용으로만 둡니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다.",
+            "modeling_limitations": public_model_limitations(),
         },
         "default_assumptions": {
             "exchange_rate_yen_per_ball": 0.89,
@@ -862,7 +869,9 @@ def build_simulator_context():
                 "right_seconds_per_spin": "0.85~3.20 by machine family and state",
                 "payout_balls_per_minute": "850~1600 by machine family",
                 "reserve_wait": "normal display time beyond active launch time",
+                "play_time_uncertainty": "family profile guidance, generally ±20~25%",
             },
+            "model_reliability_summary": reliability_summary_text(),
         },
         "rate_rules": [
             "1yen uses 200玉 per 200円 and 1000玉 per 1000円.",
@@ -973,6 +982,8 @@ def build_simulator_context_markdown():
     md += f"- 세션 방식: `{public_export['session_policy']}`\n"
     md += f"- 세션 방식 설명: {public_export['session_policy_note']}\n"
     md += f"- 공개 범위: {public_export['scope']}\n"
+    for item in public_export["modeling_limitations"]:
+        md += f"- 모델링 한계: {item}\n"
 
     md += "\n## 로컬 CLI 기본 가정\n\n"
     md += f"- 교환율 기본값: `{assumptions['exchange_rate_yen_per_ball']}`엔/발\n"
@@ -982,6 +993,8 @@ def build_simulator_context_markdown():
     md += f"- 기본 전략: `{assumptions['default_strategy']}`\n"
     md += f"- 기본 세션 방식: `{assumptions['default_session_policy']}`\n"
     md += f"- 스타트 입상 변동 반영: `{assumptions['start_variance']}`\n"
+    for item in assumptions["model_reliability_summary"]:
+        md += f"- 신뢰도 해석: {item}\n"
 
     md += "\n## 레이트 규칙\n\n"
     for item in context["rate_rules"]:

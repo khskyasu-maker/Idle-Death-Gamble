@@ -199,6 +199,7 @@ The normal data and report pipeline is:
 - Treat Monte Carlo output as local estimate text, not as public report data or jackpot prediction.
 - When changing simulator assumptions, update `pachinko-sim/ARCHITECTURE.md` and keep `pachinko-sim/README.md` aligned.
 - When adding or correcting a machine model from DMM/official/product pages, follow `pachinko-sim/SPEC_MODELING_GUIDE.md`.
+- Do not invent hidden mechanics such as exact 特図1/特図2 hold queues, symbol-selection constraints, right-side pocket loss, or forced effect waits. If public sources do not confirm them, keep them as documented limitations in `modeling_assumptions.py`, `simplification_notes`, or `confidence` rather than changing probabilities by guesswork.
 - Prefer reusable factories in `pachinko-sim/machine_templates.py` for machines with the same structure; add a new template only when it represents a real shared mechanic.
 - When Japanese text appears in simulator output or maintained docs, include a Korean translation next to it where practical.
 

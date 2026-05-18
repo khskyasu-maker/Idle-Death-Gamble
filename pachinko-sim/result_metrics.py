@@ -174,6 +174,11 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
         else 0.0
     )
     avg_profit_se_budget_pct = (avg_profit_standard_error / avg_budget * 100.0) if avg_budget > 0 else 0.0
+    play_time_uncertainty_pct = max(
+        0.0,
+        float(time_assumption.get("play_time_error_pct", 0.0) or 0.0) * 100.0,
+    )
+    play_time_uncertainty_ratio = play_time_uncertainty_pct / 100.0
     median_ci_low, median_ci_high = quantile_interval(profits, 0.5)
     worst_10_ci_low, worst_10_ci_high = quantile_interval(profits, 0.1)
     top_10_ci_low, top_10_ci_high = quantile_interval(profits, 0.9)
@@ -290,7 +295,16 @@ def calculate_metrics(results: List[Dict[str, Any]], iterations: int) -> Dict[st
             else 0.0
         ),
         "avg_play_minutes": avg_play_minutes,
+        "play_time_uncertainty_pct": play_time_uncertainty_pct,
+        "avg_play_minutes_low_estimate": avg_play_minutes * max(0.0, 1.0 - play_time_uncertainty_ratio),
+        "avg_play_minutes_high_estimate": avg_play_minutes * (1.0 + play_time_uncertainty_ratio),
         "median_play_minutes": percentile_float(play_minutes, 0.5),
+        "median_play_minutes_low_estimate": (
+            percentile_float(play_minutes, 0.5) * max(0.0, 1.0 - play_time_uncertainty_ratio)
+        ),
+        "median_play_minutes_high_estimate": (
+            percentile_float(play_minutes, 0.5) * (1.0 + play_time_uncertainty_ratio)
+        ),
         "p10_play_minutes": percentile_float(play_minutes, 0.1),
         "p25_play_minutes": percentile_float(play_minutes, 0.25),
         "p90_play_minutes": percentile_float(play_minutes, 0.9),

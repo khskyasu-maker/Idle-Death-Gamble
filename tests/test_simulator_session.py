@@ -231,6 +231,7 @@ class SimulatorSessionTests(unittest.TestCase):
         self.assertIn("final_remaining_value", result)
         self.assertIn("time_assumptions", result)
         self.assertEqual("sea_classic", result["time_assumptions"]["profile_name"])
+        self.assertEqual(0.20, result["time_assumptions"]["play_time_error_pct"])
         self.assertGreater(result["normal_balls_fired"], result["normal_net_balls_consumed"])
         self.assertAlmostEqual(0.0525, result["start_probability"], delta=0.0001)
         metrics = calculate_metrics([result], 1)
@@ -238,6 +239,9 @@ class SimulatorSessionTests(unittest.TestCase):
         self.assertNotIn(SESSION_TIME_LIMIT_HOURS + 1, metrics["stay_reach_rates"])
         self.assertIn("avg_final_remaining_value", metrics)
         self.assertIn("avg_post_budget_play_minutes", metrics)
+        self.assertEqual(20.0, metrics["play_time_uncertainty_pct"])
+        self.assertLess(metrics["median_play_minutes_low_estimate"], metrics["median_play_minutes"])
+        self.assertGreater(metrics["median_play_minutes_high_estimate"], metrics["median_play_minutes"])
         self.assertEqual("타협", rotation_reality_label(65, None))
 
         no_hit_machine = Machine(

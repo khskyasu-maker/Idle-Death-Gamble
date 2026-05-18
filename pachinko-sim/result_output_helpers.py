@@ -185,7 +185,11 @@ def time_profile_text(results: List[Dict[str, Any]]) -> str:
     assumptions = results[0].get("time_assumptions", {})
     profile = assumptions.get("profile_name", "generic")
     note = assumptions.get("source_note", "")
-    return f"{profile} ({note})" if note else profile
+    error_pct = float(assumptions.get("play_time_error_pct", 0.0) or 0.0) * 100.0
+    parts = [note] if note else []
+    if error_pct > 0:
+        parts.append(f"체류 시간 추정 오차 가이드 ±{error_pct:.0f}%")
+    return f"{profile} ({'; '.join(parts)})" if parts else profile
 
 
 def ci_pct(metrics: Dict[str, Any], prefix: str) -> str:

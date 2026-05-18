@@ -113,6 +113,9 @@ def build_public_sim_result_markdown(payload: dict[str, Any]) -> str:
     md += f"- 모드: {payload['mode']}\n"
     md += f"- 점포: {payload['store_name']}\n"
     md += f"- 기종: {machine['name_ko']} / {machine['name_ja']}\n"
+    modeling_notes = machine.get("modeling_notes", [])
+    if modeling_notes:
+        md += "- 모델 주의: " + "; ".join(str(note) for note in modeling_notes) + "\n"
     md += f"- 반복: {payload['iterations']}회\n"
     md += "- 범위: 공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.\n\n"
     md += build_public_method_markdown(payload.get("simulation_method", {}))
@@ -134,6 +137,14 @@ def build_public_sim_result_html(payload: dict[str, Any]) -> str:
         body_rows.append("<tr>" + "".join(f"<td>{escape(str(value))}</td>" for value in row) + "</tr>")
 
     machine = payload["machine"]
+    modeling_notes = machine.get("modeling_notes", [])
+    modeling_note_html = ""
+    if modeling_notes:
+        modeling_note_html = (
+            '<div class="note"><strong>모델 주의:</strong><ul>'
+            + "".join(f"<li>{escape(str(note))}</li>" for note in modeling_notes)
+            + "</ul></div>"
+        )
     method_html = build_public_method_html(payload.get("simulation_method", {}))
     sensitivity_html = build_rotation_sensitivity_html(payload.get("analysis", {}))
     tail_risk_html = build_tail_risk_review_html(payload.get("analysis", {}))
@@ -167,6 +178,7 @@ def build_public_sim_result_html(payload: dict[str, Any]) -> str:
     <p><strong>기종:</strong> {escape(machine['name_ko'])} / {escape(machine['name_ja'])}</p>
     <p><strong>반복:</strong> {escape(str(payload['iterations']))}회</p>
   </div>
+  {modeling_note_html}
   <div class="note">공개용 최신 1개 집계표입니다. 원시 표본, 개인 일정, 실제 지출/손익은 포함하지 않습니다.</div>
   {method_html}
 {sensitivity_html}

@@ -1,6 +1,7 @@
 from typing import Any
 
 from machines import Machine
+from modeling_assumptions import concise_machine_modeling_note
 from result_output_helpers import (
     installed_name_ja_from_results,
     installed_name_ko_from_results,
@@ -27,6 +28,7 @@ def print_machine_context(
         print(f"기종: {machine.name_ko}")
     if include_confidence:
         print(f"모델 신뢰도: {machine.confidence} | 추정 여부: {'예' if machine.is_estimated else '아니오'}")
+        print(f"모델 한계: {concise_machine_modeling_note(machine)}")
     print(f"기종 일본어: {machine.name_ja}")
 
     if not results:

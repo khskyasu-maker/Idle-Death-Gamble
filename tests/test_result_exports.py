@@ -224,11 +224,14 @@ class ResultExportTests(unittest.TestCase):
         markdown = build_public_sim_result_markdown(payload)
 
         self.assertFalse(payload["privacy_policy"]["raw_sample_sessions_included"])
-        self.assertEqual(5, payload["schema_version"])
+        self.assertEqual(6, payload["schema_version"])
         self.assertFalse(payload["rows"][0]["has_lt"])
         self.assertEqual(90.0, payload["rows"][0]["1h_reach_rate_pct"])
         self.assertEqual(45.0, payload["rows"][0]["first_hit_miss_funds_exhausted_rate_pct"])
         self.assertEqual(4200, payload["rows"][0]["avg_first_hit_cash_spent_yen"])
+        self.assertIn("model_reliability_summary", payload)
+        self.assertIn("modeling_notes", payload["machine"])
+        self.assertIn("play_time_uncertainty_pct", payload["rows"][0])
         lt_payload = build_public_sim_result_payload(
             "123難波店",
             "테스트 모드",
@@ -242,11 +245,14 @@ class ResultExportTests(unittest.TestCase):
         self.assertEqual(0.0, lt_payload["rows"][0]["lt_success_rate_pct"])
         self.assertIn("simulation_method", payload)
         self.assertIn("model_structure", payload["simulation_method"])
+        self.assertIn("reliability_summary", payload["simulation_method"])
         self.assertIn("statistics", payload["simulation_method"])
         self.assertIn("analysis", payload)
         self.assertNotIn("results", payload["rows"][0])
         self.assertIn("최신 공개 시뮬 결과", markdown)
         self.assertIn("시뮬 설계와 구성", markdown)
+        self.assertIn("모델 주의", markdown)
+        self.assertIn("보류 심볼 제약", markdown)
         self.assertIn("사전 유추와 실제 결과 비교 기준", markdown)
         self.assertIn("회전율 민감도 요약", markdown)
         self.assertIn("하방/꼬리 리스크 요약", markdown)
