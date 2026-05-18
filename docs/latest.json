@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18 01:40:14 KST",
+  "generated_at": "2026-05-18 16:53:06 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
@@ -23,7 +23,7 @@
       "checked_at": "Manual/public-source check date. Re-check onsite if stale."
     },
     "data_freshness": {
-      "generated_at": "2026-05-18 01:40:14 KST",
+      "generated_at": "2026-05-18 16:53:06 KST",
       "earliest_checked_at": "2026-05-10",
       "latest_checked_at": "2026-05-17",
       "checked_dates": [
@@ -39,8 +39,8 @@
         "store_name_ko": "라쿠엔 난바점",
         "rate": "1.111yen",
         "eva_machine_count": 19,
-        "daiumi_machine_count": 34,
-        "other_machine_count": 37,
+        "daiumi_machine_count": 63,
+        "other_machine_count": 8,
         "total_machine_count": 90
       },
       {
@@ -49,8 +49,8 @@
         "store_name_ko": "123 난바점",
         "rate": "1yen",
         "eva_machine_count": 25,
-        "daiumi_machine_count": 36,
-        "other_machine_count": 34,
+        "daiumi_machine_count": 53,
+        "other_machine_count": 17,
         "total_machine_count": 95
       },
       {
@@ -59,8 +59,8 @@
         "store_name_ko": "애로우 난바 힙스",
         "rate": "1yen",
         "eva_machine_count": 11,
-        "daiumi_machine_count": 20,
-        "other_machine_count": 23,
+        "daiumi_machine_count": 33,
+        "other_machine_count": 10,
         "total_machine_count": 54
       }
     ],
@@ -289,12 +289,16 @@
       "machine_name_ko": "PA 바다이야기 3R3",
       "aliases": [
         "PA海物語3R3",
-        "PA 바다이야기 3R3"
+        "PA 바다이야기 3R3",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -325,13 +329,17 @@
       "aliases": [
         "Pスーパー海物語IN沖縄6",
         "P 슈퍼 바다이야기 IN 오키나와6",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "오키나와",
         "沖海"
       ],
       "tags": [
+        "daiumi",
         "middle"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "確変/時短",
       "initial_probability": "1/319.6",
@@ -404,14 +412,18 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
         "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "오키나와",
         "沖海"
       ],
       "tags": [
+        "daiumi",
         "ama_like",
         "lt"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/超旋風RUSH",
       "initial_probability": "1/99.9",
@@ -521,12 +533,16 @@
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "aliases": [
         "P海物語 極JAPAN",
-        "P 바다이야기 극 JAPAN"
+        "P 바다이야기 극 JAPAN",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "middle"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "ST/時短",
       "initial_probability": "1/319.6",
@@ -598,12 +614,16 @@
       "machine_name_ko": "PA 신 바다이야기",
       "aliases": [
         "PA新海物語",
-        "PA 신 바다이야기"
+        "PA 신 바다이야기",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -759,12 +779,16 @@
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "aliases": [
         "PAスーパー海物語IN地中海2",
-        "PA 슈퍼 바다이야기 IN 지중해2"
+        "PA 슈퍼 바다이야기 IN 지중해2",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/89.8",
@@ -1270,13 +1294,17 @@
       "aliases": [
         "Pスーパー海物語IN沖縄6",
         "P 슈퍼 바다이야기 IN 오키나와6",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "오키나와",
         "沖海"
       ],
       "tags": [
+        "daiumi",
         "middle"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "確変/時短",
       "initial_probability": "1/319.6",
@@ -1429,14 +1457,18 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
         "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "오키나와",
         "沖海"
       ],
       "tags": [
+        "daiumi",
         "ama_like",
         "lt"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/超旋風RUSH",
       "initial_probability": "1/99.9",
@@ -1762,12 +1794,16 @@
       "machine_name_ko": "PA 바다이야기 극 JAPAN With 나기나미",
       "aliases": [
         "PA海物語 極JAPAN Withナギナミ",
-        "PA 바다이야기 극 JAPAN With 나기나미"
+        "PA 바다이야기 극 JAPAN With 나기나미",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -1841,12 +1877,16 @@
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "aliases": [
         "P海物語 極JAPAN",
-        "P 바다이야기 극 JAPAN"
+        "P 바다이야기 극 JAPAN",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "middle"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "ST/時短",
       "initial_probability": "1/319.6",
@@ -2063,13 +2103,17 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 with アイマリン",
         "PA 슈퍼 바다이야기 IN 오키나와5 with 아이마린",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "오키나와",
         "沖海"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -2099,12 +2143,16 @@
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "aliases": [
         "PAスーパー海物語IN地中海2",
-        "PA 슈퍼 바다이야기 IN 지중해2"
+        "PA 슈퍼 바다이야기 IN 지중해2",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/89.8",
@@ -2134,12 +2182,16 @@
       "machine_name_ko": "PA 바다이야기 3R3",
       "aliases": [
         "PA海物語3R3",
-        "PA 바다이야기 3R3"
+        "PA 바다이야기 3R3",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -2470,14 +2522,18 @@
       "aliases": [
         "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
         "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "오키나와",
         "沖海"
       ],
       "tags": [
+        "daiumi",
         "ama_like",
         "lt"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "rush_type": "ST/超旋風RUSH",
       "initial_probability": "1/99.9",
@@ -2507,12 +2563,16 @@
       "machine_name_ko": "PA 신 바다이야기",
       "aliases": [
         "PA新海物語",
-        "PA 신 바다이야기"
+        "PA 신 바다이야기",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "ama_like"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "rush_type": "ST/時短",
       "initial_probability": "1/99.9",
@@ -2708,13 +2768,17 @@
       "aliases": [
         "Pスーパー海物語 IN 沖縄5 夜桜超旋風",
         "P 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍",
+        "대해물어",
+        "大海物語",
+        "daiumi",
         "오키나와",
         "沖海"
       ],
       "tags": [
+        "daiumi",
         "middle"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "ST",
       "initial_probability": "1/319.6",
@@ -3062,12 +3126,16 @@
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "aliases": [
         "P海物語 極JAPAN",
-        "P 바다이야기 극 JAPAN"
+        "P 바다이야기 극 JAPAN",
+        "대해물어",
+        "大海物語",
+        "daiumi"
       ],
       "tags": [
+        "daiumi",
         "middle"
       ],
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "rush_type": "ST/時短",
       "initial_probability": "1/319.6",
@@ -3271,8 +3339,8 @@
       "entry_count": 25,
       "total_machine_count": 90,
       "eva_machine_count": 19,
-      "daiumi_machine_count": 34,
-      "other_machine_count": 37,
+      "daiumi_machine_count": 63,
+      "other_machine_count": 8,
       "ama_like_machine_count": 37,
       "border_entry_count": 24,
       "border_machine_count": 89,
@@ -3287,8 +3355,8 @@
       "entry_count": 32,
       "total_machine_count": 95,
       "eva_machine_count": 25,
-      "daiumi_machine_count": 36,
-      "other_machine_count": 34,
+      "daiumi_machine_count": 53,
+      "other_machine_count": 17,
       "ama_like_machine_count": 34,
       "border_entry_count": 25,
       "border_machine_count": 86,
@@ -3303,8 +3371,8 @@
       "entry_count": 20,
       "total_machine_count": 54,
       "eva_machine_count": 11,
-      "daiumi_machine_count": 20,
-      "other_machine_count": 23,
+      "daiumi_machine_count": 33,
+      "other_machine_count": 10,
       "ama_like_machine_count": 20,
       "border_entry_count": 20,
       "border_machine_count": 54,
@@ -3963,7 +4031,7 @@
       "machine_name": "PA海物語3R3",
       "machine_name_ko": "PA 바다이야기 3R3",
       "rate": "1.111yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -3990,7 +4058,7 @@
       "machine_name": "Pスーパー海物語IN沖縄6",
       "machine_name_ko": "P 슈퍼 바다이야기 IN 오키나와6",
       "rate": "1.111yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "確変/時短",
@@ -4069,7 +4137,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
       "rate": "1.111yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/超旋風RUSH",
@@ -4096,7 +4164,7 @@
       "machine_name": "P海物語 極JAPAN",
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "rate": "1.111yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST/時短",
@@ -4466,7 +4534,7 @@
       "machine_name": "Pスーパー海物語IN沖縄6",
       "machine_name_ko": "P 슈퍼 바다이야기 IN 오키나와6",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "確変/時短",
@@ -4543,7 +4611,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/超旋風RUSH",
@@ -4594,7 +4662,7 @@
       "machine_name": "PA海物語3R3",
       "machine_name_ko": "PA 바다이야기 3R3",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4620,7 +4688,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 with アイマリン",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 with 아이마린",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -4646,7 +4714,7 @@
       "machine_name": "PAスーパー海物語IN地中海2",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/89.8",
       "rush_type": "ST/時短",
@@ -5206,7 +5274,7 @@
       "machine_name": "PA新海物語",
       "machine_name_ko": "PA 신 바다이야기",
       "rate": "1.111yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -5233,7 +5301,7 @@
       "machine_name": "PAスーパー海物語IN地中海2",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 지중해2",
       "rate": "1.111yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/89.8",
       "rush_type": "ST/時短",
@@ -5287,7 +5355,7 @@
       "machine_name": "PA海物語 極JAPAN Withナギナミ",
       "machine_name_ko": "PA 바다이야기 극 JAPAN With 나기나미",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -5313,7 +5381,7 @@
       "machine_name": "P海物語 極JAPAN",
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST/時短",
@@ -5599,7 +5667,7 @@
       "machine_name": "P海物語 極JAPAN",
       "machine_name_ko": "P 바다이야기 극 JAPAN",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST/時短",
@@ -5625,7 +5693,7 @@
       "machine_name": "PA新海物語",
       "machine_name_ko": "PA 신 바다이야기",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji",
       "initial_probability": "1/99.9",
       "rush_type": "ST/時短",
@@ -5677,7 +5745,7 @@
       "machine_name": "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
       "machine_name_ko": "PA 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍 99버전",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "ama_deji_lt",
       "initial_probability": "1/99.9",
       "rush_type": "ST/超旋風RUSH",
@@ -5729,7 +5797,7 @@
       "machine_name": "Pスーパー海物語 IN 沖縄5 夜桜超旋風",
       "machine_name_ko": "P 슈퍼 바다이야기 IN 오키나와5 밤벚꽃 초선풍",
       "rate": "1yen",
-      "category": "other",
+      "category": "daiumi",
       "spec_type": "middle",
       "initial_probability": "1/319.6",
       "rush_type": "ST",
