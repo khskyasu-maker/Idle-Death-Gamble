@@ -62,6 +62,10 @@ def bilingual_hit_label(state: str) -> tuple[str, str, str]:
     return label_ja, label_ko, f"{label_ja}({label_ko})"
 
 
+def jitan_denominator(machine: Machine) -> float:
+    return machine.jitan_prob if machine.jitan_prob > 1 else machine.normal_prob
+
+
 def get_payout(payouts: List[Payout]) -> Payout:
     """확률 가중치에 따라 출옥 수 및 상태 전이 정보를 추첨합니다."""
     if not payouts:
@@ -675,9 +679,9 @@ def simulate_single(
                     continue
 
         elif state in ['JITAN', 'LT_JITAN', 'UPPER_JITAN', 'JINBEE_JITAN']:
-            current_prob = machine.normal_prob
+            current_prob = jitan_denominator(machine)
             if spins_left > 0:
-                wait_to_hit = spins_until_hit(machine.normal_prob)
+                wait_to_hit = spins_until_hit(current_prob)
                 right_spins_to_take = min(wait_to_hit, spins_left)
                 spins_left -= right_spins_to_take
                 right_spins_to_take, limited_by_time = take_right_spins(state, right_spins_to_take)

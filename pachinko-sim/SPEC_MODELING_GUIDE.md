@@ -47,6 +47,7 @@ Use this table while reading DMM or official pages.
 | Public term | Korean meaning | Python field or module | Notes |
 | --- | --- | --- | --- |
 | `大当り確率`, `通常時確率` | 초당첨/통상 확률 | `Machine.normal_prob` | Denominator only, such as `319.7` |
+| `時短中図柄揃い確率` | 시단 중 도안 당첨 확률 | `Machine.jitan_prob` | Only set when it differs from `normal_prob`, such as エヴァ17 チャージ込み1/349.9 vs 図柄揃い1/399.9 |
 | `右打ち中確率`, `ST中確率`, `高確率` | 우타치/ST/고확률 | `Machine.high_prob` | For fall type, this is the jackpot side of the race |
 | `ヘソ`, `特図1` | 헤소/특도1 배분 | `normal_hit_dist` | Initial hit payout and next state |
 | `電チュー`, `特図2` | 전추/특도2 배분 | `st_hit_dist`, `lt_hit_dist`, `upper_hit_dist` | Choose the distribution matching the current state |
@@ -287,6 +288,9 @@ Python mapping:
   `normal_support_prob` and `normal_support_dist`
 - if it is counted in public jackpot probability but not in the user's lived
   jackpot feeling, document the difference clearly
+- if the normal headline probability includes a charge route but 時短 uses a
+  symbol-hit denominator, use `normal_prob` for the combined normal jackpot and
+  `jitan_prob` for 時短 hit checks
 - keep confidence `medium` until benchmark checks match public values
 
 ## Payout Conversion Rules

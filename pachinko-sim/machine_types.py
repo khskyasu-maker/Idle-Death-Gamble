@@ -55,5 +55,6 @@ class Machine:
     )
     fall_prob: Dict[str, float] = field(default_factory=dict)
     fall_reserve_spins: Dict[str, int] = field(default_factory=dict)
+    jitan_prob: float = 0.0
     normal_support_prob: float = 0.0
     normal_support_dist: List[Payout] = field(default_factory=list)

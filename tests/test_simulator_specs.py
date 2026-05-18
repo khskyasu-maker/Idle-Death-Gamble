@@ -192,6 +192,8 @@ class SimulatorSpecTests(unittest.TestCase):
 
         eva_beginning = MACHINES["eva_beginning"]
         self.assertTrue(machine_has_lt(eva_beginning))
+        self.assertAlmostEqual(349.9, eva_beginning.normal_prob)
+        self.assertAlmostEqual(399.9, eva_beginning.jitan_prob)
         self.assertEqual([1400, 280, 280], [p.balls for p in eva_beginning.normal_hit_dist])
         self.assertEqual(["LT", "LT", "JITAN"], [p.next_state for p in eva_beginning.normal_hit_dist])
         self.assertEqual([True, True, False], [p.counts_as_rush for p in eva_beginning.normal_hit_dist])

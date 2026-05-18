@@ -138,8 +138,9 @@ KNOWN_SPEC_EXPECTATIONS = {
         "lt_weights": [1.00],
     },
     "eva_beginning": {
-        "normal_prob": 399.9,
+        "normal_prob": 349.9,
         "high_prob": 99.6,
+        "jitan_prob": 399.9,
         "normal_weights": [0.005, 0.500, 0.495],
         "normal_states": ["LT", "LT", "JITAN"],
         "normal_counts_as_rush": [True, True, False],
@@ -354,6 +355,14 @@ def validate_known_spec_expectation(machine: Machine, tolerance: float = 0.001) 
 
     _check_float(f"{machine.id}.normal_prob", machine.normal_prob, expectation["normal_prob"], tolerance, issues)
     _check_float(f"{machine.id}.high_prob", machine.high_prob, expectation["high_prob"], tolerance, issues)
+    if "jitan_prob" in expectation:
+        _check_float(
+            f"{machine.id}.jitan_prob",
+            machine.jitan_prob,
+            expectation["jitan_prob"],
+            tolerance,
+            issues,
+        )
     if "normal_support_prob" in expectation:
         _check_float(
             f"{machine.id}.normal_support_prob",

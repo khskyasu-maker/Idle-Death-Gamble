@@ -117,6 +117,8 @@ Core fields:
 
 - `normal_prob`: normal-time jackpot denominator
 - `high_prob`: right-side/ST/LT jackpot denominator
+- `jitan_prob`: optional time-short jackpot denominator when 時短(시단) uses a
+  different public denominator from normal-time combined jackpot probability
 - `normal_hit_dist`: initial hit payout and transition distribution
 - `st_hit_dist`: ST/RUSH hit distribution
 - `jitan_hit_dist`: time-short hit distribution

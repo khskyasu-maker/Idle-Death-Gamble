@@ -242,8 +242,9 @@ MACHINES = {
         name_ko="e 신세기 에반게리온 시작의 기억",
         spec_type="스마트 파친코 / 399 LT-ST",
         risk_grade="1/399",
-        normal_prob=399.9,
+        normal_prob=349.9,
         high_prob=99.6,
+        jitan_prob=399.9,
         normal_hit_dist=[
             Payout(balls=1400, weight=0.005, next_state="LT", st_spins=157, is_lt=True, ball_variance=0.03),
             Payout(balls=280, weight=0.500, next_state="LT", st_spins=157, is_lt=True, ball_variance=0.03),
@@ -258,10 +259,11 @@ MACHINES = {
             Payout(balls=4480, weight=0.005, next_state="LT", st_spins=157, is_lt=True, ball_variance=0.03),
             Payout(balls=2240, weight=0.995, next_state="LT", st_spins=157, is_lt=True, ball_variance=0.03),
         ],
-        simplification_notes="ST突入=LT로 분류. ヘソ는 0.5% 10R LT, 50.0% 2R LT, 49.5% 2R+時短100. 오른쪽은 8R×2=2400払出 중심, 0.5%만 8R×4로 근사.",
+        simplification_notes="ST突入=LT로 분류. 通常 당첨 대기는 チャージ込み大当り確率 약1/349.9, 時短100 되돌림은 図柄揃い約1/399.9로 분리. ヘソ는 0.5% 10R LT, 50.0% 2R LT, 49.5% 2R+時短100. 오른쪽은 8R×2=2400払出 중심, 0.5%만 8R×4로 근사.",
         spec_source="DMMぱちタウン machines/4894 / P-WORLD database/10353 / 777パチガブ / SANKYO",
-        confidence="medium",
-        notes="DMM 123難波店 1円に1台あり. チャージ込み大当り確率(約1/349.9)과 チャージ昇格은 별도 상태로 구현하지 않음. 1500/300/2400/4800払出은 예산 계산용 실전 근사 1400/280/2240/4480발로 사용.",
+        confidence="high",
+        notes="DMM 123難波店 1円に1台あり. チャージ経由の突入大当り는 별도 이벤트가 아니라 통상 대기 확률 1/349.9에 흡수. チャージ 후 非突入으로 통상 복귀하는 세부 소当り는 공개突入率 계산 대상이 아니므로 미반영. 1500/300/2400/4800払出은 예산 계산용 실전 근사 1400/280/2240/4480발로 사용.",
+        is_estimated=False,
     ),
 
     # C-8. P Re:ゼロから始める異世界生活 鬼がかり 99ver. (리제로 99)

@@ -99,11 +99,12 @@ def normal_counted_rush_weight(machine: Machine) -> float:
 def normal_rush_with_jitan(machine: Machine, rush_states: List[str]) -> float:
     direct = 0.0
     jitan_return = 0.0
+    jitan_prob = machine.jitan_prob if machine.jitan_prob > 1 else machine.normal_prob
     for payout in machine.normal_hit_dist:
         if payout.next_state in rush_states:
             direct += payout.weight
         elif payout.next_state == "JITAN" and payout.jitan_spins > 0:
-            jitan_return += payout.weight * (theoretical_hit_rate(machine.normal_prob, payout.jitan_spins) / 100.0)
+            jitan_return += payout.weight * (theoretical_hit_rate(jitan_prob, payout.jitan_spins) / 100.0)
     return (direct + jitan_return) * 100.0
 
 
@@ -152,6 +153,8 @@ def benchmark_model_value(machine: Machine, benchmark: Dict[str, Any]) -> float:
         return machine.normal_prob
     if metric == "high_prob":
         return machine.high_prob
+    if metric == "jitan_prob":
+        return machine.jitan_prob if machine.jitan_prob > 1 else machine.normal_prob
     if metric == "normal_support_prob":
         return machine.normal_support_prob
     if metric == "normal_hit_chance":
