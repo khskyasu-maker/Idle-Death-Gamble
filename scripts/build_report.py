@@ -1007,7 +1007,6 @@ def build_ai_context(latest):
     return {
         "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
         "public_data_index_path": "public-data-index.json",
-        "public_data_entrypoints": public_data_entrypoints(),
         "use_for": [
             "store/machine lookup",
             "rate and border cross-checking",

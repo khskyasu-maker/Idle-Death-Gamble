@@ -48,50 +48,6 @@
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
     "public_data_index_path": "public-data-index.json",
-    "public_data_entrypoints": [
-      {
-        "label": "lineup_context",
-        "href": "latest.json",
-        "format": "JSON",
-        "priority": 1,
-        "purpose": "라인업, 보더, 점포/레이트, AI 컨텍스트를 구조화 필드로 분석"
-      },
-      {
-        "label": "sim_result_canonical",
-        "href": "latest-sim-results.json",
-        "format": "JSON",
-        "priority": 2,
-        "purpose": "시뮬 수치, 가정, seed, 민감도, 하방 리스크를 정본 데이터로 분석"
-      },
-      {
-        "label": "sim_result_text_summary",
-        "href": "latest-sim-results.md",
-        "format": "Markdown",
-        "priority": 3,
-        "purpose": "JSON 파싱이 어려운 AI 대화에서 시뮬 결과 요약표를 텍스트로 검토"
-      },
-      {
-        "label": "lineup_ai_rules",
-        "href": "ai-context.md",
-        "format": "Markdown",
-        "priority": 4,
-        "purpose": "공개 라인업 데이터의 사용 목적, 금지선, 필드 설명 확인"
-      },
-      {
-        "label": "simulator_ai_rules",
-        "href": "simulator-ai-context.md",
-        "format": "Markdown",
-        "priority": 5,
-        "purpose": "시뮬 결과 해석 규칙과 파일 우선순위 확인"
-      },
-      {
-        "label": "lineup_report_text",
-        "href": "latest-report.md",
-        "format": "Markdown",
-        "priority": 6,
-        "purpose": "구조화 JSON 보조용 텍스트 리포트"
-      }
-    ],
     "use_for": [
       "store/machine lookup",
       "rate and border cross-checking",
