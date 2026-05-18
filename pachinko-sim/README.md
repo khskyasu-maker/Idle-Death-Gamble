@@ -68,6 +68,8 @@ python3 scripts/clean.py --apply
 - `store_comparison.py`: 같은 기종을 점포별 레이트, 헤소 입상 품질, 보더 마진 기준으로 보조 비교하는 런타임 시나리오 로직
 - `session_accounting.py`: 전략/세션 정책 라벨, 정책 정규화, 손익 잠금/재투입 회계 helper
 - `session_runtime.py`: 시간 제한, cash cutoff, 정상 회전 초수, 스핀 캡 계산 helper
+- `session_sampling.py`: 당첨 라벨, payout 추첨, payout 변동, 독립 시행 hit wait sampling helper
+- `session_setup.py`: 세션 시작 회전율 표본, 시작확률, stop-loss probe, normal spin cap 계산 helper
 - `simulator.py`: 순수 확률 기반 계산 및 시뮬레이션 코어 (UI 로직 없음)
 - `session_scenarios.py`: 회전율/예산/전략 매트릭스 실행 조합 빌더
 - `result.py`: 기존 `from result import ...` 경로를 보존하는 호환 export 래퍼
@@ -83,7 +85,9 @@ python3 scripts/clean.py --apply
 - `result_stats.py`: Wilson 구간, t 기반 평균 구간, 분위수 구간, 조건부 플러스율 같은 순수 통계 보조 로직
 - `result_formatting.py`: ASCII 표, 금액, 퍼센트, 시간 표시 같은 터미널 포맷 보조 로직
 - `result_csv.py`: 사용자가 명시적으로 선택한 경우에만 gitignored `results.csv`에 최신 매트릭스 결과를 덮어쓰는 CSV 직렬화 로직
-- `result_public_export.py`: 사용자가 명시적으로 선택한 경우에만 `docs/latest-sim-results.*`에 최신 공개용 집계표를 덮어쓰는 로직
+- `result_public_sections.py`: 공개용 Markdown/HTML의 시뮬 설계, 회전율 민감도, 하방 리스크 섹션 조립
+- `result_public_rendering.py`: 공개용 Markdown/HTML 집계표 렌더링
+- `result_public_export.py`: 사용자가 명시적으로 선택한 경우에만 `docs/latest-sim-results.*`에 최신 공개용 payload와 파일을 덮어쓰는 로직
 - `result_store_views.py`: 점포 보조 비교 출력에 필요한 표 행과 설명문을 조립하는 뷰 보조 로직
 - `model_checks.py`: 이론 무당첨률, ST/LT 확률, payout weight와 고정 스펙 메타데이터 검증용 보조 로직
 

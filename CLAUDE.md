@@ -34,7 +34,7 @@ python scripts/check.py --dev-tools
 python scripts/check.py --coverage
 
 # Run specific test
-python -m unittest tests.test_simulator_specs.TestMachineSpecs.test_example_name
+python -m unittest tests.test_simulator_specs.SimulatorSpecTests.test_all_machine_models_validate
 ```
 
 ### Data Pipeline (Manual/GitHub Actions)
@@ -101,7 +101,7 @@ python -m ruff format .
 python -m unittest discover -s tests
 
 # Test a specific module
-python -m unittest tests.test_simulator_specs
+python -m unittest tests.test_rotation
 ```
 
 ## Architecture & Data Flow
@@ -157,7 +157,7 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - **`Payout`**: nominal balls won, weight, next state transition, optional jitan/lt entry counts.
 - **`RotationEstimate`** (rotation.py): preserves input basis (1000円, 200玉, 250玉, observed cash, border margin) so output can explain conversion.
 - **Stores** (stores.py): Maps DMM lineup → simulator machine IDs, tracks installed/unsupported machines, converts borders to `spins_per_1000yen`.
-- **Session** (`simulator.py` + `session_accounting.py` + `session_runtime.py`): Monte Carlo state, cash budget, rented balls, card reuse, exchange rate, 9-hour soft stop, 11-hour hard cap, and strategy accounting.
+- **Session** (`simulator.py` + `session_accounting.py` + `session_runtime.py` + `session_sampling.py` + `session_setup.py`): Monte Carlo state, cash budget, rented balls, card reuse, exchange rate, 9-hour soft stop, 11-hour hard cap, strategy accounting, stochastic sampling helpers, and initial spin setup.
 
 **Important Simulator Constraints**:
 - Borderline does NOT change jackpot probability. It only bounds the table-quality rotation distribution and indexes default scenario cases (e.g., `보더-5/±0/+5`).
@@ -213,6 +213,8 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - **`spec_benchmarks.py`**: Fixed public spec values used in profile output and benchmark comparison rows.
 - **`session_accounting.py`**: Strategy names, policy names, profit conversion, and lock/exit rules.
 - **`session_runtime.py`**: Session time-limit conversion and spin capping helpers.
+- **`session_sampling.py`**: Hit labels, payout sampling, payout variance, and geometric hit-wait helpers.
+- **`session_setup.py`**: Initial session rotation sampling, start probability, stop-loss probe, and normal-spin cap helpers.
 - **`session_scenarios.py`**: Rotation, budget, and strategy matrix builders. `simulator.py` keeps wrappers for legacy imports.
 - **`simulator.py`**: Monte Carlo engine and state machine (NORMAL, ST, JITAN, KAKUBEN, LT, UPPER, JINBEE, etc.).
 - **`store_comparison.py`**: Build same-machine, same-state store comparison scenarios. Handles 1円/1.111円 rate conversions (cash_rotation, ball_quality, border_margin assumptions).
@@ -224,7 +226,9 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - **`result_table_builders.py`**: Reusable row builders (single, repeated, matrix, budget, profile, strategy tables).
 - **`result_formatting.py`**: Terminal width, yen/percent/minute text, ASCII bars.
 - **`result_csv.py`**: Latest-only matrix CSV serialization.
-- **`result_public_export.py`**: Sanitized JSON/Markdown/HTML export with uncertainty labels.
+- **`result_public_sections.py`**: Public Markdown/HTML method, rotation sensitivity, and tail-risk sections.
+- **`result_public_rendering.py`**: Public Markdown/HTML table rendering.
+- **`result_public_export.py`**: Latest-only sanitized public payload/file export.
 - **`result_basic_printers.py`**: Single-session and repeated-session output.
 - **`result_matrix_printers.py`**: Rotation/budget/profile/strategy matrix output.
 - **`result_matrix_sections.py`**: Matrix table headers and section helpers.
@@ -240,7 +244,12 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 
 ### Tests
 
-- **`test_simulator_specs.py`**: Deterministic machine model checks (no-hit rate, state transitions, payout weights).
+- **`test_simulator_specs.py`**: Deterministic machine model checks (state transitions, payout weights, active lineup policy).
+- **`test_simulator_session.py`**: Session engine, start-gate variance, time limits, and Monte Carlo convergence checks.
+- **`test_session_setup.py`**: Initial session setup helper checks.
+- **`test_rotation.py`**: Rotation, border, and rate-unit conversion checks.
+- **`test_store_comparison.py`**: Same-machine store comparison scenario/view checks.
+- **`test_result_metrics.py`**: Metric aggregation and statistical helper checks.
 - **`test_result_exports.py`**: Public export format validation, structure checks.
 - **`test_result_compat.py`**: Backward-compatibility for result module imports.
 - **`test_result_table_builders.py`**: Row builder logic.
@@ -301,10 +310,10 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 python -m unittest discover -s tests
 
 # Run a specific test class
-python -m unittest tests.test_simulator_specs.TestMachineSpecs
+python -m unittest tests.test_simulator_specs.SimulatorSpecTests
 
 # Run a specific test method
-python -m unittest tests.test_simulator_specs.TestMachineSpecs.test_machine_confidence_levels
+python -m unittest tests.test_simulator_specs.SimulatorSpecTests.test_all_machine_models_validate
 ```
 
 **Continuous Integration**:
@@ -328,14 +337,14 @@ python -m unittest tests.test_simulator_specs.TestMachineSpecs.test_machine_conf
 3. Ensure `spec_source`, `confidence`, and `is_estimated` are set correctly.
 4. If a reusable family, add a factory function in `machine_templates.py` and parameterize from the matching `machine_definitions/` file.
 5. Add machine to `MACHINE_NAME_TO_SIM_ID` mapping in `stores.py` if selectable, or leave as reference-only.
-6. Run `python -m unittest tests.test_simulator_specs` to validate payouts and state transitions.
+6. Run `python -m unittest tests.test_simulator_specs tests.test_simulator_session` to validate payouts, state transitions, and session behavior.
 
 ### Updating Machine Spec (Probability, Border, Payout)
 
 1. Check if the machine is in `stores.py` `MACHINE_NAME_TO_SIM_ID` (selectable) or reference-only.
 2. Update the matching `machine_definitions/` file with new probability, border, or payout distribution.
 3. If using borderline comparison, update `spec_benchmarks.py` if the public spec changed.
-4. Run `python scripts/validate_data.py` and `python -m unittest tests.test_simulator_specs` to confirm no validation errors.
+4. Run `python scripts/validate_data.py` and `python -m unittest tests.test_simulator_specs tests.test_rotation` to confirm no validation errors.
 5. If selectable and public-facing, consider running `python scripts/publish_sim_results.py --machine-id <id> --merge-existing` to update the public result table.
 
 ### Adding a New Store or Updating Lineup

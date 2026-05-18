@@ -32,7 +32,7 @@
 | 파일 | 현재 책임 | 문제 |
 |---|---|---|
 | `main.py` | CLI 입력, 모드 선택, 시나리오 생성, 결과 출력 호출 | 입력 파싱과 실행 오케스트레이션이 결합됨 |
-| `simulator.py` / `session_accounting.py` / `session_runtime.py` / `session_scenarios.py` | 세션 상태머신, 전략 회계, 시간/스핀 캡, 매트릭스 실행 | 전략/정책 회계, 시간/스핀 캡, 시나리오 빌더는 1차 분리 완료 |
+| `simulator.py` / `session_accounting.py` / `session_runtime.py` / `session_sampling.py` / `session_setup.py` / `session_scenarios.py` | 세션 상태머신, 전략 회계, 시간/스핀 캡, payout/hit sampling, 세션 시작 조건, 매트릭스 실행 | 전략/정책 회계, 시간/스핀 캡, sampling/setup helper, 시나리오 빌더는 1차 분리 완료 |
 | `result.py` | 기존 import 경로 호환 export | 실제 책임은 `result_*` 모듈로 분리됨 |
 | `result_printers.py` | 공개 프린터 export와 최신 CSV 저장 안내 | 실제 출력 구현은 하위 프린터 모듈로 분리됨 |
 | `result_basic_printers.py` | 단일 실행/반복 실행 출력 | 표 행 생성은 별도 모듈에 위임 |
@@ -91,20 +91,24 @@
 
 절대값 `70회 미만` 경고는 보더 미확정 기종에서만 fallback으로 쓴다. 보더가 있는 기종에서는 `65회`라도 보더가 `55회`면 좋은 조건일 수 있다.
 
-## 제안 모듈 구조
+## 현재 모듈 구조
 
-1차 리팩터링은 파일 이동을 최소화하고, 새 모듈을 추가한 뒤 기존 함수가 새 모듈을 호출하도록 한다.
+1차 리팩터링은 파일 이동을 최소화하고, 새 모듈을 추가한 뒤 기존 함수가 새 모듈을 호출하도록 진행했다.
 
 ```text
 pachinko-sim/
 ├── rotation.py          # 회전율/보더/단위 환산
-├── scenarios.py         # 단일/매트릭스/예산/전략 시나리오 빌더
+├── session_scenarios.py # 단일/매트릭스/예산/전략 시나리오 빌더
+├── session_sampling.py  # 당첨 라벨, payout 추첨, hit wait sampling
+├── session_setup.py     # 시작 회전율/시작확률/stop-loss probe 계산
 ├── result_metrics.py    # calculate_metrics, 신뢰구간, 조건부 플러스 통계
 ├── result_output_helpers.py # 출력 문구, 보더/스펙 비교, 표 행 보조
 ├── result_table_builders.py # 반복 출력용 표 행 생성
-├── output_tables.py     # ASCII 테이블 row 생성과 출력 텍스트
+├── result_formatting.py # ASCII 테이블과 yen/percent/time 텍스트
 ├── result_csv.py        # results.csv 최신 결과 덮어쓰기 전용
-├── result_public_export.py # docs/latest-sim-results.* 최신 공개 집계표 덮어쓰기 전용
+├── result_public_sections.py # 공개 시뮬 Markdown/HTML 설명 섹션
+├── result_public_rendering.py # 공개 시뮬 Markdown/HTML 표 렌더링
+├── result_public_export.py # docs/latest-sim-results.* 최신 공개 payload/file 덮어쓰기 전용
 ├── cli_inputs.py        # 입력/선택 UI
 ├── cli_context.py       # 라인업/결과 문맥 주입
 ├── cli_export.py        # 공개 결과 저장 확인
@@ -118,7 +122,7 @@ pachinko-sim/
 
 ### `rotation.py`
 
-새로 만들 핵심 모듈이다.
+회전율/보더 단위 환산의 핵심 모듈이다.
 
 책임:
 
@@ -128,7 +132,7 @@ pachinko-sim/
 - 보더 기준 회전율 케이스 생성
 - 현실감 라벨 생성
 
-제안 API:
+주요 API:
 
 ```python
 BORDER_MARGIN_CASES = [-10, -5, 0, 5, 10]
@@ -141,9 +145,9 @@ def border_case_rates(border_spins: float | None, fallback_rates: list[int] | No
 def rotation_reality_label(spins_per_1000y: float, border_spins: float | None) -> str: ...
 ```
 
-### `scenarios.py`
+### `session_scenarios.py`
 
-`simulator.py`의 매트릭스 실행 함수들을 옮긴다.
+`simulator.py`의 매트릭스 실행 함수들을 옮겼다.
 
 대상:
 
@@ -151,7 +155,7 @@ def rotation_reality_label(spins_per_1000y: float, border_spins: float | None) -
 - `run_budget_matrix`
 - `run_strategy_matrix`
 
-추가:
+추가 후보:
 
 - `run_border_margin_matrix`
 - `run_budget_matrix_at_border_margin`
@@ -168,9 +172,9 @@ def rotation_reality_label(spins_per_1000y: float, border_spins: float | None) -
 }
 ```
 
-### `metrics.py`
+### `result_metrics.py`
 
-`result.py`의 통계 계산을 분리한다.
+`result.py`의 통계 계산을 분리했다.
 
 대상:
 
@@ -182,9 +186,9 @@ def rotation_reality_label(spins_per_1000y: float, border_spins: float | None) -
 
 출력 포맷은 넣지 않는다. 숫자만 반환한다.
 
-### `output_tables.py`
+### `result_formatting.py` / `result_table_builders.py`
 
-`result.py`의 ASCII 테이블/문구 생성 책임을 옮긴다.
+`result.py`의 ASCII 테이블/문구 생성 책임을 분리했다.
 
 대상:
 
@@ -202,7 +206,7 @@ def useful_profit_rows(metrics): ...
 def border_rotation_rows(scenario, metrics): ...
 ```
 
-### `csv_export.py`
+### `result_csv.py`
 
 CSV 저장은 사용자가 명시적으로 선택할 때만 실행하고, 누적하지 않고 최신 결과만 덮어쓴다는 정책을 유지한다. `result.py`에서 분리해 테스트하기 쉽게 만든다.
 
@@ -214,12 +218,12 @@ CSV 저장은 사용자가 명시적으로 선택할 때만 실행하고, 누적
 `result_basic_printers.py`, `result_matrix_printers.py`,
 `result_store_printers.py`로 분리한다.
 
-### `cli.py`와 `main.py`
+### `cli_*`와 `main.py`
 
-`main.py`는 얇은 entry point로 만든다.
+`main.py`는 얇은 entry point로 유지한다.
 
 ```python
-from cli import run_cli
+from cli_modes import run_cli
 
 if __name__ == "__main__":
     run_cli()
@@ -307,7 +311,9 @@ CLI에는 회전율 입력 모드를 추가한다.
 - 완료: 점포 비교 출력과 문서를 보조 분석으로 명시해 점포 추천 순위처럼 보이지 않게 정리
 - 완료: CLI에 `1000엔`, `200엔`, `250玉`, `사용 금액+회전수`, `보더 +/-` 회전율 입력 방식을 추가
 - 완료: 리스크 평가 모드 반복 횟수를 고정 1000회에서 사용자 입력형 기본 5000회로 변경
-- 남음: `metrics.py`, `output_tables.py`, `csv_export.py`, `cli.py`, `scenarios.py`로 추가 분리
+- 완료: `result_metrics.py`, `result_csv.py`, `cli_*`, `session_sampling.py`, `session_setup.py`, `session_scenarios.py`로 주요 책임 분리
+- 완료: `result_public_export.py`의 Markdown/HTML 섹션과 표 렌더링을 `result_public_sections.py`, `result_public_rendering.py`로 분리
+- 남음: `simulator.py`의 상태 전이/결과 조립 추가 축소, `result_table_builders.py`/`result_output_helpers.py`의 출력 계층 추가 분리
 
 ### 1단계: 회전율/보더 모듈 추가
 
@@ -359,7 +365,7 @@ CLI에는 회전율 입력 모드를 추가한다.
 
 - `README.md` 실행 설명 갱신
 - `ARCHITECTURE.md`에 새 모듈 구조 반영
-- `tests/test_simulator_specs.py`를 회전율/보더/통계 테스트 파일로 분리
+- 완료: `tests/test_simulator_specs.py`를 기종 스펙 중심으로 축소하고 회전율/점포 비교/세션/통계 테스트를 별도 파일로 분리
 
 ## 테스트 계획
 

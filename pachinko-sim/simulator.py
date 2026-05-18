@@ -1,14 +1,6 @@
-import math
 import random
 from typing import Dict, Any, List
-from machines import Machine, Payout
-from start_gate import (
-    observed_rate_per_1000yen,
-    rented_balls_per_1000yen,
-    sample_start_spins,
-    sample_session_spin_rate,
-    sample_truncated_normal,
-)
+from machines import Machine, Payout  # noqa: F401
 from session_accounting import (
     SESSION_POLICIES,
     STRATEGIES,
@@ -17,6 +9,15 @@ from session_accounting import (
     normalize_session_policy,
     normalize_strategy,
 )
+from session_sampling import (
+    HIT_LABELS,  # noqa: F401
+    bilingual_hit_label,
+    get_payout,
+    jitan_denominator,
+    sample_payout_balls,
+    spins_until_hit,
+)
+from session_setup import build_session_start
 from session_limits import (
     HARD_SESSION_TIME_LIMIT_MINUTES,
     LAST_CASH_INPUT_CUTOFF_MINUTES,
@@ -41,71 +42,6 @@ from time_model import (
     time_assumptions_for_machine,
 )
 from session_scenarios import BUDGET_CASES, PROFILE_BUDGET_CASES, SPIN_RATE_CASES
-
-
-HIT_LABELS = {
-    "NORMAL": ("初当り", "초당첨"),
-    "JITAN": ("時短当り", "시단 당첨"),
-    "KAKUBEN": ("確変当り", "확변 당첨"),
-    "LT": ("LT当り", "LT 당첨"),
-    "LT_JITAN": ("LT時短当り", "LT 시단 당첨"),
-    "UPPER": ("上位RUSH当り", "상위 러시 당첨"),
-    "UPPER_JITAN": ("上位RUSH時短当り", "상위 러시 시단 당첨"),
-    "JINBEE": ("ジンベェ当り", "진베에 타임 당첨"),
-    "JINBEE_JITAN": ("ジンベェ当り", "진베에 시단 당첨"),
-}
-
-
-def bilingual_hit_label(state: str) -> tuple[str, str, str]:
-    label_ja, label_ko = HIT_LABELS.get(state, ("RUSH/ST当り", "러시/ST 당첨"))
-    return label_ja, label_ko, f"{label_ja}({label_ko})"
-
-
-def jitan_denominator(machine: Machine) -> float:
-    return machine.jitan_prob if machine.jitan_prob > 1 else machine.normal_prob
-
-
-def get_payout(payouts: List[Payout]) -> Payout:
-    """확률 가중치에 따라 출옥 수 및 상태 전이 정보를 추첨합니다."""
-    if not payouts:
-        return Payout(balls=0, weight=1.0, next_state='NORMAL')
-
-    r = random.random()
-    cumulative = 0.0
-    for p in payouts:
-        cumulative += p.weight
-        if r <= cumulative:
-            return p
-    return payouts[-1] # fallback
-
-
-def sample_payout_balls(payout: Payout) -> int:
-    """Sample realized payout around the nominal ball count.
-
-    Round distribution is fixed by the machine spec, while actual counted balls
-    vary slightly from award/over入賞(오버입상)/round-loss effects. A truncated
-    normal keeps values centred on the public payout and inside the configured
-    plausible range.
-    """
-    if payout.balls <= 0:
-        return 0
-
-    variance = max(0.0, payout.ball_variance)
-    if variance <= 0.0:
-        return int(payout.balls)
-
-    low = max(0, int(payout.balls * (1.0 - variance)))
-    high = max(low, int(payout.balls * (1.0 + variance)))
-    stddev = max(1.0, (payout.balls * variance) / 2.0)
-    return int(round(sample_truncated_normal(payout.balls, stddev, low, high)))
-
-
-def spins_until_hit(probability_denominator: float) -> int:
-    """Sample the spin count until the next hit for independent Bernoulli spins."""
-    hit_probability = 1.0 / probability_denominator
-    if hit_probability >= 1.0:
-        return 1
-    return int(math.log1p(-random.random()) / math.log1p(-hit_probability)) + 1
 
 
 def simulate_single(
@@ -137,59 +73,34 @@ def simulate_single(
     session_policy = normalize_session_policy(session_policy)
     time_assumptions = time_assumptions or time_assumptions_for_machine(machine)
 
-    true_spins_per_1000y = float(spins_per_1000y)
-    effective_quality_stddev = spin_rate_quality_stddev if start_variance else 0.0
-    if start_variance:
-        true_spins_per_1000y = sample_session_spin_rate(
-            spins_per_1000y,
-            border_spins_per_1000y=border_spins_per_1000y,
-            quality_stddev=effective_quality_stddev,
-            min_spins_per_1000y=spin_rate_min,
-            max_spins_per_1000y=spin_rate_max,
-        )
-
-    rented_balls_1000 = rented_balls_per_1000yen(lend_rate)
-    gross_rented_balls_1000 = gross_launch_balls(rented_balls_1000, time_assumptions)
-    start_probability = (
-        max(0.0, min(1.0, true_spins_per_1000y / gross_rented_balls_1000))
-        if gross_rented_balls_1000 > 0
-        else 0.0
+    session_start = build_session_start(
+        budget=budget,
+        lend_rate=lend_rate,
+        spins_per_1000y=spins_per_1000y,
+        strategy=strategy,
+        session_policy=session_policy,
+        max_normal_spins=max_normal_spins,
+        start_variance=start_variance,
+        border_spins_per_1000y=border_spins_per_1000y,
+        spin_rate_quality_stddev=spin_rate_quality_stddev,
+        spin_rate_min=spin_rate_min,
+        spin_rate_max=spin_rate_max,
+        stop_loss_probe_yen=stop_loss_probe_yen,
+        stop_loss_spin_threshold=stop_loss_spin_threshold,
+        time_assumptions=time_assumptions,
     )
-    expected_total_spins_possible = int((budget / 1000) * true_spins_per_1000y)
-
-    if start_variance and session_policy == "fixed_spin_cap":
-        total_budget_balls = budget / lend_rate
-        total_spins_possible = sample_start_spins(
-            gross_launch_balls(total_budget_balls, time_assumptions),
-            start_probability,
-        )
-        observed_spins_per_1000y = observed_rate_per_1000yen(total_spins_possible, budget)
-    elif start_variance:
-        sampled_1000y_spins = sample_start_spins(gross_rented_balls_1000, start_probability)
-        observed_spins_per_1000y = float(sampled_1000y_spins)
-        total_spins_possible = int((budget / 1000) * observed_spins_per_1000y)
-    else:
-        observed_spins_per_1000y = float(spins_per_1000y)
-        total_spins_possible = expected_total_spins_possible
-
-    stop_loss_probe_budget = max(0, min(int(stop_loss_probe_yen), int(budget)))
-    if stop_loss_probe_budget > 0:
-        if start_variance:
-            stop_loss_probe_spins = sample_start_spins(
-                gross_launch_balls(stop_loss_probe_budget / lend_rate, time_assumptions),
-                start_probability,
-            )
-        else:
-            stop_loss_probe_spins = int(round((stop_loss_probe_budget / 1000.0) * spins_per_1000y))
-        stop_loss_probe_rate = observed_rate_per_1000yen(stop_loss_probe_spins, stop_loss_probe_budget)
-    else:
-        stop_loss_probe_spins = 0
-        stop_loss_probe_rate = 0.0
-
-    normal_spin_cap = total_spins_possible if session_policy == "fixed_spin_cap" else max_normal_spins
-    stop_loss_normal_spin_cap = None
-    if strategy == "basic_stop" and stop_loss_probe_budget > 0 and stop_loss_probe_rate < stop_loss_spin_threshold:
-        stop_loss_normal_spin_cap = min(total_spins_possible, stop_loss_probe_spins)
+    true_spins_per_1000y = session_start.true_spins_per_1000y
+    effective_quality_stddev = session_start.effective_quality_stddev
+    rented_balls_1000 = session_start.rented_balls_1000
+    start_probability = session_start.start_probability
+    expected_total_spins_possible = session_start.expected_total_spins_possible
+    observed_spins_per_1000y = session_start.observed_spins_per_1000y
+    total_spins_possible = session_start.total_spins_possible
+    stop_loss_probe_budget = session_start.stop_loss_probe_budget
+    stop_loss_probe_spins = session_start.stop_loss_probe_spins
+    stop_loss_probe_rate = session_start.stop_loss_probe_rate
+    normal_spin_cap = session_start.normal_spin_cap
+    stop_loss_normal_spin_cap = session_start.stop_loss_normal_spin_cap
 
     spins_used = 0
     right_spins = 0

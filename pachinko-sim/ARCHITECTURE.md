@@ -50,6 +50,12 @@ pachinko-sim/session_accounting.py
 pachinko-sim/session_runtime.py
         |
         v
+pachinko-sim/session_sampling.py
+        |
+        v
+pachinko-sim/session_setup.py
+        |
+        v
 pachinko-sim/simulator.py
         |
         v
@@ -74,7 +80,7 @@ pachinko-sim/result_printer_common.py
 pachinko-sim/result_matrix_sections.py
         |
         v
-pachinko-sim/result_metrics.py + pachinko-sim/result_output_helpers.py + pachinko-sim/result_table_builders.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_export.py
+pachinko-sim/result_metrics.py + pachinko-sim/result_output_helpers.py + pachinko-sim/result_table_builders.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_sections.py + pachinko-sim/result_public_rendering.py + pachinko-sim/result_public_export.py
         |
         v
 CLI output / optional latest-only local results.csv / optional latest-only public docs/latest-sim-results.*
@@ -92,6 +98,8 @@ Fixed real-world inputs and runtime outputs must remain separate:
 - source-to-model translation rules: `SPEC_MODELING_GUIDE.md`
 - runtime session assumptions: CLI inputs, strategy settings, `spins_per_1000y`, budget, exchange rate
 - runtime time assumptions: launch speed, display seconds per start, right-side seconds per spin, payout/effect time
+- runtime stochastic helpers: independent hit wait sampling, payout selection, and payout variance in `session_sampling.py`
+- runtime session-start setup: rotation sample, start probability, stop-loss probe, and normal-spin cap in `session_setup.py`
 - runtime statistical output: `result_metrics.py` metrics, optional latest-only gitignored `results.csv`, and optional latest-only sanitized `docs/latest-sim-results.*`
 
 Do not copy Monte Carlo output, recommendation scores, or visit decisions back into fixed data files.
@@ -316,6 +324,35 @@ Responsibilities:
 - preserve the existing cash-cutoff cap behavior when less than one full normal
   spin remains before the cutoff
 
+### `session_sampling.py`
+
+Keeps small stochastic helpers and hit labels outside the Monte Carlo session
+loop while preserving `simulator.py` compatibility exports.
+
+Responsibilities:
+
+- expose bilingual Japanese/Korean hit labels for recorded hit events
+- choose weighted `Payout` transitions from a machine distribution
+- sample practical payout-ball variance around nominal public payout values
+- sample independent-trial wait time until the next hit from a probability
+  denominator
+- provide `jitan_denominator` for 時短(시단) states that fall back to normal
+  probability when a machine has no separate `jitan_prob`
+
+### `session_setup.py`
+
+Calculates the initial sampled rotation context before the session state machine
+starts.
+
+Responsibilities:
+
+- sample table-quality rotation when start variance is enabled
+- calculate rented balls, gross launched balls, and start probability
+- calculate expected and observed total normal spins for fixed-spin and
+  play-until-budget policies
+- calculate the first stop-loss probe budget, probe spins, probe rate, and
+  optional normal-spin cap for slow observed starts
+
 ### `simulator.py`
 
 Runs Monte Carlo sessions.
@@ -454,7 +491,9 @@ delegating reusable pure helpers to:
 - `result_stats.py`: Monte Carlo uncertainty helpers, Wilson intervals, quantile intervals, tail means, and useful-profit condition rows
 - `result_formatting.py`: terminal table width handling, yen/percent/minute text, and ASCII bar/table helpers
 - `result_csv.py`: latest-only matrix CSV serialization used only after explicit user confirmation
-- `result_public_export.py`: latest-only sanitized public simulator result JSON/Markdown/HTML export used only after explicit user confirmation
+- `result_public_sections.py`: Markdown/HTML method, rotation sensitivity, and tail-risk review section builders
+- `result_public_rendering.py`: Markdown/HTML public table rendering for sanitized aggregate rows
+- `result_public_export.py`: latest-only sanitized public simulator result payload/file export used only after explicit user confirmation
 - `result_store_views.py`: same-machine store comparison table rows and explanatory labels
 
 Primary outputs:
