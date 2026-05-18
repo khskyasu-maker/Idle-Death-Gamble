@@ -212,6 +212,10 @@ Responsibilities:
 - calculate border margin, border ratio, and human-readable rotation judgement
 - keep absolute `70회/1000엔` warnings as fallback only when no machine border is known
 
+The latest public aggregate defaults to a conservative field-like `보더±0`
+assumption. Better-than-border cases such as `보더+5` and `보더+10` belong in
+the sensitivity analysis unless the run is explicitly marked optimistic.
+
 This module does not change jackpot probability. It only changes how many
 normal-start trials a cash or ball budget can buy.
 

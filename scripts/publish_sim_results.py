@@ -22,6 +22,7 @@ DEFAULT_ITERATIONS = 5000
 DEFAULT_SENSITIVITY_BUDGET = 10000
 DEFAULT_SENSITIVITY_ITERATIONS = 3000
 DEFAULT_RISK_REVIEW_BUDGET = 10000
+DEFAULT_FIELD_ROTATION_MARGIN = 0.0
 DEFAULT_EXCHANGE_RATE = 0.89
 DEFAULT_BASE_SEED = 20260518
 FALLBACK_SPINS_PER_1000Y = 70.0
@@ -152,6 +153,13 @@ def sensitivity_label(plus_range: float, median_time_range: float, exhausted_ran
     return "낮음"
 
 
+def rotation_margin_label(margin: float) -> str:
+    if abs(margin) < 0.05:
+        return "보더±0"
+    sign = "+" if margin > 0 else ""
+    return f"보더{sign}{margin:g}"
+
+
 def tail_risk_label(
     *,
     has_lt: bool,
@@ -211,6 +219,7 @@ def build_result_rows(
     iterations: int,
     exchange_rate: float,
     base_seed: int,
+    field_rotation_margin: float,
 ) -> list[dict]:
     sort_items = []
     for machine_id in active_model_ids():
@@ -220,8 +229,8 @@ def build_result_rows(
         border = context.get("border_spins_per_1000yen")
         if border is not None:
             border = float(border)
-            spins_per_1000y = border + 5.0
-            rotation_label = "보더+5"
+            spins_per_1000y = max(1.0, border + field_rotation_margin)
+            rotation_label = rotation_margin_label(field_rotation_margin)
         else:
             spins_per_1000y = FALLBACK_SPINS_PER_1000Y
             rotation_label = "70회/1000엔"
@@ -442,6 +451,7 @@ def main() -> int:
     parser.add_argument("--sensitivity-budget", type=int, default=DEFAULT_SENSITIVITY_BUDGET)
     parser.add_argument("--sensitivity-iterations", type=int, default=DEFAULT_SENSITIVITY_ITERATIONS)
     parser.add_argument("--risk-review-budget", type=int, default=DEFAULT_RISK_REVIEW_BUDGET)
+    parser.add_argument("--field-rotation-margin", type=float, default=DEFAULT_FIELD_ROTATION_MARGIN)
     parser.add_argument("--skip-sensitivity", action="store_true")
     parser.add_argument("--skip-risk-review", action="store_true")
     parser.add_argument("--exchange-rate", type=float, default=DEFAULT_EXCHANGE_RATE)
@@ -453,6 +463,7 @@ def main() -> int:
         iterations=args.iterations,
         exchange_rate=args.exchange_rate,
         base_seed=args.base_seed,
+        field_rotation_margin=args.field_rotation_margin,
     )
     extra_analysis = {}
     if not args.skip_sensitivity:
@@ -470,7 +481,7 @@ def main() -> int:
         )
     paths = save_public_sim_results(
         "대표 저대여 설치 조건(점포 순위 아님)",
-        "대해물어/에바/기타 활성 모델 예산별 10k/15k/20k 비교",
+        f"대해물어/에바/기타 활성 모델 예산별 10k/15k/20k 비교 ({rotation_margin_label(args.field_rotation_margin)} 기준)",
         summary_machine(),
         rows,
         args.iterations,

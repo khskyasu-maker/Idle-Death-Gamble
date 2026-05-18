@@ -168,6 +168,7 @@ The normal data and report pipeline is:
 - Do not accumulate simulator result history. If the user explicitly chooses CSV save in the CLI, overwrite local gitignored `results.csv` with the latest run only.
 - If the user explicitly chooses public simulator sharing, overwrite only `docs/latest-sim-results.json`, `docs/latest-sim-results.md`, and `docs/latest-sim-results.html` with sanitized aggregate metrics. Do not create timestamped result files.
 - Use `scripts/publish_sim_results.py` for the standard public simulator aggregate. It uses fixed per-row seeds so the same machine/budget/rotation condition can be reproduced without depending on execution order.
+- The standard public aggregate should use a conservative field-like rotation assumption, currently `--field-rotation-margin 0` / `보더±0`. Keep `보더+5/+10` as sensitivity cases unless the user explicitly asks for an optimistic scenario.
 - Public rotation sensitivity sections are allowed only as sanitized pre-trip assumption analysis. They must not contain actual play results, personal spending, visit instructions, or raw Monte Carlo samples.
 - Public lower-tail risk review sections are allowed only as sanitized aggregate diagnostics. They may expose P10/P25 stay time, CVaR10, mean-minus-median profit gap, LT entry rate, and coarse risk labels, but not raw sessions, personal choices, or visit instructions.
 - For CLI smoke runs that must not touch public `docs/`, set `PACHINKO_SIM_PUBLIC_DOCS_DIR` to a temporary directory.
