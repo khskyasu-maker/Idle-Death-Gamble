@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17 22:45:46 KST",
+  "generated_at": "2026-05-18 01:40:14 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
@@ -23,7 +23,7 @@
       "checked_at": "Manual/public-source check date. Re-check onsite if stale."
     },
     "data_freshness": {
-      "generated_at": "2026-05-17 22:45:46 KST",
+      "generated_at": "2026-05-18 01:40:14 KST",
       "earliest_checked_at": "2026-05-10",
       "latest_checked_at": "2026-05-17",
       "checked_dates": [
