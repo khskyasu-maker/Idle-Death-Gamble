@@ -69,6 +69,22 @@
         "language": "ja",
         "content": "P-WORLD 매장 정보. 설치 기종 목록 보조 확인용.",
         "notes": "보조 참고용. DMM 라인업과 대조."
+      },
+      {
+        "provider": "nana_press",
+        "kind": "machine_detail",
+        "url_template": "https://nana-press.com/kaiseki/machine/{machine_id}/",
+        "language": "ja",
+        "content": "なな徹/ななプレス 기종 해석 페이지. DMM 상세가 정확히 확인되지 않는 경우 확률/보더 보조 확인.",
+        "notes": "기종명과 확률이 현재 라인업 행과 일치한 경우에만 사용."
+      },
+      {
+        "provider": "p_world_hazuse",
+        "kind": "machine_detail",
+        "url_template": "https://www.p-world.co.jp/machine/database/{machine_id}",
+        "language": "ja",
+        "content": "P-WORLD 기종 데이터베이스의 HAZUSE 조사 스펙/보더 정보.",
+        "notes": "DMM 상세가 정확히 확인되지 않는 경우 보조 스펙 출처로 사용."
       }
     ]
   },
@@ -154,6 +170,70 @@
           "大当り確率",
           "ボーダーライン",
           "RUSH/LT構成"
+        ]
+      },
+      {
+        "machine_name": "eアズールレーン2 THE ANIMATION 超次元",
+        "dmm_machine_id": 4918,
+        "url": "https://p-town.dmm.com/machines/4918",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "RUSH/LT構成"
+        ]
+      },
+      {
+        "machine_name": "P閃乱カグラ189大入りver.",
+        "dmm_machine_id": 4948,
+        "url": "https://p-town.dmm.com/machines/4948",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "RUSH/LT構成"
+        ]
+      },
+      {
+        "machine_name": "e東京喰種",
+        "dmm_machine_id": 4782,
+        "url": "https://p-town.dmm.com/machines/4782",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "RUSH/LT構成"
+        ]
+      }
+    ]
+  },
+  "machine_spec_review_notes": {
+    "notes": [
+      "DMM 상세 페이지가 정확히 일치하지 않는 경우에는 DMM ID를 dmm_machine_id_map에 기록하지 않습니다.",
+      "아래 항목은 보더를 임의 추정하지 않고 대체 공개 스펙 출처 또는 배제 사유만 기록합니다."
+    ],
+    "machines": [
+      {
+        "machine_name": "e甲鉄城のカバネリ2 咲かせや燦然",
+        "status": "confirmed_non_dmm",
+        "accepted_source": "nana_press",
+        "url": "https://nana-press.com/kaiseki/machine/1104/",
+        "checked_at": "2026-05-19",
+        "reason": "DMM 기종 상세의 정확 일치가 확인되지 않아、なな徹/ななプレス의 exact machine page에서 확률과 보더를 채택."
+      },
+      {
+        "machine_name": "e真・北斗無双 第5章 夢幻闘双",
+        "status": "confirmed_non_dmm",
+        "accepted_source": "p_world_hazuse",
+        "url": "https://www.p-world.co.jp/machine/database/10388",
+        "checked_at": "2026-05-19",
+        "reason": "DMM 검색 후보가 다른 スペック/형식명이어서 P-WORLD HAZUSE의 exact machine page에서 확률과 보더를 채택.",
+        "rejected_candidates": [
+          {
+            "provider": "dmm_pachitown",
+            "url": "https://p-town.dmm.com/machines/4758",
+            "reason": "e真・北斗無双5 ドデカSTART로 현재 행의 e真・北斗無双 第5章 夢幻闘双 1/159.8과 다른 기종."
+          }
         ]
       }
     ]

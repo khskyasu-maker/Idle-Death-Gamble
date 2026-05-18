@@ -20,7 +20,14 @@ ALLOWED_MACHINE_INFO_CATEGORIES = {
 ALLOWED_MACHINE_INFO_RATES = {"1yen", "1.111yen"}
 ALLOWED_MACHINE_INFO_SOURCES = {"pworld", "dmm", "app", "onsite", "manual_note"}
 ALLOWED_MACHINE_INFO_INSTALL_SOURCES = {"dmm_pachitown", "pworld", "manual_note"}
-ALLOWED_MACHINE_INFO_SPEC_SOURCES = {"chonborista", "dmm_pachitown", "manual_note"}
+ALLOWED_MACHINE_INFO_SPEC_SOURCES = {
+    "chonborista",
+    "dmm_pachitown",
+    "manual_note",
+    "nana_press",
+    "p_world",
+    "p_world_hazuse",
+}
 DMM_MACHINE_URL_RE = re.compile(r"^https://p-town\.dmm\.com/machines/([0-9]+)$")
 
 REQUIRED_MACHINE_INFO_FIELDS = [
