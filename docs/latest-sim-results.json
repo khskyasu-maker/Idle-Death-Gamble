@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-05-18 18:59:59 KST",
+  "generated_at": "2026-05-18 19:33:41 KST",
   "publication_scope": "latest sanitized aggregate simulator result only",
   "simulation_method": {
     "summary": "공개 기종 스펙을 상태 전이 모델로 옮긴 뒤, 공개된 예산/회전수/교환율/중단 규칙 조건에서 Monte Carlo로 반복 집계합니다.",

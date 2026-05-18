@@ -5,6 +5,9 @@ from utils import logger, get_data_path, get_docs_path, load_json, write_text, s
 from term_notes import annotate_japanese_terms, term_glossary
 
 
+PUBLIC_PAGES_BASE_URL = "https://khskyasu-maker.github.io/Idle-Death-Gamble/"
+
+
 def text(value):
     return "" if value is None else str(value)
 
@@ -189,6 +192,62 @@ def glossary_items(latest):
     return latest.get("term_glossary") or term_glossary()
 
 
+def public_data_entrypoints():
+    return [
+        {
+            "label": "lineup_context",
+            "href": "latest.json",
+            "format": "JSON",
+            "priority": 1,
+            "purpose": "라인업, 보더, 점포/레이트, AI 컨텍스트를 구조화 필드로 분석",
+        },
+        {
+            "label": "sim_result_canonical",
+            "href": "latest-sim-results.json",
+            "format": "JSON",
+            "priority": 2,
+            "purpose": "시뮬 수치, 가정, seed, 민감도, 하방 리스크를 정본 데이터로 분석",
+        },
+        {
+            "label": "sim_result_text_summary",
+            "href": "latest-sim-results.md",
+            "format": "Markdown",
+            "priority": 3,
+            "purpose": "JSON 파싱이 어려운 AI 대화에서 시뮬 결과 요약표를 텍스트로 검토",
+        },
+        {
+            "label": "lineup_ai_rules",
+            "href": "ai-context.md",
+            "format": "Markdown",
+            "priority": 4,
+            "purpose": "공개 라인업 데이터의 사용 목적, 금지선, 필드 설명 확인",
+        },
+        {
+            "label": "simulator_ai_rules",
+            "href": "simulator-ai-context.md",
+            "format": "Markdown",
+            "priority": 5,
+            "purpose": "시뮬 결과 해석 규칙과 파일 우선순위 확인",
+        },
+        {
+            "label": "lineup_report_text",
+            "href": "latest-report.md",
+            "format": "Markdown",
+            "priority": 6,
+            "purpose": "구조화 JSON 보조용 텍스트 리포트",
+        },
+    ]
+
+
+def public_data_entrypoints_with_urls():
+    rows = []
+    for entry in public_data_entrypoints():
+        row = dict(entry)
+        row["url"] = PUBLIC_PAGES_BASE_URL + entry["href"]
+        rows.append(row)
+    return rows
+
+
 def build_markdown(latest):
     md = "# 난바 1엔/저대여 기종 정보\n\n"
     md += f"**생성 시각:** {latest.get('generated_at', 'Unknown')}\n\n"
@@ -216,6 +275,22 @@ def build_markdown(latest):
     md += "- [DMM 인기 저대여 보유 기종만](dmm-popular-low-rate-only.md)\n"
     md += "- [DMM 인기 저대여 필터 검토](dmm-popular-low-rate-ranking.md)\n"
     md += "- [현장 입력 템플릿](onsite-input-template.md)\n\n"
+
+    md += "## AI 공개 데이터 엔드포인트\n\n"
+    md += "공개 가능한 객관 데이터와 정제된 시뮬 집계만 노출합니다. 다른 AI 분석에는 JSON을 우선 사용하세요.\n\n"
+    data_headers = ["우선순위", "ID", "형식", "경로", "용도"]
+    md += "| " + " | ".join(data_headers) + " |\n"
+    md += "| " + " | ".join(["---"] * len(data_headers)) + " |\n"
+    for entry in public_data_entrypoints():
+        row = [
+            str(entry["priority"]),
+            f"`{entry['label']}`",
+            f"`{entry['format']}`",
+            f"[`{entry['href']}`]({entry['href']})",
+            entry["purpose"],
+        ]
+        md += "| " + " | ".join(row) + " |\n"
+    md += "\n---\n\n"
 
     # 1. 점포별 전체 1엔 후보 총합
     md += "## 1. 점포별 전체 1엔 후보 총합\n\n"
@@ -706,6 +781,26 @@ def onsite_observation_template():
 def build_simulator_context():
     return {
         "purpose": "Public AI-readable guide for interpreting local pachinko-sim output without publishing personal trip decisions.",
+        "ai_analysis_file_priority": [
+            {
+                "rank": 1,
+                "path": "docs/latest-sim-results.json",
+                "use": "AI/코드 분석용 구조화 정본",
+                "reason": "수치 지표, 가정, seed, 스키마 버전, 개인정보 정책, 추가 분석이 typed field로 보존됩니다.",
+            },
+            {
+                "rank": 2,
+                "path": "docs/latest-sim-results.md",
+                "use": "JSON 파싱이 어려울 때 쓰는 텍스트 요약",
+                "reason": "필드 파싱보다 표 설명과 요약 텍스트가 필요한 AI 대화에서 보조 컨텍스트로 씁니다.",
+            },
+            {
+                "rank": 3,
+                "path": "docs/latest.json",
+                "use": "라인업, 점포/레이트, 보더, 시뮬 정책 컨텍스트",
+                "reason": "기종명, 레이트, 공개 라인업 필드를 대조할 때 시뮬 결과와 함께 봅니다.",
+            },
+        ],
         "public_safe_to_commit": [
             "simulator purpose, assumptions, and metric definitions",
             "reproducible local commands",
@@ -726,6 +821,28 @@ def build_simulator_context():
             "docs/latest-sim-results.json, docs/latest-sim-results.md, and docs/latest-sim-results.html "
             "with sanitized aggregate metrics only."
         ),
+        "standard_public_export": {
+            "command": "python3 scripts/publish_sim_results.py",
+            "output_files": [
+                "docs/latest-sim-results.json",
+                "docs/latest-sim-results.md",
+                "docs/latest-sim-results.html",
+            ],
+            "canonical_ai_file": "docs/latest-sim-results.json",
+            "summary_ai_file": "docs/latest-sim-results.md",
+            "browser_file": "docs/latest-sim-results.html",
+            "budgets_yen": [10000, 15000, 20000],
+            "iterations_per_row": 5000,
+            "rotation_basis": "field_rotation_margin=0 / 보더±0",
+            "sensitivity_budget_yen": 10000,
+            "sensitivity_iterations": 3000,
+            "risk_review_budget_yen": 10000,
+            "exchange_rate_yen_per_ball": 0.89,
+            "strategy": "no_rule",
+            "session_policy": "play_until_budget_and_balls_gone",
+            "session_policy_note": "현금과 재사용 가능한 보유구슬이 모두 부족할 때까지 진행하되, 9시간 이후에는 진행 중인 우타치/RUSH 상태 종료 시 정리하고 11시간 하드 캡을 둡니다.",
+            "scope": "여행 전 가정 기반의 정제된 집계만 공개합니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다.",
+        },
         "default_assumptions": {
             "exchange_rate_yen_per_ball": 0.89,
             "spin_rate_cases_per_1000yen": [50, 60, 70, 80, 90, 100],
@@ -791,7 +908,7 @@ def build_simulator_context():
                 "budget_yen": None,
                 "exchange_rate_yen_per_ball": 0.89,
                 "strategy": "no_rule",
-                "session_policy": "fixed_spin_cap",
+                "session_policy": "fixed_spin_cap or play_until_budget_and_balls_gone",
                 "iterations": None,
             },
             "metrics_to_paste_temporarily": {
@@ -812,9 +929,18 @@ def build_simulator_context():
 def build_simulator_context_markdown():
     context = build_simulator_context()
     assumptions = context["default_assumptions"]
+    public_export = context["standard_public_export"]
     md = "# Simulator AI Context\n\n"
     md += "이 파일은 GitHub에서 `pachinko-sim/` 결과를 읽는 AI가 참고할 공개용 해석 규칙입니다.\n"
     md += "실제 실행 결과, 방문 판단, 개인 운영 메모는 공개 파일에 고정하지 않습니다.\n\n"
+
+    md += "## AI 분석 파일 우선순위\n\n"
+    for item in context["ai_analysis_file_priority"]:
+        md += (
+            f"- {item['rank']}. `{item['path']}`: {item['use']} "
+            f"({item['reason']})\n"
+        )
+    md += "\n"
 
     md += "## 공개 가능\n\n"
     for item in context["public_safe_to_commit"]:
@@ -827,7 +953,23 @@ def build_simulator_context_markdown():
     md += "\n## 로컬 결과 저장 정책\n\n"
     md += f"- {context['local_result_storage_policy']}\n"
 
-    md += "\n## 기본 가정\n\n"
+    md += "\n## 표준 공개 집계 조건\n\n"
+    md += f"- 재생성 명령: `{public_export['command']}`\n"
+    md += f"- AI 정본: `{public_export['canonical_ai_file']}`\n"
+    md += f"- 해설용 요약: `{public_export['summary_ai_file']}`\n"
+    md += f"- 브라우저 표시: `{public_export['browser_file']}`\n"
+    md += f"- 예산 케이스: `{public_export['budgets_yen']}`엔\n"
+    md += f"- 행별 반복: `{public_export['iterations_per_row']}`회\n"
+    md += f"- 회전 가정: `{public_export['rotation_basis']}`\n"
+    md += f"- 회전율 민감도: `{public_export['sensitivity_budget_yen']}`엔 / `{public_export['sensitivity_iterations']}`회\n"
+    md += f"- 하방/꼬리 리스크 리뷰: `{public_export['risk_review_budget_yen']}`엔 기준\n"
+    md += f"- 교환율: `{public_export['exchange_rate_yen_per_ball']}`엔/발\n"
+    md += f"- 전략: `{public_export['strategy']}`\n"
+    md += f"- 세션 방식: `{public_export['session_policy']}`\n"
+    md += f"- 세션 방식 설명: {public_export['session_policy_note']}\n"
+    md += f"- 공개 범위: {public_export['scope']}\n"
+
+    md += "\n## 로컬 CLI 기본 가정\n\n"
     md += f"- 교환율 기본값: `{assumptions['exchange_rate_yen_per_ball']}`엔/발\n"
     md += f"- 회전수 케이스: `{assumptions['spin_rate_cases_per_1000yen']}`회/1000엔\n"
     md += f"- 예산 케이스: `{assumptions['budget_cases_yen']}`엔\n"
@@ -864,6 +1006,8 @@ def build_ai_context(latest):
     machines = latest.get("machine_info", [])
     return {
         "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
+        "public_data_index_path": "public-data-index.json",
+        "public_data_entrypoints": public_data_entrypoints(),
         "use_for": [
             "store/machine lookup",
             "rate and border cross-checking",
@@ -936,6 +1080,9 @@ def build_html(latest, md_content):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" type="application/json" href="public-data-index.json" title="AI public data index">
+    <link rel="alternate" type="application/json" href="latest.json" title="Lineup structured data">
+    <link rel="alternate" type="application/json" href="latest-sim-results.json" title="Latest simulator aggregate">
     <title>Pachinko Osaka Report</title>
     <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 1400px; margin: 0 auto; color: #333; background: #ffffff; }}
@@ -1322,6 +1469,7 @@ def build_public_latest(latest):
     return {
         "generated_at": latest.get("generated_at", ""),
         "machine_info_source": latest.get("machine_info_source", ""),
+        "public_data_entrypoints": public_data_entrypoints(),
         "ai_context": build_ai_context(latest),
         "simulator_context": build_simulator_context(),
         "ai_compact_machines": ai_compact_machines(machines),
@@ -1335,6 +1483,37 @@ def build_public_latest(latest):
         "missing_border_machine_count": latest.get("missing_border_machine_count", 0),
         "missing_border_machines": latest.get("missing_border_machines", []),
         "machine_info": machines,
+    }
+
+
+def build_public_data_index(latest):
+    return {
+        "schema_version": 1,
+        "generated_at": latest.get("generated_at", ""),
+        "base_url": PUBLIC_PAGES_BASE_URL,
+        "purpose": "Public AI-readable index for objective Namba low-rate pachinko lineup data and sanitized latest simulator aggregates.",
+        "read_order": [
+            "latest.json",
+            "latest-sim-results.json",
+            "simulator-ai-context.md",
+            "ai-context.md",
+        ],
+        "entrypoints": public_data_entrypoints_with_urls(),
+        "privacy_policy": {
+            "public": True,
+            "objective_lineup_data_allowed": True,
+            "sanitized_latest_sim_aggregate_allowed": True,
+            "raw_sample_sessions_included": False,
+            "personal_trip_data_included": False,
+            "actual_spending_or_profit_included": False,
+            "visit_instruction_included": False,
+        },
+        "notes": [
+            "Prefer JSON files for AI/code analysis.",
+            "Markdown files are text summaries for fallback context.",
+            "HTML files are not required for AI analysis.",
+            "Do not infer jackpot prediction, visit order, or actual play results from public aggregates.",
+        ],
     }
 
 
@@ -1357,6 +1536,7 @@ def main():
     write_text(simulator_context_md, get_docs_path("simulator-ai-context.md"))
     write_text(onsite_template_md, get_docs_path("onsite-input-template.md"))
     save_json(build_public_latest(latest), get_docs_path("latest.json"))
+    save_json(build_public_data_index(latest), get_docs_path("public-data-index.json"))
 
     logger.info("Reports successfully built in data/ and docs/")
 

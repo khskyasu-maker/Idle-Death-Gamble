@@ -629,6 +629,9 @@ def build_public_sim_result_html(payload: Dict[str, Any]) -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="alternate" type="application/json" href="latest-sim-results.json" title="Latest simulator aggregate JSON">
+  <link rel="alternate" type="text/markdown" href="latest-sim-results.md" title="Latest simulator aggregate Markdown">
+  <link rel="index" type="application/json" href="public-data-index.json" title="AI public data index">
   <title>최신 공개 시뮬 결과</title>
   <style>
     body {{ font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 16px; color: #1f2937; }}

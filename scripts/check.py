@@ -20,6 +20,7 @@ JSON_FILES = [
     ROOT / "data" / "namba-actual-1yen-lineup.json",
     ROOT / "data" / "latest.json",
     ROOT / "docs" / "latest.json",
+    ROOT / "docs" / "public-data-index.json",
     ROOT / "docs" / "latest-sim-results.json",
 ]
 

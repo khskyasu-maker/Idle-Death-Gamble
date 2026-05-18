@@ -3,6 +3,12 @@
 이 파일은 GitHub에서 `pachinko-sim/` 결과를 읽는 AI가 참고할 공개용 해석 규칙입니다.
 실제 실행 결과, 방문 판단, 개인 운영 메모는 공개 파일에 고정하지 않습니다.
 
+## AI 분석 파일 우선순위
+
+- 1. `docs/latest-sim-results.json`: AI/코드 분석용 구조화 정본 (수치 지표, 가정, seed, 스키마 버전, 개인정보 정책, 추가 분석이 typed field로 보존됩니다.)
+- 2. `docs/latest-sim-results.md`: JSON 파싱이 어려울 때 쓰는 텍스트 요약 (필드 파싱보다 표 설명과 요약 텍스트가 필요한 AI 대화에서 보조 컨텍스트로 씁니다.)
+- 3. `docs/latest.json`: 라인업, 점포/레이트, 보더, 시뮬 정책 컨텍스트 (기종명, 레이트, 공개 라인업 필드를 대조할 때 시뮬 결과와 함께 봅니다.)
+
 ## 공개 가능
 
 - simulator purpose, assumptions, and metric definitions
@@ -23,7 +29,24 @@
 
 - If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten with the latest run only. Public sharing, when explicitly selected, overwrites docs/latest-sim-results.json, docs/latest-sim-results.md, and docs/latest-sim-results.html with sanitized aggregate metrics only.
 
-## 기본 가정
+## 표준 공개 집계 조건
+
+- 재생성 명령: `python3 scripts/publish_sim_results.py`
+- AI 정본: `docs/latest-sim-results.json`
+- 해설용 요약: `docs/latest-sim-results.md`
+- 브라우저 표시: `docs/latest-sim-results.html`
+- 예산 케이스: `[10000, 15000, 20000]`엔
+- 행별 반복: `5000`회
+- 회전 가정: `field_rotation_margin=0 / 보더±0`
+- 회전율 민감도: `10000`엔 / `3000`회
+- 하방/꼬리 리스크 리뷰: `10000`엔 기준
+- 교환율: `0.89`엔/발
+- 전략: `no_rule`
+- 세션 방식: `play_until_budget_and_balls_gone`
+- 세션 방식 설명: 현금과 재사용 가능한 보유구슬이 모두 부족할 때까지 진행하되, 9시간 이후에는 진행 중인 우타치/RUSH 상태 종료 시 정리하고 11시간 하드 캡을 둡니다.
+- 공개 범위: 여행 전 가정 기반의 정제된 집계만 공개합니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다.
+
+## 로컬 CLI 기본 가정
 
 - 교환율 기본값: `0.89`엔/발
 - 회전수 케이스: `[50, 60, 70, 80, 90, 100]`회/1000엔
@@ -90,7 +113,7 @@
     "budget_yen": null,
     "exchange_rate_yen_per_ball": 0.89,
     "strategy": "no_rule",
-    "session_policy": "fixed_spin_cap",
+    "session_policy": "fixed_spin_cap or play_until_budget_and_balls_gone",
     "iterations": null
   },
   "metrics_to_paste_temporarily": {

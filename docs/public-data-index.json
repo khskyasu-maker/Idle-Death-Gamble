@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-18 16:53:06 KST",
+  "base_url": "https://khskyasu-maker.github.io/Idle-Death-Gamble/",
+  "purpose": "Public AI-readable index for objective Namba low-rate pachinko lineup data and sanitized latest simulator aggregates.",
+  "read_order": [
+    "latest.json",
+    "latest-sim-results.json",
+    "simulator-ai-context.md",
+    "ai-context.md"
+  ],
+  "entrypoints": [
+    {
+      "label": "lineup_context",
+      "href": "latest.json",
+      "format": "JSON",
+      "priority": 1,
+      "purpose": "라인업, 보더, 점포/레이트, AI 컨텍스트를 구조화 필드로 분석",
+      "url": "https://khskyasu-maker.github.io/Idle-Death-Gamble/latest.json"
+    },
+    {
+      "label": "sim_result_canonical",
+      "href": "latest-sim-results.json",
+      "format": "JSON",
+      "priority": 2,
+      "purpose": "시뮬 수치, 가정, seed, 민감도, 하방 리스크를 정본 데이터로 분석",
+      "url": "https://khskyasu-maker.github.io/Idle-Death-Gamble/latest-sim-results.json"
+    },
+    {
+      "label": "sim_result_text_summary",
+      "href": "latest-sim-results.md",
+      "format": "Markdown",
+      "priority": 3,
+      "purpose": "JSON 파싱이 어려운 AI 대화에서 시뮬 결과 요약표를 텍스트로 검토",
+      "url": "https://khskyasu-maker.github.io/Idle-Death-Gamble/latest-sim-results.md"
+    },
+    {
+      "label": "lineup_ai_rules",
+      "href": "ai-context.md",
+      "format": "Markdown",
+      "priority": 4,
+      "purpose": "공개 라인업 데이터의 사용 목적, 금지선, 필드 설명 확인",
+      "url": "https://khskyasu-maker.github.io/Idle-Death-Gamble/ai-context.md"
+    },
+    {
+      "label": "simulator_ai_rules",
+      "href": "simulator-ai-context.md",
+      "format": "Markdown",
+      "priority": 5,
+      "purpose": "시뮬 결과 해석 규칙과 파일 우선순위 확인",
+      "url": "https://khskyasu-maker.github.io/Idle-Death-Gamble/simulator-ai-context.md"
+    },
+    {
+      "label": "lineup_report_text",
+      "href": "latest-report.md",
+      "format": "Markdown",
+      "priority": 6,
+      "purpose": "구조화 JSON 보조용 텍스트 리포트",
+      "url": "https://khskyasu-maker.github.io/Idle-Death-Gamble/latest-report.md"
+    }
+  ],
+  "privacy_policy": {
+    "public": true,
+    "objective_lineup_data_allowed": true,
+    "sanitized_latest_sim_aggregate_allowed": true,
+    "raw_sample_sessions_included": false,
+    "personal_trip_data_included": false,
+    "actual_spending_or_profit_included": false,
+    "visit_instruction_included": false
+  },
+  "notes": [
+    "Prefer JSON files for AI/code analysis.",
+    "Markdown files are text summaries for fallback context.",
+    "HTML files are not required for AI analysis.",
+    "Do not infer jackpot prediction, visit order, or actual play results from public aggregates."
+  ]
+}

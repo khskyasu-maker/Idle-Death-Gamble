@@ -1,8 +1,97 @@
 {
   "generated_at": "2026-05-18 16:53:06 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
+  "public_data_entrypoints": [
+    {
+      "label": "lineup_context",
+      "href": "latest.json",
+      "format": "JSON",
+      "priority": 1,
+      "purpose": "라인업, 보더, 점포/레이트, AI 컨텍스트를 구조화 필드로 분석"
+    },
+    {
+      "label": "sim_result_canonical",
+      "href": "latest-sim-results.json",
+      "format": "JSON",
+      "priority": 2,
+      "purpose": "시뮬 수치, 가정, seed, 민감도, 하방 리스크를 정본 데이터로 분석"
+    },
+    {
+      "label": "sim_result_text_summary",
+      "href": "latest-sim-results.md",
+      "format": "Markdown",
+      "priority": 3,
+      "purpose": "JSON 파싱이 어려운 AI 대화에서 시뮬 결과 요약표를 텍스트로 검토"
+    },
+    {
+      "label": "lineup_ai_rules",
+      "href": "ai-context.md",
+      "format": "Markdown",
+      "priority": 4,
+      "purpose": "공개 라인업 데이터의 사용 목적, 금지선, 필드 설명 확인"
+    },
+    {
+      "label": "simulator_ai_rules",
+      "href": "simulator-ai-context.md",
+      "format": "Markdown",
+      "priority": 5,
+      "purpose": "시뮬 결과 해석 규칙과 파일 우선순위 확인"
+    },
+    {
+      "label": "lineup_report_text",
+      "href": "latest-report.md",
+      "format": "Markdown",
+      "priority": 6,
+      "purpose": "구조화 JSON 보조용 텍스트 리포트"
+    }
+  ],
   "ai_context": {
     "purpose": "AI input data for Namba low-rate pachinko store and machine comparison.",
+    "public_data_index_path": "public-data-index.json",
+    "public_data_entrypoints": [
+      {
+        "label": "lineup_context",
+        "href": "latest.json",
+        "format": "JSON",
+        "priority": 1,
+        "purpose": "라인업, 보더, 점포/레이트, AI 컨텍스트를 구조화 필드로 분석"
+      },
+      {
+        "label": "sim_result_canonical",
+        "href": "latest-sim-results.json",
+        "format": "JSON",
+        "priority": 2,
+        "purpose": "시뮬 수치, 가정, seed, 민감도, 하방 리스크를 정본 데이터로 분석"
+      },
+      {
+        "label": "sim_result_text_summary",
+        "href": "latest-sim-results.md",
+        "format": "Markdown",
+        "priority": 3,
+        "purpose": "JSON 파싱이 어려운 AI 대화에서 시뮬 결과 요약표를 텍스트로 검토"
+      },
+      {
+        "label": "lineup_ai_rules",
+        "href": "ai-context.md",
+        "format": "Markdown",
+        "priority": 4,
+        "purpose": "공개 라인업 데이터의 사용 목적, 금지선, 필드 설명 확인"
+      },
+      {
+        "label": "simulator_ai_rules",
+        "href": "simulator-ai-context.md",
+        "format": "Markdown",
+        "priority": 5,
+        "purpose": "시뮬 결과 해석 규칙과 파일 우선순위 확인"
+      },
+      {
+        "label": "lineup_report_text",
+        "href": "latest-report.md",
+        "format": "Markdown",
+        "priority": 6,
+        "purpose": "구조화 JSON 보조용 텍스트 리포트"
+      }
+    ],
     "use_for": [
       "store/machine lookup",
       "rate and border cross-checking",
@@ -82,6 +171,26 @@
   },
   "simulator_context": {
     "purpose": "Public AI-readable guide for interpreting local pachinko-sim output without publishing personal trip decisions.",
+    "ai_analysis_file_priority": [
+      {
+        "rank": 1,
+        "path": "docs/latest-sim-results.json",
+        "use": "AI/코드 분석용 구조화 정본",
+        "reason": "수치 지표, 가정, seed, 스키마 버전, 개인정보 정책, 추가 분석이 typed field로 보존됩니다."
+      },
+      {
+        "rank": 2,
+        "path": "docs/latest-sim-results.md",
+        "use": "JSON 파싱이 어려울 때 쓰는 텍스트 요약",
+        "reason": "필드 파싱보다 표 설명과 요약 텍스트가 필요한 AI 대화에서 보조 컨텍스트로 씁니다."
+      },
+      {
+        "rank": 3,
+        "path": "docs/latest.json",
+        "use": "라인업, 점포/레이트, 보더, 시뮬 정책 컨텍스트",
+        "reason": "기종명, 레이트, 공개 라인업 필드를 대조할 때 시뮬 결과와 함께 봅니다."
+      }
+    ],
     "public_safe_to_commit": [
       "simulator purpose, assumptions, and metric definitions",
       "reproducible local commands",
@@ -97,6 +206,32 @@
       "screenshots or app/member-only 台番号별 data"
     ],
     "local_result_storage_policy": "If CSV save is explicitly selected in the local CLI, results.csv is gitignored and overwritten with the latest run only. Public sharing, when explicitly selected, overwrites docs/latest-sim-results.json, docs/latest-sim-results.md, and docs/latest-sim-results.html with sanitized aggregate metrics only.",
+    "standard_public_export": {
+      "command": "python3 scripts/publish_sim_results.py",
+      "output_files": [
+        "docs/latest-sim-results.json",
+        "docs/latest-sim-results.md",
+        "docs/latest-sim-results.html"
+      ],
+      "canonical_ai_file": "docs/latest-sim-results.json",
+      "summary_ai_file": "docs/latest-sim-results.md",
+      "browser_file": "docs/latest-sim-results.html",
+      "budgets_yen": [
+        10000,
+        15000,
+        20000
+      ],
+      "iterations_per_row": 5000,
+      "rotation_basis": "field_rotation_margin=0 / 보더±0",
+      "sensitivity_budget_yen": 10000,
+      "sensitivity_iterations": 3000,
+      "risk_review_budget_yen": 10000,
+      "exchange_rate_yen_per_ball": 0.89,
+      "strategy": "no_rule",
+      "session_policy": "play_until_budget_and_balls_gone",
+      "session_policy_note": "현금과 재사용 가능한 보유구슬이 모두 부족할 때까지 진행하되, 9시간 이후에는 진행 중인 우타치/RUSH 상태 종료 시 정리하고 11시간 하드 캡을 둡니다.",
+      "scope": "여행 전 가정 기반의 정제된 집계만 공개합니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다."
+    },
     "default_assumptions": {
       "exchange_rate_yen_per_ball": 0.89,
       "spin_rate_cases_per_1000yen": [
@@ -180,7 +315,7 @@
         "budget_yen": null,
         "exchange_rate_yen_per_ball": 0.89,
         "strategy": "no_rule",
-        "session_policy": "fixed_spin_cap",
+        "session_policy": "fixed_spin_cap or play_until_budget_and_balls_gone",
         "iterations": null
       },
       "metrics_to_paste_temporarily": {

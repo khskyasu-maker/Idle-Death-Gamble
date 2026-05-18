@@ -92,6 +92,7 @@ PUBLIC_PRIVACY_SCAN_FILES = [
     "docs/eva-spec-summary.html",
     "docs/ai-context.md",
     "docs/simulator-ai-context.md",
+    "docs/public-data-index.json",
     "docs/latest-sim-results.md",
     "docs/latest-sim-results.html",
     "docs/latest-sim-results.json",

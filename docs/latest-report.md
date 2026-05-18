@@ -20,6 +20,21 @@
 - [DMM 인기 저대여 필터 검토](dmm-popular-low-rate-ranking.md)
 - [현장 입력 템플릿](onsite-input-template.md)
 
+## AI 공개 데이터 엔드포인트
+
+공개 가능한 객관 데이터와 정제된 시뮬 집계만 노출합니다. 다른 AI 분석에는 JSON을 우선 사용하세요.
+
+| 우선순위 | ID | 형식 | 경로 | 용도 |
+| --- | --- | --- | --- | --- |
+| 1 | `lineup_context` | `JSON` | [`latest.json`](latest.json) | 라인업, 보더, 점포/레이트, AI 컨텍스트를 구조화 필드로 분석 |
+| 2 | `sim_result_canonical` | `JSON` | [`latest-sim-results.json`](latest-sim-results.json) | 시뮬 수치, 가정, seed, 민감도, 하방 리스크를 정본 데이터로 분석 |
+| 3 | `sim_result_text_summary` | `Markdown` | [`latest-sim-results.md`](latest-sim-results.md) | JSON 파싱이 어려운 AI 대화에서 시뮬 결과 요약표를 텍스트로 검토 |
+| 4 | `lineup_ai_rules` | `Markdown` | [`ai-context.md`](ai-context.md) | 공개 라인업 데이터의 사용 목적, 금지선, 필드 설명 확인 |
+| 5 | `simulator_ai_rules` | `Markdown` | [`simulator-ai-context.md`](simulator-ai-context.md) | 시뮬 결과 해석 규칙과 파일 우선순위 확인 |
+| 6 | `lineup_report_text` | `Markdown` | [`latest-report.md`](latest-report.md) | 구조화 JSON 보조용 텍스트 리포트 |
+
+---
+
 ## 1. 점포별 전체 1엔 후보 총합
 
 | 점포 ID | 일본어 점포명 | 한국어 점포명 | 레이트 | 전체 후보 총 대수 |
