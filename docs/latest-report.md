@@ -16,7 +16,8 @@
 - [AI 컨텍스트](ai-context.md)
 - [시뮬레이터 AI 컨텍스트](simulator-ai-context.md)
 - [최신 공개 시뮬 결과](latest-sim-results.html)
-- [DMM 인기 저대여 필터](dmm-popular-low-rate-ranking.md)
+- [DMM 인기 저대여 보유 기종만](dmm-popular-low-rate-only.md)
+- [DMM 인기 저대여 필터 검토](dmm-popular-low-rate-ranking.md)
 - [현장 입력 템플릿](onsite-input-template.md)
 
 ## 1. 점포별 전체 1엔 후보 총합

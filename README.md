@@ -97,7 +97,8 @@ python scripts/build_report.py
 - `docs/ai-context.md`: AI 활용 규칙과 필드 설명
 - `docs/simulator-ai-context.md`: 시뮬레이터 결과를 AI가 해석할 때 필요한 공개 규칙과 빈 입력 템플릿
 - `docs/latest-sim-results.html`: 명시적으로 공유한 최신 1개 시뮬레이터 집계표
-- `docs/dmm-popular-low-rate-ranking.md`: DMM 파친코 PV 인기순과 123/라쿠엔 저대여 설치 후보를 대조한 공개 참고표
+- `docs/dmm-popular-low-rate-only.md`: DMM 파친코 PV 인기순에서 123/라쿠엔 저대여 보유 기종만 남긴 공개 참고표
+- `docs/dmm-popular-low-rate-ranking.md`: DMM 파친코 PV 인기순 TOP10과 저대여 필터 과정을 대조한 검토용 참고표
 - `docs/onsite-input-template.md`: 현장 관찰값 입력 템플릿
 
 공개 시뮬레이터 결과 형식:

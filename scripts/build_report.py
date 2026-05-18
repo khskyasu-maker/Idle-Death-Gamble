@@ -213,7 +213,8 @@ def build_markdown(latest):
     md += "- [AI 컨텍스트](ai-context.md)\n"
     md += "- [시뮬레이터 AI 컨텍스트](simulator-ai-context.md)\n"
     md += "- [최신 공개 시뮬 결과](latest-sim-results.html)\n"
-    md += "- [DMM 인기 저대여 필터](dmm-popular-low-rate-ranking.md)\n"
+    md += "- [DMM 인기 저대여 보유 기종만](dmm-popular-low-rate-only.md)\n"
+    md += "- [DMM 인기 저대여 필터 검토](dmm-popular-low-rate-ranking.md)\n"
     md += "- [현장 입력 템플릿](onsite-input-template.md)\n\n"
 
     # 1. 점포별 전체 1엔 후보 총합
@@ -966,7 +967,8 @@ def build_html(latest, md_content):
             <a href="ai-context.md">AI 컨텍스트</a>
             <a href="simulator-ai-context.md">시뮬레이터 AI 컨텍스트</a>
             <a href="latest-sim-results.html">최신 공개 시뮬 결과</a>
-            <a href="dmm-popular-low-rate-ranking.md">DMM 인기 저대여 필터</a>
+            <a href="dmm-popular-low-rate-only.md">DMM 인기 저대여 보유 기종만</a>
+            <a href="dmm-popular-low-rate-ranking.md">DMM 인기 저대여 필터 검토</a>
             <a href="onsite-input-template.md">현장 입력 템플릿</a>
         </p>
     </div>
