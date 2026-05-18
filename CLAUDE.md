@@ -8,25 +8,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The project consists of two primary subsystems:
 
-1. **Report Pipeline** (`scripts/`): Collects store/machine data from public sources, validates, analyzes, and generates static HTML/JSON/Markdown reports published via GitHub Pages.
+1. **Report Pipeline** (`scripts/`): Validates manually checked public store/machine data, analyzes it, and generates static HTML/JSON/Markdown reports published via GitHub Pages.
 2. **Pachinko Simulator** (`pachinko-sim/`): A local Monte Carlo risk comparison tool for the same machines. Output is optional, latest-only, and explicitly user-approved before public export.
 
 **Critical Policy**: Only objective data (store name, machine name, rate, machine count, probability, borderline, source, checked date) is committed to GitHub. Personal budgets, spending records, visit decisions, travel schedules, and raw simulation samples are never published.
 
 ## Key Commands
 
-All commands assume Python 3.11+ and use `python` (or `python3` if `python` is unavailable).
+All commands assume Python 3.11+. No pip install required for analysis/reports (`requirements.txt` is empty; dev tools in `requirements-dev.txt`).
 
 ### Development & Validation
 
 ```bash
-# Install dependencies (do this once)
-pip install -r requirements.txt
-
-# Run core checks without web scraping (unit tests, JSON validation, data validation)
+# Run core checks (syntax, JSON validation, unit tests, data validation)
 python scripts/check.py
 
-# Install optional dev tools and run linting + tests
+# Install optional dev tools (ruff, pytest, coverage) and run
 pip install -r requirements-dev.txt
 python scripts/check.py --dev-tools
 
@@ -37,16 +34,13 @@ python scripts/check.py --coverage
 python -m unittest tests.test_simulator_specs.SimulatorSpecTests.test_all_machine_models_validate
 ```
 
-### Data Pipeline (Manual/GitHub Actions)
+### Data Pipeline (Local Only — No GitHub Actions)
 
 ```bash
 # Validate data integrity (JSON syntax, privacy rules, machine specs)
 python scripts/validate_data.py
 
-# Collect store/machine data from configured DMM source (slow, ~seconds per store)
-python scripts/collect.py
-
-# Analyze collected data and generate data/latest.json
+# Analyze lineup data and generate data/latest.json
 python scripts/analyze.py
 
 # Build static reports (HTML/JSON/Markdown) into docs/ folder
@@ -59,10 +53,10 @@ python scripts/check.py --report
 ### Report Generation with Cache Cleanup
 
 ```bash
-# Show what would be deleted (cache, old sim results, generated files)
+# Show what would be deleted (old sim results, generated files)
 python scripts/clean.py
 
-# Actually delete cache and old files
+# Actually delete
 python scripts/clean.py --apply
 ```
 
@@ -106,26 +100,38 @@ python -m unittest tests.test_rotation
 
 ## Architecture & Data Flow
 
+### Information Collection Workflow
+
+**자동화 스크립트 없음. Claude Code 대화 중 Claude가 직접 수집.**
+
+수집 출처 (우선순위 순):
+1. **DMMぱちタウン 기종 상세 페이지**: 확률, 보더, ST/RUSH 구성 확인. 기종명과 확률이 라인업 행과 일치할 때만 반영.
+2. **DMMぱちタウン 매장 페이지**: 저대여 섹션에서 설치 기종명/대수 확인. 매장별 URL은 `data/stores.json` 참고.
+3. **P-WORLD 매장 프로필**: DMM 라인업 보조 대조.
+4. **ちょんぼりすた, なな徹, 777パチガブ, パチセブン 등**: DMM으로 확인되지 않는 스펙/보더 보조 확인.
+5. **디씨인사이드 파치슬로 갤러리**: 매장 분위기, 여행자 실용 경험, 인기 기종 트렌드 등 정성 참고용. 공개 스펙 수치의 1차 소스로 사용하지 않음.
+
+사용자가 "라인업 업데이트해줘" 또는 "DMM 스펙 갱신해줘" 라고 하면 Claude가 public pages로 확인 후 `data/namba-actual-1yen-lineup.json`을 직접 수정.
+
 ### Report Pipeline (`scripts/`)
 
 ```
-data/namba-actual-1yen-lineup.json (fixed machine/store lineup)
+[Claude WebFetch] DMM 기종 상세 + DMM/P-WORLD 매장 페이지
+  ↓ (Claude가 직접 수집 및 해석)
+data/namba-actual-1yen-lineup.json (수동 수정)
   ↓
-scripts/collect.py (scrapes DMM, adds to data/collected.json cache)
+scripts/analyze.py (보더 환산, 집계 → data/latest.json)
   ↓
-scripts/analyze.py (processes lineup + cache, generates data/latest.json)
+scripts/build_report.py (data/latest.json → docs/ HTML/JSON/Markdown)
   ↓
-scripts/build_report.py (templates data/latest.json into docs/index.html, etc.)
-  ↓
-docs/latest.json, docs/index.html, docs/latest-report.md (published via GitHub Pages)
+docs/ (GitHub Pages 공개)
 ```
 
 **Key Principles**:
-- `data/namba-actual-1yen-lineup.json` is the source of truth for store/machine/rate/border data.
-- `scripts/collect.py` respects robots.txt and includes transient error retry logic; it does not use external AI APIs or aggressive scraping.
-- `scripts/validate_data.py` enforces privacy: blocks travel schedules, booking IDs, passport data, and personal spending records from being committed.
-- Local generated data (`data/latest.json`, `data/latest-report.md`) and caches (`data/collected.json`) are gitignored by default.
-- Public simulator exports use only latest fixed filenames (`docs/latest-sim-results.*`) and may be committed only after explicit sharing.
+- `data/namba-actual-1yen-lineup.json` is the source of truth. All collection ends here.
+- `scripts/validate_data.py` enforces privacy: blocks travel schedules, booking IDs, passport data, and personal spending records.
+- Local generated data (`data/latest.json`) is gitignored. Public simulator exports (`docs/latest-sim-results.*`) require explicit sharing confirmation.
+- GitHub Actions runs only `ci.yml` (check.py only). No automated data collection on GitHub.
 
 ### Simulator (`pachinko-sim/`)
 
@@ -172,7 +178,6 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - `docs/*.md`, `docs/*.html`, `docs/*.json`: static mobile-friendly reports, AI context, onsite-input templates, latest-only simulator results.
 
 **What is gitignored (private/local only)**:
-- `data/collected.json`: raw DMM scrape cache.
 - `data/latest.json`, `data/latest-report.md`: local analysis cache.
 - `data/manual-notes.md`: local private memo.
 - `results.csv`: raw simulator session samples.
@@ -189,8 +194,7 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 ### Report Scripts
 
 - **`check.py`**: Quality gate orchestrator. Runs syntax, JSON validation, unit tests, data validation, and optional linting/coverage.
-- **`collect.py`**: Scrapes DMM store pages, respects robots.txt, retries transient errors, caches results in `data/collected.json`.
-- **`analyze.py`**: Loads `namba-actual-1yen-lineup.json`, merges collected data, computes store/category/border totals, generates `data/latest.json`.
+- **`analyze.py`**: Loads `namba-actual-1yen-lineup.json`, computes store/category/border totals, generates `data/latest.json`. (수집은 Claude가 직접 수행 — collect.py 없음)
 - **`build_report.py`**: Templates `data/latest.json` into HTML/Markdown/JSON reports for GitHub Pages, generates AI context files.
 - **`validate_data.py`**: Regex-based privacy validation (blocks travel dates, booking IDs, passport data, spending records).
 - **`clean.py`**: Removes cache and old generated files on demand.
@@ -318,7 +322,7 @@ python -m unittest tests.test_simulator_specs.SimulatorSpecTests.test_all_machin
 
 **Continuous Integration**:
 - `.github/workflows/ci.yml`: Runs on push/PR/workflow_dispatch. Installs dependencies, runs `python scripts/check.py`.
-- `.github/workflows/daily.yml`: Manual workflow_dispatch only. Runs full pipeline (check → collect → analyze → build_report), commits results to docs/.
+- No GitHub Actions workflow performs data collection or commits generated reports.
 
 **Quality Gate** (`scripts/check.py`):
 1. Python syntax check (py_compile).
@@ -377,10 +381,10 @@ python -m unittest tests.test_simulator_specs.SimulatorSpecTests.test_all_machin
 **Branches**: main is the primary branch. Public reports in `docs/` are published via GitHub Pages.
 
 **Workflows**:
-- **CI (ci.yml)**: Runs on every push, PR, and manual dispatch. Validates code/data quality.
-- **Manual Report (daily.yml)**: Requires manual workflow_dispatch. Scrapes fresh data and publishes reports.
+- **CI (ci.yml)**: Runs on every push and PR. Runs `python scripts/check.py` only — no data collection.
+- 자동화된 데이터 수집 워크플로우 없음. 수집은 로컬에서 Claude Code 대화 중 수행.
 
-**Commits**: Use descriptive messages. Auto-generated reports should note "manual pachinko report" or "simulator aggregate update".
+**Commits**: Use descriptive messages. Data updates: "update lineup: {machine}" or "update border: {machine}". Simulator exports: "publish sim results: {machine-id}".
 
 ## References
 

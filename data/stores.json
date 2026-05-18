@@ -11,7 +11,8 @@
     "notes": [
       "이 파일은 수집 대상 점포와 객관 링크만 관리합니다.",
       "방문 순위, 추천 점수, 오늘 갈 곳, 당첨 예측은 저장하지 않습니다.",
-      "현재 관리 범위는 난바권 123難波店, 楽園なんば店, ARROW namBa HIPS의 1円/저대여 중심 정보입니다."
+      "현재 관리 범위는 난바권 123難波店, 楽園なんば店, ARROW namBa HIPS의 1円/저대여 중심 정보입니다.",
+      "정보 수집은 Claude Code 대화 중 Claude가 직접 WebFetch로 수행합니다. 별도 크롤링 스크립트 없음."
     ]
   },
   "machine_info_targets": {
@@ -30,6 +31,133 @@
       "Use data/namba-actual-1yen-lineup.json for corrected Namba low-rate machine information."
     ]
   },
+  "spec_info_sources": {
+    "notes": [
+      "기종 스펙(확률, 보더, ST 구성 등)은 DMMぱちタウン 기종 상세 또는 신뢰 가능한 공개 스펙 사이트에서 확인합니다.",
+      "라인업 확인(어떤 기종이 설치됐는지)은 DMM ぱちタウン 매장 페이지에서 확인합니다.",
+      "디씨인사이드 파치슬로 갤러리는 매장 분위기/실용 경험/트렌드 등 정성 참고용이며, 공개 스펙 수치의 1차 소스로 사용하지 않습니다."
+    ],
+    "sources": [
+      {
+        "provider": "dcinside_pachislot_gallery",
+        "kind": "community_context_reference",
+        "url": "https://gall.dcinside.com/mgallery/board/lists/?id=pachislot&search_head=1",
+        "language": "ko",
+        "content": "파치슬로 갤러리 공지/게시글 목록. 매장 분위기, 여행자 실용 경험, 인기 기종 트렌드 참고용.",
+        "notes": "공개 JSON에는 정성 의견, 방문 판단, 추천 점수, 당첨 예측을 저장하지 않습니다."
+      },
+      {
+        "provider": "dmm_pachitown",
+        "kind": "store_lineup",
+        "url_template": "https://p-town.dmm.com/shops/osaka/{store_id}",
+        "language": "ja",
+        "content": "DMM 매장 페이지. 저대여 섹션에서 설치 기종명과 대수 확인.",
+        "notes": "매장 라인업 확인 전용. 기종 스펙(확률/보더)은 기종 상세 페이지를 사용."
+      },
+      {
+        "provider": "dmm_pachitown",
+        "kind": "machine_detail",
+        "url_template": "https://p-town.dmm.com/machines/{machine_id}",
+        "language": "ja",
+        "content": "DMM 기종 상세 페이지. 大当り確率, ボーダーライン, ST/RUSH構成 확인.",
+        "notes": "기종명과 확률이 현재 라인업 행과 정확히 일치한 경우에만 보더값을 반영."
+      },
+      {
+        "provider": "pworld",
+        "kind": "store_reference",
+        "url_template": "https://www.p-world.co.jp/osaka/{store_slug}.htm",
+        "language": "ja",
+        "content": "P-WORLD 매장 정보. 설치 기종 목록 보조 확인용.",
+        "notes": "보조 참고용. DMM 라인업과 대조."
+      }
+    ]
+  },
+  "dmm_machine_id_map": {
+    "notes": [
+      "DMMぱちタウン /machines/{id} 기종 상세 확인용 매핑입니다.",
+      "기종명과 확률이 현재 저대여 라인업 행과 정확히 일치한 항목만 기록합니다.",
+      "DMM 검색 결과가 다른 스펙이면 ID를 기록하지 않고 보더도 임의 적용하지 않습니다."
+    ],
+    "machines": [
+      {
+        "machine_name": "新世紀エヴァンゲリオン〜未来への咆哮〜",
+        "dmm_machine_id": 4021,
+        "url": "https://p-town.dmm.com/machines/4021",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "ST/RUSH構成"
+        ]
+      },
+      {
+        "machine_name": "e新世紀エヴァンゲリオン ～はじまりの記憶～",
+        "dmm_machine_id": 4894,
+        "url": "https://p-town.dmm.com/machines/4894",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "ST/RUSH構成"
+        ]
+      },
+      {
+        "machine_name": "ぱちんこ シン・エヴァンゲリオン PREMIUM MODEL",
+        "dmm_machine_id": 4865,
+        "url": "https://p-town.dmm.com/machines/4865",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "ST/RUSH構成"
+        ]
+      },
+      {
+        "machine_name": "PAスーパー海物語 IN 沖縄5 夜桜超旋風 99ver.",
+        "dmm_machine_id": 4270,
+        "url": "https://p-town.dmm.com/machines/4270",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "RUSH構成"
+        ]
+      },
+      {
+        "machine_name": "PA大海物語5 Withアグネス・ラム",
+        "dmm_machine_id": 4358,
+        "url": "https://p-town.dmm.com/machines/4358",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "ST構成"
+        ]
+      },
+      {
+        "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
+        "dmm_machine_id": 4612,
+        "url": "https://p-town.dmm.com/machines/4612",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "RUSH構成"
+        ]
+      },
+      {
+        "machine_name": "e北斗の拳11 暴凶星",
+        "dmm_machine_id": 4897,
+        "url": "https://p-town.dmm.com/machines/4897",
+        "checked_at": "2026-05-19",
+        "confirmed_fields": [
+          "大当り確率",
+          "ボーダーライン",
+          "RUSH/LT構成"
+        ]
+      }
+    ]
+  },
   "stores": [
     {
       "id": "rakuen_namba",
@@ -42,11 +170,10 @@
       "links": {
         "pworld": "https://www.p-world.co.jp/osaka/rakuen-nanba.htm",
         "dmm": "https://p-town.dmm.com/shops/osaka/12558",
-        "minpachi": "https://minpachi.com/楽園なんば店/",
-        "search": ""
+        "minpachi": "https://minpachi.com/楽園なんば店/"
       },
       "machine_data": {
-        "status": "manual_lineup_managed",
+        "status": "claude_collected",
         "target_machine_keywords": [
           "1.111円",
           "エヴァ",
@@ -59,15 +186,13 @@
             "provider": "dmm_pachitown",
             "kind": "store_page",
             "url": "https://p-town.dmm.com/shops/osaka/12558",
-            "access_status": "http_200",
-            "notes": "DMM store page reference. Per-unit 台データ collection is out of scope."
+            "notes": "DMM 저대여 섹션에서 기종명/대수 확인. Claude가 직접 수집."
           },
           {
             "provider": "pworld",
             "kind": "store_page",
             "url": "https://www.p-world.co.jp/osaka/rakuen-nanba.htm",
-            "access_status": "public_reference",
-            "notes": "P-WORLD store profile reference."
+            "notes": "P-WORLD 매장 프로필 보조 참고."
           }
         ]
       }
@@ -83,11 +208,10 @@
       "links": {
         "pworld": "https://www.p-world.co.jp/osaka/nanba123.htm",
         "dmm": "https://p-town.dmm.com/shops/osaka/7568",
-        "minpachi": "https://minpachi.com/123難波店/",
-        "search": ""
+        "minpachi": "https://minpachi.com/123難波店/"
       },
       "machine_data": {
-        "status": "manual_lineup_managed",
+        "status": "claude_collected",
         "target_machine_keywords": [
           "1円",
           "エヴァ",
@@ -100,15 +224,13 @@
             "provider": "dmm_pachitown",
             "kind": "store_page",
             "url": "https://p-town.dmm.com/shops/osaka/7568",
-            "access_status": "http_200",
-            "notes": "DMM store page reference. Per-unit 台データ collection is out of scope."
+            "notes": "DMM 저대여 섹션에서 기종명/대수 확인. Claude가 직접 수집."
           },
           {
             "provider": "pworld",
             "kind": "store_page",
             "url": "https://www.p-world.co.jp/osaka/nanba123.htm",
-            "access_status": "public_reference",
-            "notes": "P-WORLD store profile reference."
+            "notes": "P-WORLD 매장 프로필 보조 참고."
           }
         ]
       }
@@ -124,11 +246,10 @@
       "links": {
         "pworld": "https://www.p-world.co.jp/osaka/arrow-nanba-hips.htm",
         "dmm": "https://p-town.dmm.com/shops/osaka/7579",
-        "minpachi": "https://minpachi.com/arrow-nanba-hips/",
-        "search": ""
+        "minpachi": "https://minpachi.com/arrow-nanba-hips/"
       },
       "machine_data": {
-        "status": "manual_lineup_managed",
+        "status": "claude_collected",
         "target_machine_keywords": [
           "1円",
           "エヴァ",
@@ -141,15 +262,13 @@
             "provider": "dmm_pachitown",
             "kind": "store_page",
             "url": "https://p-town.dmm.com/shops/osaka/7579",
-            "access_status": "http_200",
-            "notes": "DMM store page reference. Per-unit 台データ collection is out of scope."
+            "notes": "DMM 저대여 섹션에서 기종명/대수 확인. Claude가 직접 수집."
           },
           {
             "provider": "pworld",
             "kind": "store_page",
             "url": "https://www.p-world.co.jp/osaka/arrow-nanba-hips.htm",
-            "access_status": "public_reference",
-            "notes": "P-WORLD store profile reference."
+            "notes": "P-WORLD 매장 프로필 보조 참고."
           }
         ]
       }

@@ -80,7 +80,7 @@ pachinko-sim/result_printer_common.py
 pachinko-sim/result_matrix_sections.py
         |
         v
-pachinko-sim/result_metrics.py + pachinko-sim/result_output_helpers.py + pachinko-sim/result_table_builders.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_sections.py + pachinko-sim/result_public_rendering.py + pachinko-sim/result_public_export.py
+pachinko-sim/result_metrics.py + pachinko-sim/result_model_helpers.py + pachinko-sim/result_output_helpers.py + pachinko-sim/result_*_table_builders.py + pachinko-sim/result_stats.py + pachinko-sim/result_formatting.py + pachinko-sim/result_store_views.py + pachinko-sim/result_public_sections.py + pachinko-sim/result_public_rendering.py + pachinko-sim/result_public_export.py
         |
         v
 CLI output / optional latest-only local results.csv / optional latest-only public docs/latest-sim-results.*
@@ -100,6 +100,7 @@ Fixed real-world inputs and runtime outputs must remain separate:
 - runtime time assumptions: launch speed, display seconds per start, right-side seconds per spin, payout/effect time
 - runtime stochastic helpers: independent hit wait sampling, payout selection, and payout variance in `session_sampling.py`
 - runtime session-start setup: rotation sample, start probability, stop-loss probe, and normal-spin cap in `session_setup.py`
+- runtime event/result shaping: hit event dictionaries in `session_events.py` and final session result dictionaries in `session_result.py`
 - runtime statistical output: `result_metrics.py` metrics, optional latest-only gitignored `results.csv`, and optional latest-only sanitized `docs/latest-sim-results.*`
 
 Do not copy Monte Carlo output, recommendation scores, or visit decisions back into fixed data files.
@@ -353,6 +354,28 @@ Responsibilities:
 - calculate the first stop-loss probe budget, probe spins, probe rate, and
   optional normal-spin cap for slow observed starts
 
+### `session_events.py`
+
+Builds runtime hit event dictionaries for optional single-run event output.
+
+Responsibilities:
+
+- keep bilingual hit labels together with state/probability/payout fields
+- keep `simulator.py` focused on state changes rather than output shape
+- preserve the existing event keys consumed by result table builders
+
+### `session_result.py`
+
+Builds the final single-session result dictionary returned by `simulate_single`.
+
+Responsibilities:
+
+- calculate final balls, exchange value, unused cash, net profit, and exchange
+  loss
+- calculate play time, cashless play share, and post-budget continuation time
+- attach normalized strategy/session-policy labels and session-start context
+- preserve the existing result keys consumed by metrics, printers, and exports
+
 ### `simulator.py`
 
 Runs Monte Carlo sessions.
@@ -486,8 +509,14 @@ Focused printer modules should keep the user-facing report assembly while
 delegating reusable pure helpers to:
 
 - `result_metrics.py`: Monte Carlo aggregate metrics such as profit, hit, stay-time, cash exhaustion, and condition rows
-- `result_output_helpers.py`: output text helpers, benchmark comparison values, LT/upper-RUSH labels, and reusable table rows
-- `result_table_builders.py`: reusable row builders for single, repeated, matrix, budget, profile, and strategy output tables
+- `result_model_helpers.py`: public benchmark comparison values, probability denominator rows, and model distribution calculations
+- `result_output_helpers.py`: output text helpers, rotation/border display labels, and LT/upper-RUSH labels
+- `result_single_table_builders.py`: reusable row builders for single-session summary, hit events, and ball graph tables
+- `result_repeated_table_builders.py`: repeated-session summary and risk-detail table rows
+- `result_matrix_table_builders.py`: rotation and budget matrix table rows
+- `result_profile_table_builders.py`: model profile and public benchmark table rows
+- `result_strategy_table_builders.py`: strategy comparison table rows
+- `result_table_builders.py`: compatibility exports for older table-builder imports
 - `result_stats.py`: Monte Carlo uncertainty helpers, Wilson intervals, quantile intervals, tail means, and useful-profit condition rows
 - `result_formatting.py`: terminal table width handling, yen/percent/minute text, and ASCII bar/table helpers
 - `result_csv.py`: latest-only matrix CSV serialization used only after explicit user confirmation

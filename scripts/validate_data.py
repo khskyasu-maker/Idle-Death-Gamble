@@ -21,6 +21,7 @@ ALLOWED_MACHINE_INFO_RATES = {"1yen", "1.111yen"}
 ALLOWED_MACHINE_INFO_SOURCES = {"pworld", "dmm", "app", "onsite", "manual_note"}
 ALLOWED_MACHINE_INFO_INSTALL_SOURCES = {"dmm_pachitown", "pworld", "manual_note"}
 ALLOWED_MACHINE_INFO_SPEC_SOURCES = {"chonborista", "dmm_pachitown", "manual_note"}
+DMM_MACHINE_URL_RE = re.compile(r"^https://p-town\.dmm\.com/machines/([0-9]+)$")
 
 REQUIRED_MACHINE_INFO_FIELDS = [
     "store_id",
@@ -108,7 +109,7 @@ PUBLIC_PRIVACY_SCAN_FILES = [
     "pachinko-sim/start_gate.py",
     "pachinko-sim/time_model.py",
     "pachinko-sim/store_comparison.py",
-    ".github/workflows/daily.yml",
+    ".github/workflows/ci.yml",
 ]
 
 PUBLIC_PRIVACY_TEXT_PATTERNS = [
@@ -192,6 +193,20 @@ def parse_date(value):
         return datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
+
+
+def optional_number(value):
+    if value in (None, ""):
+        return None
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def values_close(left, right, tolerance=0.11):
+    return abs(left - right) <= tolerance
 
 
 def validate_probability(value, path, errors, warnings):
@@ -289,6 +304,71 @@ def validate_no_known_lineup_mixups(machines, errors, file_name):
                 f"{path}.machine_count",
                 "123 Namba アイマリン expected count is 1 in the corrected low-rate baseline.",
             )
+
+
+def validate_border_consistency(machine, path, errors, warnings):
+    border_4yen = optional_number(machine.get("border_4yen_per_250"))
+    border_1yen = optional_number(machine.get("border_1yen_per_200"))
+    border_1_111yen = optional_number(machine.get("border_1_111yen_per_180"))
+    border_spins = optional_number(machine.get("border_spins_per_1000yen"))
+    border_unit_value = optional_number(machine.get("border_unit_value"))
+    rate = machine.get("rate", "")
+
+    if border_4yen is not None and border_1yen is not None:
+        expected_1yen = border_4yen * 0.8
+        if not values_close(border_1yen, expected_1yen):
+            add_issue(
+                errors,
+                f"{path}.border_1yen_per_200",
+                "must match border_4yen_per_250 * 0.8 within one-decimal rounding tolerance",
+            )
+
+    if border_1yen is not None and border_1_111yen is not None:
+        expected_1_111yen = border_1yen * 0.9
+        if not values_close(border_1_111yen, expected_1_111yen):
+            add_issue(
+                errors,
+                f"{path}.border_1_111yen_per_180",
+                "must match border_1yen_per_200 * 0.9 within one-decimal rounding tolerance",
+            )
+
+    expected_unit_values = {
+        "1yen": ("200円/200玉", border_1yen),
+        "1.111yen": ("200円/180玉", border_1_111yen),
+    }
+    expected_unit, expected_border_value = expected_unit_values.get(rate, ("", None))
+    border_unit = machine.get("border_unit")
+    if border_unit not in (None, "") and border_unit != expected_unit:
+        add_issue(errors, f"{path}.border_unit", f"must be {expected_unit} for {rate}")
+
+    if (
+        border_unit_value is not None
+        and expected_border_value is not None
+        and not values_close(border_unit_value, expected_border_value)
+    ):
+        add_issue(
+            errors,
+            f"{path}.border_unit_value",
+            "must match the rate-specific per-unit border value",
+        )
+
+    if (
+        border_spins is not None
+        and expected_border_value is not None
+        and not values_close(border_spins, expected_border_value * 5)
+    ):
+        add_issue(
+            errors,
+            f"{path}.border_spins_per_1000yen",
+            "must match the rate-specific border value * 5",
+        )
+
+    if rate == "1.111yen" and border_1yen is not None and border_1_111yen is None:
+        add_issue(
+            warnings,
+            f"{path}.border_1_111yen_per_180",
+            "missing 1.111yen converted border makes Rakuen onsite checks less explicit",
+        )
 
 
 def validate_machine_info_file(file_name, errors, warnings, required=False):
@@ -437,6 +517,8 @@ def validate_machine_info_file(file_name, errors, warnings, required=False):
             "border_4yen_per_250",
             "border_1yen_per_200",
             "border_1_111yen_per_180",
+            "border_spins_per_1000yen",
+            "border_unit_value",
         ):
             val = machine.get(border_field)
             if val not in (None, ""):
@@ -446,13 +528,21 @@ def validate_machine_info_file(file_name, errors, warnings, required=False):
                         add_issue(
                             errors, f"{path}.{border_field}", "must be a number > 0"
                         )
-                except ValueError:
+                except (TypeError, ValueError):
                     add_issue(errors, f"{path}.{border_field}", "must be a number")
 
-        for str_field in ("border_source", "border_source_url", "border_note"):
+        for str_field in (
+            "border_source",
+            "border_source_url",
+            "border_reference_url",
+            "border_note",
+            "border_unit",
+        ):
             val = machine.get(str_field)
             if val is not None and not isinstance(val, str):
                 add_issue(errors, f"{path}.{str_field}", "must be a string")
+
+        validate_border_consistency(machine, path, errors, warnings)
 
     validate_no_known_lineup_mixups(machines, errors, file_name)
 
@@ -460,6 +550,126 @@ def validate_machine_info_file(file_name, errors, warnings, required=False):
 def validate_machine_info(errors, warnings):
     for file_name in MACHINE_INFO_FILES:
         validate_machine_info_file(file_name, errors, warnings, required=True)
+
+
+def current_lineup_machine_names():
+    raw = load_json(get_data_path("namba-actual-1yen-lineup.json"), None)
+    if not isinstance(raw, dict):
+        return set()
+
+    return {
+        machine.get("machine_name", "")
+        for machine in raw.get("machines", [])
+        if isinstance(machine, dict) and machine.get("machine_name")
+    }
+
+
+def validate_dmm_machine_id_map(raw, lineup_machine_names, errors, warnings):
+    mapping = raw.get("dmm_machine_id_map") if isinstance(raw, dict) else None
+    if mapping is None:
+        return
+
+    path = "data/stores.json.dmm_machine_id_map"
+    if not isinstance(mapping, dict):
+        add_issue(errors, path, "must be an object")
+        return
+
+    entries = mapping.get("machines", [])
+    if not isinstance(entries, list):
+        add_issue(errors, f"{path}.machines", "must be a list")
+        return
+
+    seen_ids = {}
+    seen_names = {}
+    for index, entry in enumerate(entries):
+        entry_path = f"{path}.machines[{index}]"
+        if not isinstance(entry, dict):
+            add_issue(errors, entry_path, "must be an object")
+            continue
+
+        machine_name = entry.get("machine_name")
+        if not isinstance(machine_name, str) or not machine_name:
+            add_issue(errors, f"{entry_path}.machine_name", "must be a non-empty string")
+        elif lineup_machine_names and machine_name not in lineup_machine_names:
+            add_issue(
+                errors,
+                f"{entry_path}.machine_name",
+                "must match a machine_name in data/namba-actual-1yen-lineup.json",
+            )
+
+        machine_id = entry.get("dmm_machine_id")
+        if not isinstance(machine_id, int) or machine_id <= 0:
+            add_issue(errors, f"{entry_path}.dmm_machine_id", "must be an integer > 0")
+
+        url = entry.get("url")
+        if not isinstance(url, str) or not url:
+            add_issue(errors, f"{entry_path}.url", "must be a non-empty string")
+        else:
+            match = DMM_MACHINE_URL_RE.fullmatch(url)
+            if not match:
+                add_issue(
+                    errors,
+                    f"{entry_path}.url",
+                    "must be a DMM machine detail URL",
+                )
+            elif isinstance(machine_id, int) and str(machine_id) != match.group(1):
+                add_issue(
+                    errors,
+                    f"{entry_path}.url",
+                    "must end with the same numeric ID as dmm_machine_id",
+                )
+
+        checked_at = entry.get("checked_at", "")
+        if not isinstance(checked_at, str) or not re.fullmatch(
+            r"\d{4}-\d{2}-\d{2}",
+            checked_at,
+        ):
+            add_issue(errors, f"{entry_path}.checked_at", "must be YYYY-MM-DD")
+
+        confirmed_fields = entry.get("confirmed_fields")
+        if not isinstance(confirmed_fields, list) or not confirmed_fields:
+            add_issue(errors, f"{entry_path}.confirmed_fields", "must be a non-empty list")
+        elif not all(isinstance(field, str) and field for field in confirmed_fields):
+            add_issue(
+                errors,
+                f"{entry_path}.confirmed_fields",
+                "must contain only non-empty strings",
+            )
+
+        if isinstance(machine_id, int):
+            if machine_id in seen_ids:
+                add_issue(
+                    errors,
+                    f"{entry_path}.dmm_machine_id",
+                    f"duplicates {seen_ids[machine_id]}",
+                )
+            seen_ids[machine_id] = entry_path
+
+        if isinstance(machine_name, str) and machine_name:
+            if machine_name in seen_names:
+                add_issue(
+                    errors,
+                    f"{entry_path}.machine_name",
+                    f"duplicates {seen_names[machine_name]}",
+                )
+            seen_names[machine_name] = entry_path
+
+
+def validate_store_metadata(errors, warnings):
+    raw = load_json(get_data_path("stores.json"), None)
+    if raw is None:
+        add_issue(errors, "data/stores.json", "file is missing")
+        return
+    if not isinstance(raw, dict):
+        add_issue(errors, "data/stores.json", "must be an object")
+        return
+
+    validate_dmm_machine_id_map(
+        raw,
+        current_lineup_machine_names(),
+        errors,
+        warnings,
+    )
 
 
 def validate_manual_public_docs(errors, warnings):
@@ -675,6 +885,7 @@ def main():
     errors = []
     warnings = []
     validate_machine_info(errors, warnings)
+    validate_store_metadata(errors, warnings)
     validate_manual_public_docs(errors, warnings)
     validate_simulator_lineup(errors, warnings)
     validate_public_privacy_scan(errors, warnings)

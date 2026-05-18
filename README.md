@@ -34,7 +34,7 @@ GitHub에 넣지 않는 데이터:
 - 예약 관련 식별값
 
 ## 3. 주요 기능
-- **수동 데이터 수집**: GitHub Actions `workflow_dispatch`로 필요할 때만 수집합니다.
+- **수동 데이터 갱신**: DMM/공개 스펙 페이지를 확인한 뒤 `data/namba-actual-1yen-lineup.json`에 객관 필드만 반영합니다.
 - **정적 리포트 제공**: 수집된 데이터를 바탕으로 GitHub Pages를 통해 모바일 친화적인 리포트를 제공합니다.
 - **AI 입력용 공개 JSON**: `docs/latest.json`에는 원본 표와 함께 `ai_context`, `ai_compact_machines`를 생성해 대화형 분석에 바로 사용할 수 있게 합니다.
 - **시뮬레이터 AI 컨텍스트**: `docs/simulator-ai-context.md`와 `docs/latest.json`의 `simulator_context`는 다른 AI가 GitHub만 보고도 로컬 시뮬레이터의 전제, 지표명, 해석 금지선을 이해할 수 있게 합니다.
@@ -83,7 +83,6 @@ python scripts/check.py --coverage
 
 ```bash
 python scripts/validate_data.py
-python scripts/collect.py
 python scripts/analyze.py
 python scripts/build_report.py
 ```
@@ -132,7 +131,7 @@ python -m unittest discover -s tests
   "machine_name": "新世紀エヴァンゲリオン〜未来への咆哮〜",
   "machine_name_ko": "신세기 에반게리온 미래로의 포효",
   "rate": "1.111yen",
-  "category": "eva_middle",
+  "category": "eva",
   "spec_type": "middle",
   "initial_probability": "1/319.7",
   "rush_type": "ST",

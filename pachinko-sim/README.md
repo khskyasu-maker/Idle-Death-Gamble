@@ -70,6 +70,8 @@ python3 scripts/clean.py --apply
 - `session_runtime.py`: 시간 제한, cash cutoff, 정상 회전 초수, 스핀 캡 계산 helper
 - `session_sampling.py`: 당첨 라벨, payout 추첨, payout 변동, 독립 시행 hit wait sampling helper
 - `session_setup.py`: 세션 시작 회전율 표본, 시작확률, stop-loss probe, normal spin cap 계산 helper
+- `session_events.py`: 단일 실행 중 hit event 기록 딕셔너리 생성 helper
+- `session_result.py`: 단일 실행 종료 후 공개/CLI 공통 결과 딕셔너리 조립 helper
 - `simulator.py`: 순수 확률 기반 계산 및 시뮬레이션 코어 (UI 로직 없음)
 - `session_scenarios.py`: 회전율/예산/전략 매트릭스 실행 조합 빌더
 - `result.py`: 기존 `from result import ...` 경로를 보존하는 호환 export 래퍼
@@ -80,8 +82,14 @@ python3 scripts/clean.py --apply
 - `result_store_printers.py`: 점포 보조 비교 결과 출력
 - `result_printer_common.py`: 프린터 공통 헤더/기종 문맥/세션 문맥/footer 출력
 - `result_metrics.py`: 반복 결과에서 평균/분위수/체류 시간/조건부 플러스율 같은 집계 지표 계산
-- `result_output_helpers.py`: 출력 문구, 보더/스펙 비교, LT/상위RUSH 표시, 표 행 보조 로직
-- `result_table_builders.py`: 단일/반복/매트릭스/예산/프로파일/전략 출력에 쓰는 표 행 생성 로직
+- `result_model_helpers.py`: 공개 스펙 벤치마크, 분모별 당첨/무당첨률, 상태 분포 계산 보조 로직
+- `result_output_helpers.py`: 출력 문구, 보더/회전율 표시, LT/상위RUSH 표시 보조 로직
+- `result_single_table_builders.py`: 단일 실행 요약, hit event, 구슬 그래프 표 행 생성 로직
+- `result_repeated_table_builders.py`: 반복 실행 요약/리스크 상세 표 행 생성 로직
+- `result_matrix_table_builders.py`: 회전율/예산 매트릭스 표 행 생성 로직
+- `result_profile_table_builders.py`: 기종 프로파일/공개 스펙 벤치마크 표 행 생성 로직
+- `result_strategy_table_builders.py`: 전략 비교 표 행 생성 로직
+- `result_table_builders.py`: 기존 import 경로를 보존하는 표 행 호환 export
 - `result_stats.py`: Wilson 구간, t 기반 평균 구간, 분위수 구간, 조건부 플러스율 같은 순수 통계 보조 로직
 - `result_formatting.py`: ASCII 표, 금액, 퍼센트, 시간 표시 같은 터미널 포맷 보조 로직
 - `result_csv.py`: 사용자가 명시적으로 선택한 경우에만 gitignored `results.csv`에 최신 매트릭스 결과를 덮어쓰는 CSV 직렬화 로직

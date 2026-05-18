@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18 20:21:46 KST",
+  "generated_at": "2026-05-19 01:47:29 KST",
   "machine_info_source": "namba-actual-1yen-lineup.json",
   "public_data_entrypoints": [
     {
@@ -68,14 +68,15 @@
       "checked_at": "Manual/public-source check date. Re-check onsite if stale."
     },
     "data_freshness": {
-      "generated_at": "2026-05-18 20:21:46 KST",
+      "generated_at": "2026-05-19 01:47:29 KST",
       "earliest_checked_at": "2026-05-10",
-      "latest_checked_at": "2026-05-18",
+      "latest_checked_at": "2026-05-19",
       "checked_dates": [
         "2026-05-10",
         "2026-05-12",
         "2026-05-17",
-        "2026-05-18"
+        "2026-05-18",
+        "2026-05-19"
       ]
     },
     "category_machine_totals": [
@@ -315,18 +316,18 @@
       "rush_type": "ST",
       "initial_probability": "1/99.9",
       "machine_count": 10,
-      "border_spins_per_1000yen": 55.0,
+      "border_spins_per_1000yen": 65.5,
       "border_unit": "200円/180玉",
-      "border_unit_value": 11.0,
-      "border_confidence": "known",
-      "onsite_judgment": "180玉당 11.0회 이상",
+      "border_unit_value": 13.1,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "180玉당 13.1회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-12"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4358",
+        "border_reference_url": "https://p-town.dmm.com/machines/4358",
+        "checked_at": "2026-05-19"
       },
       "memo": "라쿠엔 1.111パチ 실제 설치 후보. 감데지 바다 주력."
     },
@@ -481,15 +482,15 @@
       "border_spins_per_1000yen": 64.0,
       "border_unit": "200円/180玉",
       "border_unit_value": 12.8,
-      "border_confidence": "known",
+      "border_confidence": "web_verified",
       "onsite_judgment": "180玉당 12.8회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-12"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4021",
+        "border_reference_url": "https://p-town.dmm.com/machines/4021",
+        "checked_at": "2026-05-19"
       },
       "memo": "라쿠엔 1.111パチ 실제 설치 후보. 에바15 미들."
     },
@@ -766,15 +767,15 @@
       "border_spins_per_1000yen": 59.5,
       "border_unit": "200円/180玉",
       "border_unit_value": 11.9,
-      "border_confidence": "known",
+      "border_confidence": "web_verified",
       "onsite_judgment": "180玉당 11.9회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-12"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4865",
+        "border_reference_url": "https://p-town.dmm.com/machines/4865",
+        "checked_at": "2026-05-19"
       },
       "memo": "라쿠엔 1.111パチ 실제 설치 후보. 신에바 감데지."
     },
@@ -1320,18 +1321,18 @@
       "rush_type": "ST",
       "initial_probability": "1/99.9",
       "machine_count": 10,
-      "border_spins_per_1000yen": 61.0,
+      "border_spins_per_1000yen": 73.0,
       "border_unit": "200円/200玉",
-      "border_unit_value": 12.2,
-      "border_confidence": "known",
-      "onsite_judgment": "200玉당 12.2회 이상",
+      "border_unit_value": 14.6,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "200玉당 14.6회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-12"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4358",
+        "border_reference_url": "https://p-town.dmm.com/machines/4358",
+        "checked_at": "2026-05-19"
       },
       "memo": "123 난바 1円パチ 실제 설치 후보. 감데지 바다 주력."
     },
@@ -1445,15 +1446,15 @@
       "border_spins_per_1000yen": 71.0,
       "border_unit": "200円/200玉",
       "border_unit_value": 14.2,
-      "border_confidence": "known",
+      "border_confidence": "web_verified",
       "onsite_judgment": "200玉당 14.2회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-12"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4021",
+        "border_reference_url": "https://p-town.dmm.com/machines/4021",
+        "checked_at": "2026-05-19"
       },
       "memo": "123 난바 1円パチ 실제 설치 후보. 에바15 미들."
     },
@@ -1862,15 +1863,15 @@
       "border_spins_per_1000yen": 66.0,
       "border_unit": "200円/200玉",
       "border_unit_value": 13.2,
-      "border_confidence": "known",
+      "border_confidence": "web_verified",
       "onsite_judgment": "200玉당 13.2회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-12"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4865",
+        "border_reference_url": "https://p-town.dmm.com/machines/4865",
+        "checked_at": "2026-05-19"
       },
       "memo": "123 난바 1円パチ 실제 설치 후보. 신에바 감데지."
     },
@@ -2321,18 +2322,18 @@
       "rush_type": "RUSH",
       "initial_probability": "1/77.7",
       "machine_count": 1,
-      "border_spins_per_1000yen": null,
-      "border_unit": null,
-      "border_unit_value": null,
-      "border_confidence": "unknown",
-      "onsite_judgment": "-",
+      "border_spins_per_1000yen": 66.5,
+      "border_unit": "200円/200玉",
+      "border_unit_value": 13.3,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "200玉당 13.3회 이상",
       "source": {
         "install_source": "dmm_pachitown",
         "spec_source": "dmm_pachitown",
-        "border_source": "",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-17"
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4612",
+        "border_reference_url": "https://p-town.dmm.com/machines/4612",
+        "checked_at": "2026-05-19"
       },
       "memo": "123 DMM 1円 섹션 NEW 표시 확인."
     },
@@ -2431,18 +2432,18 @@
       "rush_type": "RUSH/LT",
       "initial_probability": "1/399.8",
       "machine_count": 1,
-      "border_spins_per_1000yen": null,
-      "border_unit": null,
-      "border_unit_value": null,
-      "border_confidence": "unknown",
-      "onsite_judgment": "-",
+      "border_spins_per_1000yen": 67.0,
+      "border_unit": "200円/200玉",
+      "border_unit_value": 13.4,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "200玉당 13.4회 이상",
       "source": {
         "install_source": "dmm_pachitown",
         "spec_source": "dmm_pachitown",
-        "border_source": "",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-17"
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4897",
+        "border_reference_url": "https://p-town.dmm.com/machines/4897",
+        "checked_at": "2026-05-19"
       },
       "memo": "123 DMM 1円 섹션 NEW 표시 확인."
     },
@@ -2471,18 +2472,18 @@
       "rush_type": "ST/LT",
       "initial_probability": "1/399.9",
       "machine_count": 1,
-      "border_spins_per_1000yen": 68.5,
+      "border_spins_per_1000yen": 67.0,
       "border_unit": "200円/200玉",
-      "border_unit_value": 13.7,
+      "border_unit_value": 13.4,
       "border_confidence": "web_verified",
-      "onsite_judgment": "200玉당 13.7회 이상",
+      "onsite_judgment": "200玉당 13.4회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "777_pachigabu",
-        "spec_source_url": "",
-        "border_reference_url": "https://p-gabu.jp/guideworks/machinecontents/detail/6956/170",
-        "checked_at": "2026-05-12"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4894",
+        "border_reference_url": "https://p-town.dmm.com/machines/4894",
+        "checked_at": "2026-05-19"
       },
       "memo": "123 난바 1円パチ 실제 설치 후보. 1대 고위험 체험 후보."
     },
@@ -2793,15 +2794,15 @@
       "border_spins_per_1000yen": 71.0,
       "border_unit": "200円/200玉",
       "border_unit_value": 14.2,
-      "border_confidence": "known",
+      "border_confidence": "web_verified",
       "onsite_judgment": "200玉당 14.2회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-10"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4021",
+        "border_reference_url": "https://p-town.dmm.com/machines/4021",
+        "checked_at": "2026-05-19"
       },
       "memo": "HIPS 1円パチ 설치 후보. 에바15 미들."
     },
@@ -2831,18 +2832,18 @@
       "rush_type": "ST",
       "initial_probability": "1/99.9",
       "machine_count": 3,
-      "border_spins_per_1000yen": 61.0,
+      "border_spins_per_1000yen": 73.0,
       "border_unit": "200円/200玉",
-      "border_unit_value": 12.2,
-      "border_confidence": "known",
-      "onsite_judgment": "200玉당 12.2회 이상",
+      "border_unit_value": 14.6,
+      "border_confidence": "web_verified",
+      "onsite_judgment": "200玉당 14.6회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
-        "border_source": "manual_note",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-10"
+        "spec_source": "dmm_pachitown",
+        "border_source": "dmm_pachitown",
+        "spec_source_url": "https://p-town.dmm.com/machines/4358",
+        "border_reference_url": "https://p-town.dmm.com/machines/4358",
+        "checked_at": "2026-05-19"
       },
       "memo": "HIPS 1円パチ 설치 후보. 감데지 바다."
     },
@@ -3359,15 +3360,15 @@
       "border_spins_per_1000yen": 66.0,
       "border_unit": "200円/200玉",
       "border_unit_value": 13.2,
-      "border_confidence": "known",
+      "border_confidence": "web_verified",
       "onsite_judgment": "200玉당 13.2회 이상",
       "source": {
         "install_source": "dmm_pachitown",
-        "spec_source": "manual_note",
+        "spec_source": "dmm_pachitown",
         "border_source": "dmm_pachitown",
-        "spec_source_url": "",
-        "border_reference_url": "",
-        "checked_at": "2026-05-10"
+        "spec_source_url": "https://p-town.dmm.com/machines/4865",
+        "border_reference_url": "https://p-town.dmm.com/machines/4865",
+        "checked_at": "2026-05-19"
       },
       "memo": "HIPS 1円パチ 설치 후보. 신에바 감데지."
     }
@@ -3447,9 +3448,9 @@
       "daiumi_machine_count": 53,
       "other_machine_count": 17,
       "ama_like_machine_count": 34,
-      "border_entry_count": 25,
-      "border_machine_count": 86,
-      "missing_border_machine_count": 9
+      "border_entry_count": 27,
+      "border_machine_count": 88,
+      "missing_border_machine_count": 7
     },
     {
       "store_id": "arrow_namba_hips",
@@ -3479,8 +3480,8 @@
       "initial_probability": "1/99.9",
       "machine_count": 10,
       "onsite_unit": "180玉",
-      "onsite_judgment": "180玉당 11.0회 이상",
-      "checked_at": "2026-05-12"
+      "onsite_judgment": "180玉당 13.1회 이상",
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "rakuen_namba",
@@ -3532,7 +3533,7 @@
       "machine_count": 6,
       "onsite_unit": "180玉",
       "onsite_judgment": "180玉당 12.8회 이상",
-      "checked_at": "2026-05-12"
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "123_namba",
@@ -3544,8 +3545,8 @@
       "initial_probability": "1/99.9",
       "machine_count": 10,
       "onsite_unit": "200玉",
-      "onsite_judgment": "200玉당 12.2회 이상",
-      "checked_at": "2026-05-12"
+      "onsite_judgment": "200玉당 14.6회 이상",
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "123_namba",
@@ -3584,7 +3585,7 @@
       "machine_count": 6,
       "onsite_unit": "200玉",
       "onsite_judgment": "200玉당 14.2회 이상",
-      "checked_at": "2026-05-12"
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "123_namba",
@@ -3676,8 +3677,8 @@
       "initial_probability": "1/99.9",
       "machine_count": 10,
       "onsite_unit": "200玉",
-      "onsite_judgment": "200玉당 12.2회 이상",
-      "checked_at": "2026-05-12"
+      "onsite_judgment": "200玉당 14.6회 이상",
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "123_namba",
@@ -3702,8 +3703,8 @@
       "initial_probability": "1/99.9",
       "machine_count": 10,
       "onsite_unit": "180玉",
-      "onsite_judgment": "180玉당 11.0회 이상",
-      "checked_at": "2026-05-12"
+      "onsite_judgment": "180玉당 13.1회 이상",
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "rakuen_namba",
@@ -3768,7 +3769,7 @@
       "machine_count": 6,
       "onsite_unit": "200玉",
       "onsite_judgment": "200玉당 14.2회 이상",
-      "checked_at": "2026-05-12"
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "rakuen_namba",
@@ -3781,7 +3782,7 @@
       "machine_count": 6,
       "onsite_unit": "180玉",
       "onsite_judgment": "180玉당 12.8회 이상",
-      "checked_at": "2026-05-12"
+      "checked_at": "2026-05-19"
     },
     {
       "store_id": "123_namba",
@@ -3894,19 +3895,6 @@
       "store_name": "123難波店",
       "store_name_ko": "123 난바점",
       "rate": "1yen",
-      "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
-      "machine_name_ko": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
-      "initial_probability": "1/77.7",
-      "machine_count": 1,
-      "onsite_unit": "200玉",
-      "onsite_judgment": "-",
-      "checked_at": "2026-05-17"
-    },
-    {
-      "store_id": "123_namba",
-      "store_name": "123難波店",
-      "store_name_ko": "123 난바점",
-      "rate": "1yen",
       "machine_name": "P閃乱カグラ189大入りver.",
       "machine_name_ko": "P 섬란카구라 189 대입 ver.",
       "initial_probability": "1/189.4",
@@ -3923,19 +3911,6 @@
       "machine_name": "eアズールレーン2 THE ANIMATION 超次元",
       "machine_name_ko": "e 아주르레인2 THE ANIMATION 초차원",
       "initial_probability": "1/169.9",
-      "machine_count": 1,
-      "onsite_unit": "200玉",
-      "onsite_judgment": "-",
-      "checked_at": "2026-05-17"
-    },
-    {
-      "store_id": "123_namba",
-      "store_name": "123難波店",
-      "store_name_ko": "123 난바점",
-      "rate": "1yen",
-      "machine_name": "e北斗の拳11 暴凶星",
-      "machine_name_ko": "e 북두의 권11 폭흉성",
-      "initial_probability": "1/399.8",
       "machine_count": 1,
       "onsite_unit": "200玉",
       "onsite_judgment": "-",
@@ -3968,8 +3943,8 @@
       "checked_at": "2026-05-17"
     }
   ],
-  "border_ready_machine_count": 69,
-  "missing_border_machine_count": 8,
+  "border_ready_machine_count": 71,
+  "missing_border_machine_count": 6,
   "missing_border_machines": [
     {
       "store_id": "123_namba",
@@ -3986,30 +3961,8 @@
       "store_id": "123_namba",
       "store_name": "123難波店",
       "store_name_ko": "123 난바점",
-      "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
-      "machine_name_ko": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
-      "rate": "1yen",
-      "machine_count": 1,
-      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
-      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
-    },
-    {
-      "store_id": "123_namba",
-      "store_name": "123難波店",
-      "store_name_ko": "123 난바점",
       "machine_name": "eアズールレーン2 THE ANIMATION 超次元",
       "machine_name_ko": "e 아주르레인2 THE ANIMATION 초차원",
-      "rate": "1yen",
-      "machine_count": 1,
-      "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
-      "memo": "123 DMM 1円 섹션 NEW 표시 확인."
-    },
-    {
-      "store_id": "123_namba",
-      "store_name": "123難波店",
-      "store_name_ko": "123 난바점",
-      "machine_name": "e北斗の拳11 暴凶星",
-      "machine_name_ko": "e 북두의 권11 폭흉성",
       "rate": "1yen",
       "machine_count": 1,
       "missing_border_reason": "원본 기종 데이터에 보더 값 없음",
@@ -4075,17 +4028,20 @@
       "machine_count": 10,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
+      "checked_at": "2026-05-19",
       "memo": "라쿠엔 1.111パチ 실제 설치 후보. 감데지 바다 주력.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
-      "border_1yen_per_200": 12.2,
-      "border_1_111yen_per_180": 11.0,
-      "border_spins_per_1000yen": 55.0,
-      "border_unit_value": 11.0,
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4358",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4358",
+      "border_4yen_per_250": 18.3,
+      "border_1yen_per_200": 14.6,
+      "border_1_111yen_per_180": 13.1,
+      "border_spins_per_1000yen": 65.5,
+      "border_unit_value": 13.1,
       "border_unit": "200円/180玉",
-      "border_confidence": "known",
-      "border_note": "1.111円 환산 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 18.3回、1円/200玉 14.6回。"
     },
     {
       "store_id": "rakuen_namba",
@@ -4181,17 +4137,20 @@
       "machine_count": 6,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
+      "checked_at": "2026-05-19",
       "memo": "라쿠엔 1.111パチ 실제 설치 후보. 에바15 미들.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4021",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4021",
+      "border_4yen_per_250": 17.8,
       "border_1yen_per_200": 14.2,
       "border_1_111yen_per_180": 12.8,
       "border_spins_per_1000yen": 64.0,
       "border_unit_value": 12.8,
       "border_unit": "200円/180玉",
-      "border_confidence": "known",
-      "border_note": "1.111円 환산 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 17.8回、1円/200玉 14.2回。"
     },
     {
       "store_id": "rakuen_namba",
@@ -4314,17 +4273,20 @@
       "machine_count": 3,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
+      "checked_at": "2026-05-19",
       "memo": "라쿠엔 1.111パチ 실제 설치 후보. 신에바 감데지.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4865",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4865",
+      "border_4yen_per_250": 16.5,
       "border_1yen_per_200": 13.2,
       "border_1_111yen_per_180": 11.9,
       "border_spins_per_1000yen": 59.5,
       "border_unit_value": 11.9,
       "border_unit": "200円/180玉",
-      "border_confidence": "known",
-      "border_note": "1.111円 환산 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 16.5回、1円/200玉 13.2回。"
     },
     {
       "store_id": "rakuen_namba",
@@ -4605,16 +4567,19 @@
       "machine_count": 10,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
+      "checked_at": "2026-05-19",
       "memo": "123 난바 1円パチ 실제 설치 후보. 감데지 바다 주력.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
-      "border_1yen_per_200": 12.2,
-      "border_spins_per_1000yen": 61.0,
-      "border_unit_value": 12.2,
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4358",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4358",
+      "border_4yen_per_250": 18.3,
+      "border_1yen_per_200": 14.6,
+      "border_spins_per_1000yen": 73.0,
+      "border_unit_value": 14.6,
       "border_unit": "200円/200玉",
-      "border_confidence": "known",
-      "border_note": "1円 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 18.3回、1円/200玉 14.6回。"
     },
     {
       "store_id": "123_namba",
@@ -4888,16 +4853,19 @@
       "machine_count": 6,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
+      "checked_at": "2026-05-19",
       "memo": "123 난바 1円パチ 실제 설치 후보. 에바15 미들.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4021",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4021",
+      "border_4yen_per_250": 17.8,
       "border_1yen_per_200": 14.2,
       "border_spins_per_1000yen": 71.0,
       "border_unit_value": 14.2,
       "border_unit": "200円/200玉",
-      "border_confidence": "known",
-      "border_note": "1円 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 17.8回、1円/200玉 14.2回。"
     },
     {
       "store_id": "123_namba",
@@ -4988,16 +4956,19 @@
       "machine_count": 3,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
+      "checked_at": "2026-05-19",
       "memo": "123 난바 1円パチ 실제 설치 후보. 신에바 감데지.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4865",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4865",
+      "border_4yen_per_250": 16.5,
       "border_1yen_per_200": 13.2,
       "border_spins_per_1000yen": 66.0,
       "border_unit_value": 13.2,
       "border_unit": "200円/200玉",
-      "border_confidence": "known",
-      "border_note": "1円 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 16.5回、1円/200玉 13.2回。"
     },
     {
       "store_id": "123_namba",
@@ -5039,17 +5010,19 @@
       "machine_count": 1,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-12",
+      "checked_at": "2026-05-19",
       "memo": "123 난바 1円パチ 실제 설치 후보. 1대 고위험 체험 후보.",
-      "spec_source": "manual_note",
-      "border_source": "777_pachigabu",
-      "border_note": "777パチガブ 4円等価 17.1回/1000円を1円/200玉 기준으로 환산.",
-      "border_spins_per_1000yen": 68.5,
-      "border_unit_value": 13.7,
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4894",
+      "border_source": "dmm_pachitown",
+      "border_note": "DMMぱちタウン 4円/250玉 16.7回、1円/200玉 13.4回。",
+      "border_4yen_per_250": 16.7,
+      "border_spins_per_1000yen": 67.0,
+      "border_unit_value": 13.4,
       "border_unit": "200円/200玉",
       "border_confidence": "web_verified",
-      "border_reference_url": "https://p-gabu.jp/guideworks/machinecontents/detail/6956/170",
-      "border_1yen_per_200": 13.7
+      "border_reference_url": "https://p-town.dmm.com/machines/4894",
+      "border_1yen_per_200": 13.4
     },
     {
       "store_id": "arrow_namba_hips",
@@ -5065,16 +5038,19 @@
       "machine_count": 4,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-10",
+      "checked_at": "2026-05-19",
       "memo": "HIPS 1円パチ 설치 후보. 에바15 미들.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4021",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4021",
+      "border_4yen_per_250": 17.8,
       "border_1yen_per_200": 14.2,
       "border_spins_per_1000yen": 71.0,
       "border_unit_value": 14.2,
       "border_unit": "200円/200玉",
-      "border_confidence": "known",
-      "border_note": "1円 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 17.8回、1円/200玉 14.2回。"
     },
     {
       "store_id": "arrow_namba_hips",
@@ -5140,16 +5116,19 @@
       "machine_count": 1,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-10",
+      "checked_at": "2026-05-19",
       "memo": "HIPS 1円パチ 설치 후보. 신에바 감데지.",
-      "spec_source": "manual_note",
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4865",
       "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4865",
+      "border_4yen_per_250": 16.5,
       "border_1yen_per_200": 13.2,
       "border_spins_per_1000yen": 66.0,
       "border_unit_value": 13.2,
       "border_unit": "200円/200玉",
-      "border_confidence": "known",
-      "border_note": "1円 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 16.5回、1円/200玉 13.2回。"
     },
     {
       "store_id": "arrow_namba_hips",
@@ -5295,16 +5274,19 @@
       "machine_count": 3,
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-10",
+      "checked_at": "2026-05-19",
       "memo": "HIPS 1円パチ 설치 후보. 감데지 바다.",
-      "spec_source": "manual_note",
-      "border_source": "manual_note",
-      "border_1yen_per_200": 12.2,
-      "border_spins_per_1000yen": 61.0,
-      "border_unit_value": 12.2,
+      "spec_source": "dmm_pachitown",
+      "spec_source_url": "https://p-town.dmm.com/machines/4358",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4358",
+      "border_4yen_per_250": 18.3,
+      "border_1yen_per_200": 14.6,
+      "border_spins_per_1000yen": 73.0,
+      "border_unit_value": 14.6,
       "border_unit": "200円/200玉",
-      "border_confidence": "known",
-      "border_note": "1円 보더 사용"
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 18.3回、1円/200玉 14.6回。"
     },
     {
       "store_id": "arrow_namba_hips",
@@ -5601,17 +5583,20 @@
       "category": "other",
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-17",
+      "checked_at": "2026-05-19",
       "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
       "spec_source": "dmm_pachitown",
-      "border_source": "",
-      "border_1yen_per_200": null,
+      "spec_source_url": "https://p-town.dmm.com/machines/4612",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4612",
+      "border_4yen_per_250": 16.6,
+      "border_1yen_per_200": 13.3,
       "border_1_111yen_per_180": null,
-      "border_spins_per_1000yen": null,
-      "border_unit_value": null,
-      "border_unit": null,
-      "border_confidence": "unknown",
-      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "border_spins_per_1000yen": 66.5,
+      "border_unit_value": 13.3,
+      "border_unit": "200円/200玉",
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 16.6回、1円/200玉 13.3回。",
       "machine_name": "Pルパン三世 銭形からの招待状 77Sweet Ver.",
       "machine_name_ko": "P 루팡3세 제니가타로부터의 초대장 77 Sweet Ver.",
       "spec_type": "sweet",
@@ -5653,17 +5638,20 @@
       "category": "other",
       "source_type": "dmm",
       "install_source": "dmm_pachitown",
-      "checked_at": "2026-05-17",
+      "checked_at": "2026-05-19",
       "memo": "123 DMM 1円 섹션 NEW 표시 확인.",
       "spec_source": "dmm_pachitown",
-      "border_source": "",
-      "border_1yen_per_200": null,
+      "spec_source_url": "https://p-town.dmm.com/machines/4897",
+      "border_source": "dmm_pachitown",
+      "border_reference_url": "https://p-town.dmm.com/machines/4897",
+      "border_4yen_per_250": 16.7,
+      "border_1yen_per_200": 13.4,
       "border_1_111yen_per_180": null,
-      "border_spins_per_1000yen": null,
-      "border_unit_value": null,
-      "border_unit": null,
-      "border_confidence": "unknown",
-      "border_note": "보더 미확정. 현장 회전수 기준 확인 필요",
+      "border_spins_per_1000yen": 67.0,
+      "border_unit_value": 13.4,
+      "border_unit": "200円/200玉",
+      "border_confidence": "web_verified",
+      "border_note": "DMMぱちタウン 4円/250玉 16.7回、1円/200玉 13.4回。",
       "machine_name": "e北斗の拳11 暴凶星",
       "machine_name_ko": "e 북두의 권11 폭흉성",
       "spec_type": "smart_pachinko_lt",

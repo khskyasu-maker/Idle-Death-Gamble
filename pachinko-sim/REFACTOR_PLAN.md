@@ -313,7 +313,11 @@ CLI에는 회전율 입력 모드를 추가한다.
 - 완료: 리스크 평가 모드 반복 횟수를 고정 1000회에서 사용자 입력형 기본 5000회로 변경
 - 완료: `result_metrics.py`, `result_csv.py`, `cli_*`, `session_sampling.py`, `session_setup.py`, `session_scenarios.py`로 주요 책임 분리
 - 완료: `result_public_export.py`의 Markdown/HTML 섹션과 표 렌더링을 `result_public_sections.py`, `result_public_rendering.py`로 분리
-- 남음: `simulator.py`의 상태 전이/결과 조립 추가 축소, `result_table_builders.py`/`result_output_helpers.py`의 출력 계층 추가 분리
+- 완료: `result_output_helpers.py`에서 공개 스펙/확률 벤치마크 계산을 `result_model_helpers.py`로 분리
+- 완료: 단일 실행 요약/event/구슬 그래프 행 생성을 `result_single_table_builders.py`로 분리
+- 완료: `result_table_builders.py`의 반복/매트릭스/프로파일/전략 행 생성을 `result_repeated_table_builders.py`, `result_matrix_table_builders.py`, `result_profile_table_builders.py`, `result_strategy_table_builders.py`로 분리
+- 완료: `simulator.py`의 hit event 생성과 최종 result 딕셔너리 조립을 `session_events.py`, `session_result.py`로 분리
+- 남음: `simulator.py`의 상태 전이 세부 처리 추가 축소
 
 ### 1단계: 회전율/보더 모듈 추가
 
@@ -354,6 +358,9 @@ CLI에는 회전율 입력 모드를 추가한다.
 - 완료: `result_metrics.py`로 순수 통계 이동
 - 완료: `result_output_helpers.py`로 출력 문구/보더/벤치마크/표 행 보조 로직 이동
 - 완료: `result_table_builders.py`로 단일/반복/매트릭스/예산/프로파일/전략 표 행 생성 이동
+- 완료: 벤치마크/분모 확률 helper를 `result_model_helpers.py`로 분리
+- 완료: 단일 실행 표 행 helper를 `result_single_table_builders.py`로 분리
+- 완료: 반복/매트릭스/프로파일/전략 표 행 helper를 세부 모듈로 분리하고 `result_table_builders.py`는 호환 export로 축소
 - 완료: 남은 `result.py` 출력 함수 자체를 `result_printers.py` 프린터 모듈로 이동
 - 완료: `result_printers.py`를 공개 export로 축소하고 단일/매트릭스/점포 비교 프린터 모듈로 분리
 - 완료: 반복되는 프린터 헤더/기종 문맥/footer 출력을 `result_printer_common.py`로 분리

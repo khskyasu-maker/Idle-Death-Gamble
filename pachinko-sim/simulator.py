@@ -11,12 +11,13 @@ from session_accounting import (
 )
 from session_sampling import (
     HIT_LABELS,  # noqa: F401
-    bilingual_hit_label,
     get_payout,
     jitan_denominator,
     sample_payout_balls,
     spins_until_hit,
 )
+from session_events import build_hit_event
+from session_result import build_session_result
 from session_setup import build_session_start
 from session_limits import (
     HARD_SESSION_TIME_LIMIT_MINUTES,
@@ -33,10 +34,8 @@ from session_runtime import (
 )
 from time_model import (
     TimeAssumptions,
-    assumption_dict,
     gross_launch_balls,
     hit_effect_seconds as hit_effect_time_seconds,
-    minutes,
     normal_time_components,
     right_seconds,
     time_assumptions_for_machine,
@@ -89,16 +88,9 @@ def simulate_single(
         stop_loss_spin_threshold=stop_loss_spin_threshold,
         time_assumptions=time_assumptions,
     )
-    true_spins_per_1000y = session_start.true_spins_per_1000y
-    effective_quality_stddev = session_start.effective_quality_stddev
     rented_balls_1000 = session_start.rented_balls_1000
-    start_probability = session_start.start_probability
-    expected_total_spins_possible = session_start.expected_total_spins_possible
     observed_spins_per_1000y = session_start.observed_spins_per_1000y
-    total_spins_possible = session_start.total_spins_possible
     stop_loss_probe_budget = session_start.stop_loss_probe_budget
-    stop_loss_probe_spins = session_start.stop_loss_probe_spins
-    stop_loss_probe_rate = session_start.stop_loss_probe_rate
     normal_spin_cap = session_start.normal_spin_cap
     stop_loss_normal_spin_cap = session_start.stop_loss_normal_spin_cap
 
@@ -618,29 +610,23 @@ def simulate_single(
                     state = 'LT'
 
             if record_events:
-                hit_label_ja, hit_label_ko, hit_label = bilingual_hit_label(previous_state)
-
                 hit_events.append(
-                    {
-                        "hit_no": total_hits,
-                        "label": hit_label,
-                        "label_ja": hit_label_ja,
-                        "label_ko": hit_label_ko,
-                        "normal_spins": spins_used,
-                        "right_spins": right_spins,
-                        "state_before": previous_state,
-                        "state_after": state,
-                        "probability_denominator": current_prob,
-                        "payout_balls": payout_balls,
-                        "st_spins": payout.st_spins,
-                        "jitan_spins": payout.jitan_spins,
-                        "streak": streak,
-                        "rush_entry": rush_entry_event,
-                        "lt_entry": lt_entry_event,
-                        "upper_entry": upper_entry_event,
-                        "bank_balls_after": int(bank_balls),
-                        "locked_balls_after": int(locked_balls),
-                    }
+                    build_hit_event(
+                        hit_no=total_hits,
+                        previous_state=previous_state,
+                        state_after=state,
+                        current_prob=current_prob,
+                        payout=payout,
+                        payout_balls=payout_balls,
+                        normal_spins=spins_used,
+                        right_spins=right_spins,
+                        streak=streak,
+                        rush_entry_event=rush_entry_event,
+                        lt_entry_event=lt_entry_event,
+                        upper_entry_event=upper_entry_event,
+                        bank_balls=bank_balls,
+                        locked_balls=locked_balls,
+                    )
                 )
 
             bank_balls, locked_balls, strategy_stop = apply_strategy_rules(
@@ -664,106 +650,53 @@ def simulate_single(
             )
             stop_requested = stop_requested or strategy_stop
 
-    final_balls = max(0.0, bank_balls + locked_balls)
-    final_money = int(final_balls * exchange_rate)
-    unused_cash = max(0.0, float(budget) - cash_spent)
-    final_remaining_value = int(unused_cash + final_money)
-    net_profit = int(final_money - cash_spent)
-    exchange_loss = int(final_balls * lend_rate - final_money)
-    play_seconds = (
-        normal_play_seconds
-        + right_play_seconds
-        + hit_effect_seconds_total
-        + support_event_seconds
+    return build_session_result(
+        budget=budget,
+        session_start=session_start,
+        stop_loss_spin_threshold=stop_loss_spin_threshold,
+        first_hit_spin=first_hit_spin,
+        first_hit_total_spins=first_hit_total_spins,
+        first_hit_cash_spent=first_hit_cash_spent,
+        first_hit_play_seconds=first_hit_play_seconds,
+        total_hits=total_hits,
+        max_streak=max_streak,
+        total_out_balls=total_out_balls,
+        bank_balls=bank_balls,
+        locked_balls=locked_balls,
+        exchange_rate=exchange_rate,
+        lend_rate=lend_rate,
+        cash_spent=cash_spent,
+        cash_budget_exhausted_seconds=cash_budget_exhausted_seconds,
+        normal_play_seconds=normal_play_seconds,
+        active_launch_seconds=active_launch_seconds,
+        normal_display_seconds=normal_display_seconds,
+        reserve_wait_seconds=reserve_wait_seconds,
+        right_play_seconds=right_play_seconds,
+        hit_effect_seconds_total=hit_effect_seconds_total,
+        support_event_seconds=support_event_seconds,
+        cashless_play_seconds=cashless_play_seconds,
+        session_time_limit_minutes=session_time_limit_minutes,
+        cash_input_cutoff_minutes=cash_input_cutoff_minutes,
+        soft_stop_minutes=soft_stop_minutes,
+        rush_entries=rush_entries,
+        lt_entries=lt_entries,
+        upper_entries=upper_entries,
+        hit_events=hit_events,
+        spins_used=spins_used,
+        right_spins=right_spins,
+        normal_balls_fired=normal_balls_fired,
+        normal_net_balls_consumed=normal_net_balls_consumed,
+        time_assumptions=time_assumptions,
+        strategy=strategy,
+        spins_per_1000y=spins_per_1000y,
+        border_spins_per_1000y=border_spins_per_1000y,
+        spin_rate_min=spin_rate_min,
+        spin_rate_max=spin_rate_max,
+        start_variance=start_variance,
+        card_reuse=card_reuse,
+        session_policy=session_policy,
+        flags=flags,
     )
-    post_budget_play_seconds = (
-        max(0.0, play_seconds - cash_budget_exhausted_seconds)
-        if cash_budget_exhausted_seconds is not None
-        else 0.0
-    )
-    cashless_share = (
-        (cashless_play_seconds / play_seconds) * 100.0
-        if play_seconds > 0
-        else 0.0
-    )
-
-    return {
-        "budget": budget,
-        "total_spins_possible": total_spins_possible,
-        "expected_total_spins_possible": expected_total_spins_possible,
-        "normal_spin_cap": normal_spin_cap,
-        "stop_loss_probe_yen": stop_loss_probe_budget,
-        "stop_loss_probe_spins": stop_loss_probe_spins,
-        "stop_loss_probe_rate": stop_loss_probe_rate,
-        "stop_loss_spin_threshold": stop_loss_spin_threshold,
-        "stop_loss_normal_spin_cap": stop_loss_normal_spin_cap,
-        "first_hit_spin": first_hit_spin,
-        "first_hit_total_spins": first_hit_total_spins,
-        "first_hit_cash_spent": first_hit_cash_spent,
-        "first_hit_play_minutes": minutes(first_hit_play_seconds or 0.0),
-        "total_hits": total_hits,
-        "max_streak": max_streak,
-        "total_out_balls": int(total_out_balls),
-        "final_balls": int(final_balls),
-        "locked_balls": int(locked_balls),
-        "final_money": final_money,
-        "unused_cash": int(unused_cash),
-        "final_remaining_value": final_remaining_value,
-        "final_remaining_balance": int(final_remaining_value - budget),
-        "net_profit": net_profit,
-        "cash_spent": int(cash_spent),
-        "exchange_loss": exchange_loss,
-        "session_time_limit_minutes": session_time_limit_minutes,
-        "cash_input_cutoff_minutes": cash_input_cutoff_minutes,
-        "soft_stop_minutes": soft_stop_minutes,
-        "cash_budget_exhausted": cash_budget_exhausted_seconds is not None,
-        "cash_budget_exhausted_minutes": minutes(cash_budget_exhausted_seconds or 0.0),
-        "post_budget_play_minutes": minutes(post_budget_play_seconds),
-        "experienced_rush": rush_entries > 0 or lt_entries > 0,
-        "rush_entries": rush_entries,
-        "lt_entries": lt_entries,
-        "upper_entries": upper_entries,
-        "hit_events": hit_events,
-        "spins_used": spins_used,
-        "right_spins": right_spins,
-        "normal_balls_fired": int(normal_balls_fired),
-        "normal_net_balls_consumed": int(normal_net_balls_consumed),
-        "play_seconds": play_seconds,
-        "play_minutes": minutes(play_seconds),
-        "normal_play_seconds": normal_play_seconds,
-        "normal_play_minutes": minutes(normal_play_seconds),
-        "active_launch_seconds": active_launch_seconds,
-        "normal_display_seconds": normal_display_seconds,
-        "reserve_wait_seconds": reserve_wait_seconds,
-        "reserve_wait_minutes": minutes(reserve_wait_seconds),
-        "right_play_seconds": right_play_seconds,
-        "right_play_minutes": minutes(right_play_seconds),
-        "hit_effect_seconds": hit_effect_seconds_total,
-        "hit_effect_minutes": minutes(hit_effect_seconds_total),
-        "support_event_seconds": support_event_seconds,
-        "cashless_play_seconds": cashless_play_seconds,
-        "cashless_play_minutes": minutes(cashless_play_seconds),
-        "cashless_play_share": cashless_share,
-        "time_assumptions": assumption_dict(time_assumptions),
-        "strategy": strategy,
-        "strategy_label": STRATEGIES[strategy],
-        "spins_per_1000y": spins_per_1000y,
-        "observed_spins_per_1000y": observed_spins_per_1000y,
-        "true_spins_per_1000y": true_spins_per_1000y,
-        "border_spins_per_1000y": border_spins_per_1000y,
-        "border_spins_per_1000yen": border_spins_per_1000y,
-        "spin_rate_quality_stddev": effective_quality_stddev,
-        "spin_rate_min": spin_rate_min,
-        "spin_rate_max": spin_rate_max,
-        "start_probability": start_probability,
-        "start_variance": start_variance,
-        "lend_rate": lend_rate,
-        "exchange_rate": exchange_rate,
-        "card_reuse": card_reuse,
-        "session_policy": session_policy,
-        "session_policy_label": SESSION_POLICIES[session_policy],
-        **flags,
-    }
 
 def simulate_multiple(
     machine: Machine,

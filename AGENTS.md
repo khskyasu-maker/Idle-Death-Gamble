@@ -8,7 +8,7 @@
 - **Dynamic Decision Making**: Visit priorities and final decisions are not fixed in the report. The user analyzes these dynamically through conversations with ChatGPT based on the latest conditions.
 - **Not a Prediction Tool**: This project is not a jackpot predictor. It is a pre-visit information organization tool.
 
-It collects a small set of public store pages, applies simple rules, and publishes a mobile-friendly static report through GitHub Pages.
+It organizes manually checked public store/spec data, applies simple rules, and publishes a mobile-friendly static report through GitHub Pages.
 
 ## GitHub Public Data Policy
 
@@ -61,15 +61,14 @@ Do not store or publish dynamic decision data in GitHub:
 
 ```text
 .
-├── .github/workflows/daily.yml   # Manual GitHub Actions workflow
+├── .github/workflows/ci.yml      # CI quality gate workflow
 ├── README.md                     # Project overview and Pages setup notes
-├── requirements.txt              # Python dependencies
+├── requirements.txt              # Core runtime dependency placeholder
 ├── requirements-dev.txt          # Optional local developer tools
 ├── pyproject.toml                # Ruff/pytest/coverage configuration
 ├── data/
 │   ├── stores.json               # Store list, URL targets, and machine rules
 │   ├── namba-actual-1yen-lineup.json # Corrected Namba low-rate lineup
-│   ├── collected.json            # Generated local cache; gitignored
 │   ├── manual-notes.md           # Optional private local memo; gitignored
 │   ├── latest.json               # Generated local analysis data; gitignored
 │   └── latest-report.md          # Generated local Markdown report; gitignored
@@ -93,6 +92,8 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── machine_traits.py          # Shared machine trait helpers for LT/upper-RUSH detection
 │   ├── sim_terms.py               # Shared Japanese/Korean simulator terminology
 │   ├── session_accounting.py      # Strategy/session policy labels and accounting helpers
+│   ├── session_events.py          # Runtime hit event record builder
+│   ├── session_result.py          # Final simulator result dictionary builder
 │   ├── session_runtime.py         # Time-limit and spin-cap runtime helpers
 │   ├── session_sampling.py        # Hit labels, payout sampling, and geometric hit wait helpers
 │   ├── session_setup.py           # Initial spin/start probability and stop-loss setup helpers
@@ -112,8 +113,14 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── result_store_printers.py  # Same-machine store comparison printer function
 │   ├── result_printer_common.py  # Shared printer header/context/footer helpers
 │   ├── result_metrics.py          # Monte Carlo metric aggregation
-│   ├── result_output_helpers.py   # Output text, benchmark, and table helper functions
-│   ├── result_table_builders.py   # Reusable result table row builders
+│   ├── result_model_helpers.py    # Public spec benchmark and probability helper functions
+│   ├── result_output_helpers.py   # Output text, rotation, and LT/upper-RUSH display helpers
+│   ├── result_single_table_builders.py # Single-run event and summary table row builders
+│   ├── result_repeated_table_builders.py # Repeated-run summary and risk table row builders
+│   ├── result_matrix_table_builders.py # Rotation and budget matrix table row builders
+│   ├── result_profile_table_builders.py # Machine profile and benchmark table row builders
+│   ├── result_strategy_table_builders.py # Strategy comparison table row builders
+│   ├── result_table_builders.py   # Compatibility exports for table row builders
 │   ├── result_stats.py           # Pure statistical helper functions
 │   ├── result_formatting.py       # Terminal table, yen, percent, and time formatting helpers
 │   ├── result_csv.py              # Explicit opt-in latest-only local CSV serialization
@@ -142,7 +149,6 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── test_result_exports.py    # Latest-only CSV/public export tests
 │   └── test_clean.py             # Local generated artifact cleanup tests
 └── scripts/
-    ├── collect.py                # External page collection
     ├── analyze.py                # Rule-based analysis and ranking
     ├── build_report.py           # Report generation; this is the real report builder
     ├── check.py                  # Local syntax/JSON/test/validation/dev-tool check runner
@@ -158,7 +164,7 @@ Use `scripts/build_report.py` as the only report generation script unless the re
 
 The normal data and report pipeline is:
 
-1. `scripts/collect.py` reads `data/stores.json` and updates `data/collected.json`.
+1. Public store/spec pages are checked manually during an AI-assisted update, then objective fields are written to `data/namba-actual-1yen-lineup.json`.
 2. `scripts/analyze.py` reads `data/namba-actual-1yen-lineup.json`, then writes `data/latest.json`.
 3. `scripts/build_report.py` reads `data/latest.json` and writes:
    - `data/latest-report.md`
@@ -237,7 +243,7 @@ Do not invent missing specs. If a page does not confirm a mechanic, either leave
 
 ## Local Development Commands
 
-Install dependencies:
+Install dependencies if needed. Core analysis/report generation is standard-library-first; optional tools live in `requirements-dev.txt`:
 
 ```bash
 python -m pip install --upgrade pip
@@ -247,7 +253,7 @@ pip install -r requirements.txt
 Run the full local pipeline:
 
 ```bash
-python scripts/collect.py
+python scripts/validate_data.py
 python scripts/analyze.py
 python scripts/build_report.py
 ```
@@ -255,7 +261,7 @@ python scripts/build_report.py
 If the local environment does not provide `python`, use `python3` for the same commands:
 
 ```bash
-python3 scripts/collect.py
+python3 scripts/validate_data.py
 python3 scripts/analyze.py
 python3 scripts/build_report.py
 ```
@@ -268,23 +274,17 @@ python scripts/build_report.py
 
 ## Data Collection Notes
 
-`scripts/collect.py`:
+There is no automated external collection script in the current pipeline. Update objective lineup/spec rows manually after checking public pages.
 
-- Loads store definitions from `data/stores.json`.
-- Preserves and updates local `data/collected.json` incrementally. This file is gitignored in the public repository.
-- Checks `robots.txt` before scraping when possible.
-- Uses a browser-like user agent.
-- Limits a run to `MAX_URLS_PER_RUN = 10`.
-- Sleeps randomly between requests.
-- Treats `401`, `403`, and `429` as `blocked_or_limited`.
-- Retries once after request exceptions.
-- Preserves existing successful data for the same URL when a later attempt fails due to transient network, proxy, DNS, timeout, rate-limit, or CAPTCHA-like blocking. The preserved entry records `last_attempt_status`, `last_attempt_error_type`, and `last_attempt_at`.
+- Use DMM store pages for low-rate installation names, rates, and counts.
+- Use DMM machine detail pages or trusted public spec pages for probability, RUSH/ST structure, and borderlines.
+- Record source URLs and checked dates in `data/namba-actual-1yen-lineup.json`.
+- Do not use mismatched machine specs just because a search result has a similar name.
+- Do not commit raw scrape caches or per-unit 台番号(기기 번호) data.
 
-External collection is environment-sensitive. A `403 Forbidden` can be caused by proxy, network, CDN, or anti-bot behavior in the execution environment. Do not assume a `403` is automatically a code bug.
+External page access is environment-sensitive. A `403 Forbidden` can be caused by proxy, network, CDN, or anti-bot behavior in the execution environment. Do not assume a `403` is automatically a code bug.
 
 A `404 Not Found` usually means the stored URL changed, is stale, or has a typo. Check `data/stores.json` first when a store URL returns `404`.
-
-Do not commit `data/collected.json` unless the project intentionally changes to publish collected raw cache data.
 
 ## Machine Info Source Notes
 
@@ -320,19 +320,15 @@ If `data/latest.json` is empty or missing, `build_report.py` logs an error and a
 
 ## GitHub Actions and Pages
 
-The manual workflow is `.github/workflows/daily.yml`.
+The active workflow is `.github/workflows/ci.yml`.
 
 Current workflow behavior:
 
 - Runs on `ubuntu-latest`.
 - Uses Python `3.11`.
-- Does not run on a schedule.
-- Runs only through manual `workflow_dispatch`.
-- Runs:
-  - `python scripts/collect.py`
-  - `python scripts/analyze.py`
-  - `python scripts/build_report.py`
-- Commits generated `docs/` changes back to `main`. Generated local `data/` outputs stay gitignored unless the project intentionally changes that policy.
+- Runs on push, pull request, and manual `workflow_dispatch`.
+- Runs `python scripts/check.py`.
+- Does not collect external data and does not commit generated `docs/` changes back to `main`.
 
 GitHub Pages is configured to publish from:
 
@@ -401,7 +397,7 @@ python scripts/clean.py --apply
 Equivalent manual syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_definitions/__init__.py pachinko-sim/machine_definitions/sea.py pachinko-sim/machine_definitions/eva.py pachinko-sim/machine_definitions/rezero.py pachinko-sim/machine_definitions/other.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_accounting.py pachinko-sim/session_runtime.py pachinko-sim/session_sampling.py pachinko-sim/session_setup.py pachinko-sim/session_scenarios.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_printers.py pachinko-sim/result_basic_printers.py pachinko-sim/result_matrix_printers.py pachinko-sim/result_matrix_sections.py pachinko-sim/result_store_printers.py pachinko-sim/result_printer_common.py pachinko-sim/result_metrics.py pachinko-sim/result_output_helpers.py pachinko-sim/result_table_builders.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_sections.py pachinko-sim/result_public_rendering.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_rotation.py tests/test_store_comparison.py tests/test_simulator_session.py tests/test_result_metrics.py tests/test_session_accounting.py tests/test_session_runtime.py tests/test_session_setup.py tests/test_session_scenarios.py tests/test_result_compat.py tests/test_result_table_builders.py tests/test_result_exports.py tests/test_clean.py
+python -m py_compile scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_definitions/__init__.py pachinko-sim/machine_definitions/sea.py pachinko-sim/machine_definitions/eva.py pachinko-sim/machine_definitions/rezero.py pachinko-sim/machine_definitions/other.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_accounting.py pachinko-sim/session_events.py pachinko-sim/session_result.py pachinko-sim/session_runtime.py pachinko-sim/session_sampling.py pachinko-sim/session_setup.py pachinko-sim/session_scenarios.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_printers.py pachinko-sim/result_basic_printers.py pachinko-sim/result_matrix_printers.py pachinko-sim/result_matrix_sections.py pachinko-sim/result_store_printers.py pachinko-sim/result_printer_common.py pachinko-sim/result_metrics.py pachinko-sim/result_model_helpers.py pachinko-sim/result_output_helpers.py pachinko-sim/result_single_table_builders.py pachinko-sim/result_repeated_table_builders.py pachinko-sim/result_matrix_table_builders.py pachinko-sim/result_profile_table_builders.py pachinko-sim/result_strategy_table_builders.py pachinko-sim/result_table_builders.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_sections.py pachinko-sim/result_public_rendering.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_rotation.py tests/test_store_comparison.py tests/test_simulator_session.py tests/test_result_metrics.py tests/test_session_accounting.py tests/test_session_runtime.py tests/test_session_setup.py tests/test_session_scenarios.py tests/test_result_compat.py tests/test_result_table_builders.py tests/test_result_exports.py tests/test_validate_data.py tests/test_clean.py
 ```
 
 JSON validation:
@@ -451,7 +447,7 @@ curl -I --max-time 15 <url>
 - Treat `docs/` as generated Pages output, not as a separate hand-maintained app.
 - AI helper files in `docs/` must stay generic and blank. Do not write actual onsite observations, personal movement, budget, or spending notes into generated public files.
 - When changing report logic, update generated `data/` and `docs/` outputs as needed.
-- When collection fails because of `403`, avoid overwriting useful collected data with all-failure results unless explicitly requested.
+- When public page access fails because of `403`, treat it as an access condition and avoid replacing verified data with all-failure results unless explicitly requested.
 - When URLs fail with `404`, check for store URL changes or typos first.
 - Keep `data/manual-notes.md` local/private. Do not commit sensitive travel details, screenshots, app/member data, or spending/profit notes.
 - Keep private trip files under gitignored paths such as `private/`, `data/manual-notes.md`, or `data/travel-*`. Public `data/` and `docs/` files must stay objective and non-personal.
