@@ -86,11 +86,15 @@ Do not store or publish dynamic decision data in GitHub:
 │   ├── cli_inputs.py             # Interactive CLI input and rotation selection helpers
 │   ├── cli_export.py             # Explicit public simulator export prompt
 │   ├── cli_modes.py              # Interactive simulator mode orchestration
-│   ├── machines.py               # Simulator machine models and payout distributions
+│   ├── machines.py               # Compatibility registry for simulator machine models
+│   ├── machine_definitions/       # Family-split simulator machine model definitions
 │   ├── machine_types.py           # Shared Machine/Payout dataclasses
 │   ├── machine_templates.py       # Reusable machine-family model factories
 │   ├── machine_traits.py          # Shared machine trait helpers for LT/upper-RUSH detection
 │   ├── sim_terms.py               # Shared Japanese/Korean simulator terminology
+│   ├── session_accounting.py      # Strategy/session policy labels and accounting helpers
+│   ├── session_runtime.py         # Time-limit and spin-cap runtime helpers
+│   ├── session_scenarios.py       # Matrix/budget/strategy scenario builders
 │   ├── session_limits.py          # Practical stay/cash-input limit constants
 │   ├── spec_benchmarks.py         # Fixed public spec benchmark values for profile checks
 │   ├── start_gate.py              # Ball-to-start-spin stochastic first gate model
@@ -121,6 +125,9 @@ Do not store or publish dynamic decision data in GitHub:
 │   └── ARCHITECTURE.md           # Simulator design and assumptions
 ├── tests/
 │   ├── test_simulator_specs.py   # Deterministic simulator/spec regression tests
+│   ├── test_session_accounting.py # Strategy/session accounting helper tests
+│   ├── test_session_runtime.py   # Time-limit and spin-cap helper tests
+│   ├── test_session_scenarios.py # Scenario builder compatibility tests
 │   ├── test_result_table_builders.py # Result table row builder tests
 │   ├── test_result_exports.py    # Latest-only CSV/public export tests
 │   └── test_clean.py             # Local generated artifact cleanup tests
@@ -384,7 +391,7 @@ python scripts/clean.py --apply
 Equivalent manual syntax check:
 
 ```bash
-python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_printers.py pachinko-sim/result_basic_printers.py pachinko-sim/result_matrix_printers.py pachinko-sim/result_matrix_sections.py pachinko-sim/result_store_printers.py pachinko-sim/result_printer_common.py pachinko-sim/result_metrics.py pachinko-sim/result_output_helpers.py pachinko-sim/result_table_builders.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_result_compat.py tests/test_result_table_builders.py tests/test_result_exports.py tests/test_clean.py
+python -m py_compile scripts/collect.py scripts/analyze.py scripts/build_report.py scripts/check.py scripts/clean.py scripts/validate_data.py scripts/utils.py scripts/term_notes.py pachinko-sim/main.py pachinko-sim/cli_context.py pachinko-sim/cli_inputs.py pachinko-sim/cli_export.py pachinko-sim/cli_modes.py pachinko-sim/machines.py pachinko-sim/machine_definitions/__init__.py pachinko-sim/machine_definitions/sea.py pachinko-sim/machine_definitions/eva.py pachinko-sim/machine_definitions/rezero.py pachinko-sim/machine_definitions/other.py pachinko-sim/machine_types.py pachinko-sim/machine_templates.py pachinko-sim/machine_traits.py pachinko-sim/sim_terms.py pachinko-sim/session_accounting.py pachinko-sim/session_runtime.py pachinko-sim/session_scenarios.py pachinko-sim/session_limits.py pachinko-sim/spec_benchmarks.py pachinko-sim/start_gate.py pachinko-sim/time_model.py pachinko-sim/rotation.py pachinko-sim/store_comparison.py pachinko-sim/model_checks.py pachinko-sim/result.py pachinko-sim/result_printers.py pachinko-sim/result_basic_printers.py pachinko-sim/result_matrix_printers.py pachinko-sim/result_matrix_sections.py pachinko-sim/result_store_printers.py pachinko-sim/result_printer_common.py pachinko-sim/result_metrics.py pachinko-sim/result_output_helpers.py pachinko-sim/result_table_builders.py pachinko-sim/result_stats.py pachinko-sim/result_formatting.py pachinko-sim/result_csv.py pachinko-sim/result_public_export.py pachinko-sim/result_store_views.py pachinko-sim/simulator.py pachinko-sim/stores.py tests/test_simulator_specs.py tests/test_session_accounting.py tests/test_session_runtime.py tests/test_session_scenarios.py tests/test_result_compat.py tests/test_result_table_builders.py tests/test_result_exports.py tests/test_clean.py
 ```
 
 JSON validation:

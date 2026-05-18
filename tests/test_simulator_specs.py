@@ -529,6 +529,45 @@ class SimulatorSpecTests(unittest.TestCase):
         simulate_multiple(MACHINES["sea_5"], **kwargs)
         self.assertEqual(expected_next, random.random())
 
+    def test_monte_carlo_fixed_spin_cap_converges_for_simple_normal_model(self):
+        simple_machine = Machine(
+            id="test_simple_normal",
+            name_ja="テスト単純機",
+            name_ko="테스트 단순기",
+            spec_type="test",
+            risk_grade="1/100",
+            normal_prob=100.0,
+            high_prob=100.0,
+            normal_hit_dist=[
+                Payout(balls=1000, weight=1.0, next_state="NORMAL", ball_variance=0.0),
+            ],
+            st_hit_dist=[],
+            jitan_hit_dist=[],
+            kakuben_hit_dist=[],
+            lt_hit_dist=[],
+        )
+        iterations = 3000
+        normal_spins = 500
+
+        results = simulate_multiple(
+            simple_machine,
+            budget=5000,
+            lend_rate=1.0,
+            spins_per_1000y=100,
+            exchange_rate=1.0,
+            iterations=iterations,
+            session_policy="fixed_spin_cap",
+            start_variance=False,
+            seed=20260518,
+        )
+        metrics = calculate_metrics(results, iterations)
+
+        expected_avg_hits = normal_spins / simple_machine.normal_prob
+        expected_hit_rate = 100.0 - theoretical_no_hit_rate(simple_machine.normal_prob, normal_spins)
+        self.assertAlmostEqual(expected_avg_hits, metrics["avg_hits"], delta=0.20)
+        self.assertAlmostEqual(expected_hit_rate, metrics["hit_rate"], delta=1.0)
+        self.assertAlmostEqual(metrics["avg_hits"] * 1000, metrics["avg_total_out_balls"], delta=250)
+
     def test_basic_stop_uses_probe_rotation_and_charges_failed_probe(self):
         slow_machine = Machine(
             id="test_slow_machine",

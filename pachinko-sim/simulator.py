@@ -9,11 +9,26 @@ from start_gate import (
     sample_session_spin_rate,
     sample_truncated_normal,
 )
-from rotation import ABSOLUTE_SPIN_RATE_CASES, border_case_rates
+from session_accounting import (
+    SESSION_POLICIES,
+    STRATEGIES,
+    apply_strategy_rules,
+    current_profit_balls,
+    normalize_session_policy,
+    normalize_strategy,
+)
 from session_limits import (
     HARD_SESSION_TIME_LIMIT_MINUTES,
     LAST_CASH_INPUT_CUTOFF_MINUTES,
     SESSION_TIME_LIMIT_MINUTES,
+)
+from session_runtime import (
+    cap_spins_before_cash_cutoff,
+    cap_spins_by_seconds,
+    limit_minutes_to_seconds,
+    limit_reached,
+    normal_seconds_per_spin,
+    remaining_seconds,
 )
 from time_model import (
     TimeAssumptions,
@@ -25,23 +40,7 @@ from time_model import (
     right_seconds,
     time_assumptions_for_machine,
 )
-
-
-SPIN_RATE_CASES = ABSOLUTE_SPIN_RATE_CASES
-BUDGET_CASES = [5000, 10000, 15000, 20000]
-PROFILE_BUDGET_CASES = [1000, 5000, 10000, 15000, 20000]
-
-SESSION_POLICIES = {
-    "fixed_spin_cap": "예산 고정 회전수",
-    "play_until_budget_and_balls_gone": f"현금+보유구슬 소진({SESSION_TIME_LIMIT_MINUTES // 60}시간 후 RUSH 종료 시 정리)",
-}
-
-STRATEGIES = {
-    "no_rule": "노룰",
-    "basic_stop": "기본 손절",
-    "profit_lock": "이익 잠금",
-    "aggressive": "공격형",
-}
+from session_scenarios import BUDGET_CASES, PROFILE_BUDGET_CASES, SPIN_RATE_CASES
 
 
 HIT_LABELS = {
@@ -107,66 +106,6 @@ def spins_until_hit(probability_denominator: float) -> int:
     if hit_probability >= 1.0:
         return 1
     return int(math.log1p(-random.random()) / math.log1p(-hit_probability)) + 1
-
-
-def normalize_strategy(strategy: str) -> str:
-    if strategy in STRATEGIES:
-        return strategy
-    return "no_rule"
-
-
-def normalize_session_policy(session_policy: str) -> str:
-    if session_policy in SESSION_POLICIES:
-        return session_policy
-    return "fixed_spin_cap"
-
-
-def current_profit_balls(bank_balls: float, locked_balls: float, cash_spent: float, lend_rate: float) -> float:
-    spent_balls_equivalent = cash_spent / lend_rate
-    return bank_balls + locked_balls - spent_balls_equivalent
-
-
-def apply_strategy_rules(
-    strategy: str,
-    bank_balls: float,
-    locked_balls: float,
-    cash_spent: float,
-    lend_rate: float,
-    flags: Dict[str, bool],
-) -> tuple[float, float, bool]:
-    """익절/공격형 잠금 규칙을 적용하고 종료 요청 여부를 반환합니다."""
-    stop_requested = False
-    profit_balls = current_profit_balls(bank_balls, locked_balls, cash_spent, lend_rate)
-
-    if strategy == "profit_lock":
-        if profit_balls >= 2000 and not flags.get("lock_2000"):
-            lock_amount = bank_balls * 0.5
-            bank_balls -= lock_amount
-            locked_balls += lock_amount
-            flags["lock_2000"] = True
-            flags["profit_lock_triggered"] = True
-
-        if profit_balls >= 5000 and locked_balls < 3000:
-            lock_amount = min(bank_balls, 3000 - locked_balls)
-            bank_balls -= lock_amount
-            locked_balls += lock_amount
-            flags["profit_lock_triggered"] = True
-
-        if profit_balls >= 8000:
-            stop_requested = True
-            flags["profit_exit_triggered"] = True
-
-    elif strategy == "aggressive":
-        if profit_balls >= 5000:
-            keep_for_redeploy = 3000
-            if bank_balls > keep_for_redeploy:
-                lock_amount = bank_balls - keep_for_redeploy
-                bank_balls -= lock_amount
-                locked_balls += lock_amount
-                flags["profit_lock_triggered"] = True
-            flags["aggressive_redeploy_triggered"] = True
-
-    return bank_balls, locked_balls, stop_requested
 
 
 def simulate_single(
@@ -302,21 +241,9 @@ def simulate_single(
     effective_spins_per_1000y = max(1.0, observed_spins_per_1000y)
     spin_cost_balls = rented_balls_1000 / effective_spins_per_1000y
     spin_cost_yen = 1000.0 / effective_spins_per_1000y
-    session_time_limit_seconds = (
-        max(0.0, float(session_time_limit_minutes)) * 60.0
-        if session_time_limit_minutes is not None and session_time_limit_minutes > 0
-        else None
-    )
-    cash_input_cutoff_seconds = (
-        max(0.0, float(cash_input_cutoff_minutes)) * 60.0
-        if cash_input_cutoff_minutes is not None and cash_input_cutoff_minutes >= 0
-        else None
-    )
-    soft_stop_seconds = (
-        max(0.0, float(soft_stop_minutes)) * 60.0
-        if soft_stop_minutes is not None and soft_stop_minutes > 0
-        else None
-    )
+    session_time_limit_seconds = limit_minutes_to_seconds(session_time_limit_minutes)
+    cash_input_cutoff_seconds = limit_minutes_to_seconds(cash_input_cutoff_minutes, allow_zero=True)
+    soft_stop_seconds = limit_minutes_to_seconds(soft_stop_minutes)
     safety_counter = 0
 
     def elapsed_seconds() -> float:
@@ -328,31 +255,16 @@ def simulate_single(
             cash_budget_exhausted_seconds = elapsed_seconds()
 
     def session_seconds_remaining() -> float | None:
-        if session_time_limit_seconds is None:
-            return None
-        return session_time_limit_seconds - elapsed_seconds()
+        return remaining_seconds(session_time_limit_seconds, elapsed_seconds())
 
     def cash_input_allowed() -> bool:
-        if cash_input_cutoff_seconds is None:
-            return True
-        return elapsed_seconds() < cash_input_cutoff_seconds
+        return not limit_reached(cash_input_cutoff_seconds, elapsed_seconds())
 
     def soft_stop_reached() -> bool:
-        return soft_stop_seconds is not None and elapsed_seconds() >= soft_stop_seconds
+        return limit_reached(soft_stop_seconds, elapsed_seconds())
 
     def soft_stop_seconds_remaining() -> float | None:
-        if soft_stop_seconds is None:
-            return None
-        return soft_stop_seconds - elapsed_seconds()
-
-    def normal_seconds_per_spin() -> float:
-        gross_spin_balls = gross_launch_balls(spin_cost_balls, time_assumptions)
-        active_per_spin = (
-            (gross_spin_balls / time_assumptions.launch_balls_per_minute) * 60.0
-            if time_assumptions.launch_balls_per_minute > 0
-            else 0.0
-        )
-        return max(active_per_spin, time_assumptions.normal_seconds_per_start)
+        return remaining_seconds(soft_stop_seconds, elapsed_seconds())
 
     def cap_normal_spins_by_cash_cutoff(spin_count: int) -> tuple[int, bool]:
         if cash_input_cutoff_seconds is None or elapsed_seconds() >= cash_input_cutoff_seconds:
@@ -365,38 +277,28 @@ def simulate_single(
         if not needs_new_cash:
             return spin_count, False
 
-        seconds_to_cutoff = cash_input_cutoff_seconds - elapsed_seconds()
-        capped = int(seconds_to_cutoff // normal_seconds_per_spin())
-        if 0 < capped < spin_count:
+        capped, limited_by_cutoff = cap_spins_before_cash_cutoff(
+            spin_count,
+            cash_input_cutoff_seconds,
+            elapsed_seconds(),
+            normal_seconds_per_spin(spin_cost_balls, time_assumptions),
+        )
+        if limited_by_cutoff:
             flags["cash_input_cutoff_triggered"] = True
-            return capped, True
-        return spin_count, False
+        return capped, limited_by_cutoff
 
     def cap_normal_spins_by_soft_stop(spin_count: int) -> tuple[int, bool]:
-        remaining_seconds = soft_stop_seconds_remaining()
-        if remaining_seconds is None:
-            return spin_count, False
-        if remaining_seconds <= 0:
+        capped, limited_by_soft_stop = cap_spins_by_seconds(
+            spin_count,
+            soft_stop_seconds_remaining(),
+            normal_seconds_per_spin(spin_cost_balls, time_assumptions),
+        )
+        if limited_by_soft_stop:
             flags["soft_stop_triggered"] = True
-            return 0, True
-        capped = int(remaining_seconds // normal_seconds_per_spin())
-        if capped < spin_count:
-            flags["soft_stop_triggered"] = True
-            return max(0, capped), True
-        return spin_count, False
+        return capped, limited_by_soft_stop
 
     def cap_spins_by_time(spin_count: int, seconds_per_spin: float) -> tuple[int, bool]:
-        remaining_seconds = session_seconds_remaining()
-        if remaining_seconds is None:
-            return spin_count, False
-        if remaining_seconds <= 0:
-            return 0, True
-        if seconds_per_spin <= 0:
-            return spin_count, False
-        capped = int(remaining_seconds // seconds_per_spin)
-        if capped < spin_count:
-            return max(0, capped), True
-        return spin_count, False
+        return cap_spins_by_seconds(spin_count, session_seconds_remaining(), seconds_per_spin)
 
     def add_right_time(state_name: str, spin_count: int):
         nonlocal right_play_seconds, cashless_play_seconds
@@ -572,7 +474,7 @@ def simulate_single(
                 spins_to_take = min(spins_to_take, remaining_normal_spins)
             spins_to_take, limited_by_time = cap_spins_by_time(
                 spins_to_take,
-                normal_seconds_per_spin(),
+                normal_seconds_per_spin(spin_cost_balls, time_assumptions),
             )
             spins_to_take, limited_by_soft_stop = cap_normal_spins_by_soft_stop(spins_to_take)
             spins_to_take, limited_by_cash_cutoff = cap_normal_spins_by_cash_cutoff(spins_to_take)
@@ -1029,53 +931,22 @@ def run_matrix_simulation(
     spin_rate_quality_stddev: float = 3.0,
     time_assumptions: TimeAssumptions = None,
 ) -> List[Dict[str, Any]]:
-    """예산과 회전율에 따른 매트릭스 시뮬레이션을 수행합니다."""
-    budgets = [budget]
-    spin_cases = (
-        border_case_rates(border_spins_per_1000y)
-        if spin_rates is None
-        else [
-            {
-                "rotation_basis": "absolute",
-                "rotation_label": f"{spins}회",
-                "spins_per_1000y": float(spins),
-                "border_margin": None,
-            }
-            for spins in spin_rates
-        ]
-    )
-    matrix_results = []
+    from session_scenarios import run_matrix_simulation as _run_matrix_simulation
 
-    for budget in budgets:
-        for spin_case in spin_cases:
-            spins = spin_case["spins_per_1000y"]
-            results = simulate_multiple(
-                machine,
-                budget,
-                lend_rate,
-                spins,
-                exchange_rate,
-                iterations,
-                strategy=strategy,
-                session_policy=session_policy,
-                start_variance=start_variance,
-                border_spins_per_1000y=border_spins_per_1000y,
-                spin_rate_quality_stddev=spin_rate_quality_stddev,
-                time_assumptions=time_assumptions,
-            )
-            matrix_results.append({
-                "budget": budget,
-                "spins_per_1000y": spins,
-                "border_spins_per_1000yen": border_spins_per_1000y,
-                "rotation_basis": spin_case["rotation_basis"],
-                "rotation_label": spin_case["rotation_label"],
-                "border_margin": spin_case["border_margin"],
-                "strategy": strategy,
-                "session_policy": session_policy,
-                "start_variance": start_variance,
-                "results": results
-            })
-    return matrix_results
+    return _run_matrix_simulation(
+        machine,
+        lend_rate,
+        exchange_rate,
+        iterations,
+        budget=budget,
+        strategy=strategy,
+        spin_rates=spin_rates,
+        session_policy=session_policy,
+        start_variance=start_variance,
+        border_spins_per_1000y=border_spins_per_1000y,
+        spin_rate_quality_stddev=spin_rate_quality_stddev,
+        time_assumptions=time_assumptions,
+    )
 
 
 def run_budget_matrix(
@@ -1093,42 +964,23 @@ def run_budget_matrix(
     spin_rate_quality_stddev: float = 3.0,
     time_assumptions: TimeAssumptions = None,
 ) -> List[Dict[str, Any]]:
-    budgets = budgets or BUDGET_CASES
-    session_policy = normalize_session_policy(session_policy)
-    matrix_results = []
+    from session_scenarios import run_budget_matrix as _run_budget_matrix
 
-    for budget in budgets:
-        max_normal_spins = None
-        if (
-            session_policy == "play_until_budget_and_balls_gone"
-            and max_normal_spin_multiplier is not None
-        ):
-            max_normal_spins = int((budget / 1000) * spins_per_1000y * max_normal_spin_multiplier)
-        results = simulate_multiple(
-            machine,
-            budget,
-            lend_rate,
-            spins_per_1000y,
-            exchange_rate,
-            iterations,
-            strategy=strategy,
-            session_policy=session_policy,
-            max_normal_spins=max_normal_spins,
-            start_variance=start_variance,
-            border_spins_per_1000y=border_spins_per_1000y,
-            spin_rate_quality_stddev=spin_rate_quality_stddev,
-            time_assumptions=time_assumptions,
-        )
-        matrix_results.append({
-            "budget": budget,
-            "spins_per_1000y": spins_per_1000y,
-            "border_spins_per_1000yen": border_spins_per_1000y,
-            "strategy": strategy,
-            "session_policy": session_policy,
-            "start_variance": start_variance,
-            "results": results,
-        })
-    return matrix_results
+    return _run_budget_matrix(
+        machine,
+        lend_rate,
+        exchange_rate,
+        iterations,
+        budgets=budgets,
+        spins_per_1000y=spins_per_1000y,
+        strategy=strategy,
+        session_policy=session_policy,
+        max_normal_spin_multiplier=max_normal_spin_multiplier,
+        start_variance=start_variance,
+        border_spins_per_1000y=border_spins_per_1000y,
+        spin_rate_quality_stddev=spin_rate_quality_stddev,
+        time_assumptions=time_assumptions,
+    )
 
 
 def run_strategy_matrix(
@@ -1145,50 +997,19 @@ def run_strategy_matrix(
     spin_rate_quality_stddev: float = 3.0,
     time_assumptions: TimeAssumptions = None,
 ) -> List[Dict[str, Any]]:
-    spin_cases = (
-        border_case_rates(border_spins_per_1000y)
-        if spin_rates is None
-        else [
-            {
-                "rotation_basis": "absolute",
-                "rotation_label": f"{spins}회",
-                "spins_per_1000y": float(spins),
-                "border_margin": None,
-            }
-            for spins in spin_rates
-        ]
+    from session_scenarios import run_strategy_matrix as _run_strategy_matrix
+
+    return _run_strategy_matrix(
+        machine,
+        lend_rate,
+        exchange_rate,
+        budget,
+        iterations,
+        spin_rates=spin_rates,
+        strategies=strategies,
+        session_policy=session_policy,
+        start_variance=start_variance,
+        border_spins_per_1000y=border_spins_per_1000y,
+        spin_rate_quality_stddev=spin_rate_quality_stddev,
+        time_assumptions=time_assumptions,
     )
-    strategies = strategies or list(STRATEGIES.keys())
-    rows = []
-    for strategy in strategies:
-        for spin_case in spin_cases:
-            spins = spin_case["spins_per_1000y"]
-            rows.append(
-                {
-                    "budget": budget,
-                    "spins_per_1000y": spins,
-                    "border_spins_per_1000yen": border_spins_per_1000y,
-                    "rotation_basis": spin_case["rotation_basis"],
-                    "rotation_label": spin_case["rotation_label"],
-                    "border_margin": spin_case["border_margin"],
-                    "strategy": strategy,
-                    "strategy_label": STRATEGIES[strategy],
-                    "session_policy": session_policy,
-                    "start_variance": start_variance,
-                    "results": simulate_multiple(
-                        machine,
-                        budget,
-                        lend_rate,
-                        spins,
-                        exchange_rate,
-                        iterations,
-                        strategy=strategy,
-                        session_policy=session_policy,
-                        start_variance=start_variance,
-                        border_spins_per_1000y=border_spins_per_1000y,
-                        spin_rate_quality_stddev=spin_rate_quality_stddev,
-                        time_assumptions=time_assumptions,
-                    ),
-                }
-            )
-    return rows

@@ -11,7 +11,7 @@
 - 점포 라인업은 `../data/namba-actual-1yen-lineup.json`을 읽어 구성합니다.
 - 라인업 데이터는 DMM 저대여 전체 대수와 로컬 등록 대수를 함께 표시합니다. 현재 로컬 행은 에바/대해물어/기타 수동 확인 후보이며, DMM 전체 1円(1엔)/저대여 전체 기종을 모두 저장했다는 의미가 아닙니다.
 - 모든 등록 기종에 시뮬레이션 모델이 있는 것은 아니며, 모델이 없는 기종은 선택지는 아니지만 미지원/관찰 후보로 표시됩니다.
-- `stores.py`에서 현재 선택 가능한 모델은 `ACTIVE_EVA_SIM_MODEL_IDS`의 에바 7개 모델, 大海物語(대해물어), 그리고 `ACTIVE_OTHER_SIM_MODEL_IDS`에 적은 기타 6개 모델(`デジハネP北斗の拳 慈母`, `P Re:ゼロ 鬼がかり 99`, `P Re:ゼロ season2 129`, `Pルパン三世 77Sweet`, `e甲鉄城のカバネリ2`, `e東京喰種`)로 제한합니다. `eゴジラ対エヴァンゲリオン2 超デカゴールド`는 에바 관련 저대여 라인업에는 남기지만 현 시뮬레이터에서는 미지원/관찰 후보입니다. `machines.py`에는 검증용 참조 모델이 더 남아 있을 수 있습니다.
+- `stores.py`에서 현재 선택 가능한 모델은 `ACTIVE_EVA_SIM_MODEL_IDS`의 에바 7개 모델, 大海物語(대해물어), 그리고 `ACTIVE_OTHER_SIM_MODEL_IDS`에 적은 기타 6개 모델(`デジハネP北斗の拳 慈母`, `P Re:ゼロ 鬼がかり 99`, `P Re:ゼロ season2 129`, `Pルパン三世 77Sweet`, `e甲鉄城のカバネリ2`, `e東京喰種`)로 제한합니다. `eゴジラ対エヴァンゲリオン2 超デカゴールド`는 에바 관련 저대여 라인업에는 남기지만 현 시뮬레이터에서는 미지원/관찰 후보입니다. `machine_definitions/`에는 검증용 참조 모델이 더 남아 있을 수 있습니다.
 - 기종별 `confidence`가 `low`인 모델은 세부 스펙 확인 전의 보수적 추정값이며, 점수 상한과 주의 문구가 적용됩니다.
 - CSV 저장은 사용자가 명시적으로 선택할 때만 로컬 gitignored `results.csv`에 최신 결과로 덮어씁니다. 누적 실행 이력은 남기지 않습니다.
 - 공개 공유를 선택하면 `../docs/latest-sim-results.*` 고정 파일 3개(JSON/Markdown/HTML)에 최신 집계표만 덮어씁니다. 시간별 결과 파일은 만들지 않습니다.
@@ -54,7 +54,8 @@ python3 scripts/clean.py --apply
 - `cli_inputs.py`: 입력값 검증, 전략/세션/회전율 선택 UI
 - `cli_export.py`: 공개용 최신 시뮬 결과 저장 여부 확인
 - `cli_modes.py`: 단일/반복/매트릭스/전략/예산/프로파일/점포 보조 비교 실행 흐름
-- `machines.py`: 파친코 기종별 스펙 데이터베이스
+- `machines.py`: 기존 `from machines import ...` 경로를 보존하는 기종 레지스트리 wrapper
+- `machine_definitions/`: Sea/Eva/Re:Zero/기타 계열별 `Machine` 스펙 정의
 - `machine_types.py`: `Machine`/`Payout` 공통 데이터 구조
 - `machine_templates.py`: 같은 구조의 기종을 값만 바꿔 생성하는 공통 팩토리
 - `machine_traits.py`: LT/상위 RUSH 여부와 payout 분포 목록을 공유하는 공통 판별 로직
@@ -65,7 +66,10 @@ python3 scripts/clean.py --apply
 - `rotation.py`: 1000엔/200엔/250玉/180玉/보더 마진 회전율 환산과 보더 판정 로직
 - `stores.py`: 라쿠엔/123/HIPS 매장별 보유 기종 매핑과 활성 시뮬 후보 제한
 - `store_comparison.py`: 같은 기종을 점포별 레이트, 헤소 입상 품질, 보더 마진 기준으로 보조 비교하는 런타임 시나리오 로직
+- `session_accounting.py`: 전략/세션 정책 라벨, 정책 정규화, 손익 잠금/재투입 회계 helper
+- `session_runtime.py`: 시간 제한, cash cutoff, 정상 회전 초수, 스핀 캡 계산 helper
 - `simulator.py`: 순수 확률 기반 계산 및 시뮬레이션 코어 (UI 로직 없음)
+- `session_scenarios.py`: 회전율/예산/전략 매트릭스 실행 조합 빌더
 - `result.py`: 기존 `from result import ...` 경로를 보존하는 호환 export 래퍼
 - `result_printers.py`: 공개 프린터 export와 CSV 저장 안내
 - `result_basic_printers.py`: 단일 실행/반복 실행 결과 출력

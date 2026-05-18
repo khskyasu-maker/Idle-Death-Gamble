@@ -29,7 +29,10 @@ data/namba-actual-1yen-lineup.json
 pachinko-sim/stores.py
         |
         v
-pachinko-sim/machines.py
+pachinko-sim/machines.py compatibility registry
+        |
+        v
+pachinko-sim/machine_definitions/*
         |
         v
 pachinko-sim/rotation.py
@@ -41,7 +44,16 @@ pachinko-sim/start_gate.py
 pachinko-sim/time_model.py
         |
         v
+pachinko-sim/session_accounting.py
+        |
+        v
+pachinko-sim/session_runtime.py
+        |
+        v
 pachinko-sim/simulator.py
+        |
+        v
+pachinko-sim/session_scenarios.py
         |
         v
 pachinko-sim/store_comparison.py
@@ -73,7 +85,8 @@ pachinko-sim/result.py remains a compatibility export wrapper for older imports.
 Fixed real-world inputs and runtime outputs must remain separate:
 
 - fixed store lineup and border data: `data/namba-actual-1yen-lineup.json`
-- fixed machine specs and payout distributions: `machines.py`
+- fixed machine specs and payout distributions: `machine_definitions/`
+- machine registry compatibility wrapper: `machines.py`
 - reusable machine data types and family templates: `machine_types.py`, `machine_templates.py`
 - fixed public benchmark values used for model drift checks: `spec_benchmarks.py`
 - source-to-model translation rules: `SPEC_MODELING_GUIDE.md`
@@ -92,7 +105,7 @@ Loads `../data/namba-actual-1yen-lineup.json` and builds store inventory.
 Responsibilities:
 
 - map DMM/manual lineup machine names to simulator model keys
-- keep `MACHINE_NAME_TO_SIM_ID` as the active selectable subset; `machines.py`
+- keep `MACHINE_NAME_TO_SIM_ID` as the active selectable subset; `machine_definitions/`
   may retain extra reference models for deterministic spec checks
 - keep non-Eva/non-DaiUmi selectable models limited to
   `ACTIVE_OTHER_SIM_MODEL_IDS`; validation and unit tests should fail if a
@@ -106,12 +119,17 @@ This module should not contain personal visit priority or recommendation decisio
 
 ### `machines.py`
 
+Builds the `MACHINES` registry from `machine_definitions/` and preserves the
+older `from machines import MACHINES, Machine, Payout` import path.
+
+### `machine_definitions/`
+
 Defines machine specs as `Machine` objects and hit distributions as `Payout` objects.
 Use `SPEC_MODELING_GUIDE.md` before adding or promoting a model, so public
 DMM/official/source-page terms are mapped consistently into Python states.
 When multiple machines share the same game flow, put the shared construction
 logic in `machine_templates.py` and pass only the differing source/spec values
-from `machines.py`.
+from the relevant family module.
 
 Core fields:
 
@@ -268,6 +286,36 @@ Responsibilities:
 This module must not write comparison scores or visit decisions back into public
 data files.
 
+### `session_accounting.py`
+
+Keeps session policy labels, strategy labels, runtime policy normalization, and
+strategy accounting helpers outside the Monte Carlo state machine.
+
+Responsibilities:
+
+- preserve stable labels for `fixed_spin_cap`, `play_until_budget_and_balls_gone`,
+  `no_rule`, `basic_stop`, `profit_lock`, and `aggressive`
+- normalize unknown strategy/session policy input to conservative defaults
+- calculate current profit in balls from banked balls, locked balls, cash spent,
+  and lend rate
+- apply profit-lock and aggressive redeploy rules without touching machine state
+
+`simulator.py` re-exports these names for compatibility with older imports.
+
+### `session_runtime.py`
+
+Keeps small deterministic runtime calculations outside the Monte Carlo loop.
+
+Responsibilities:
+
+- convert optional minute limits into seconds, preserving the difference between
+  disabled limits and an explicit zero-minute cash cutoff
+- calculate remaining time and whether a limit is reached
+- calculate normal-play seconds per spin from net ball cost and time assumptions
+- cap planned spin counts by hard/soft time limits
+- preserve the existing cash-cutoff cap behavior when less than one full normal
+  spin remains before the cutoff
+
 ### `simulator.py`
 
 Runs Monte Carlo sessions.
@@ -369,6 +417,19 @@ Important current limitation:
 
 - exchange lot size, leftover balls, time-of-day, closing-time, and exact stop-button
   technique are still outside the model
+
+### `session_scenarios.py`
+
+Builds repeated-run scenario rows around the single-session simulator.
+
+Responsibilities:
+
+- provide legacy scenario constants for absolute spin-rate, budget, and profile
+  budget cases
+- build absolute and border-relative rotation cases
+- run rotation matrix, budget matrix, and strategy matrix batches
+- keep the older `simulator.run_*_matrix` function paths working through
+  compatibility wrappers
 
 ### `result.py` and CLI helpers
 
