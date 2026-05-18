@@ -253,7 +253,6 @@ class SimulatorSpecTests(unittest.TestCase):
         expected = {
             "hokuto_jibo",
             "re_zero_99",
-            "re_zero_s2_129",
             "lupin_77_sweet",
             "kabaneri_2",
             "tokyo_ghoul",
@@ -275,13 +274,16 @@ class SimulatorSpecTests(unittest.TestCase):
         }
         self.assertTrue(inactive_names.isdisjoint(MACHINE_NAME_TO_SIM_ID))
 
-    def test_re_zero_season2_129_is_only_selectable_for_hips_low_rate(self):
+    def test_re_zero_season2_129_is_reference_only_outside_main_sim_scope(self):
         contexts = store_contexts_for_machine("re_zero_s2_129", include_missing=True)
         installed = [context for context in contexts if context["installed"]]
 
-        self.assertEqual(["arrow_namba_hips"], [context["store_id"] for context in installed])
-        self.assertEqual([2], [context["count"] for context in installed])
-        self.assertEqual(["1yen"], [context["rate"] for context in installed])
+        self.assertEqual([], installed)
+        self.assertNotIn("re_zero_s2_129", ACTIVE_OTHER_SIM_MODEL_IDS)
+        self.assertEqual(
+            {"123_namba", "rakuen_namba"},
+            {store["store_id"] for store in STORE_INVENTORY.values()},
+        )
 
     def test_result_formatting_helpers_handle_terminal_output(self):
         table = build_ascii_table(["항목", "값"], [["기종", "e東京喰種"], ["메모", "A|B"]])

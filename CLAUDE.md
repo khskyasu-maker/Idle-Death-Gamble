@@ -280,7 +280,7 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - **`medium` confidence**: Major structure modeled but some split/reserve/provider details estimated.
 - **`low` confidence**: Rough temporary model; ranking should be capped or treated as observation only.
 - **Payout `balls`**: Practical budgeting value. When public source shows only `払出`, model uses ~93% obtained-ball approximation (conversion basis must be visible in `notes`).
-- **Selectable machines**: `MACHINE_NAME_TO_SIM_ID` in `stores.py` is the active subset; unsupported models remain in `machine_definitions/` for reference/test only.
+- **Selectable machines**: `STORE_CHOICES` in `stores.py` limits the simulator to 123難波店 and 楽園なんば店; `ACTIVE_*_SIM_MODEL_IDS` limits which modeled machines can appear there. Unsupported or out-of-scope models remain in `machine_definitions/` for reference/test only.
 
 ### Session & Strategy Semantics
 

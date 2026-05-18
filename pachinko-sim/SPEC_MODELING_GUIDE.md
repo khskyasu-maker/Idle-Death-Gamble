@@ -91,7 +91,7 @@ without inventing mechanics.
 | --- | --- | --- | --- |
 | Eva / エヴァ | V-ST, breakthrough V-ST, LT-ST, or LT 1種2種 | `eva_15_roar`, `eva_15_premium`, `eva_15_special_199`, `shin_eva_type_rei`, `shin_eva_premium_99`, `shin_eva_129_lt`, `eva_beginning` | Promote only when low-rate installation is confirmed. Use shared Eva templates when the state flow matches. `eゴジラ対エヴァンゲリオン2 超デカゴールド` stays lineup-only until its large-start/LT route is modeled explicitly. |
 | Daiumi / 海物語 | 確変ループ, ST+時短, 1種2種, LT, or non-LT upper RUSH | `sea_5`, `sea_5_special`, `sea_5_agnes`, `sea_5_black_lt`, `sea_5_black_199` | Prefer `sea_kakuhen_loop` or `sea_st_jitan` before hand-writing repeated distributions. Sea machines often need `KAKUBEN`, `JITAN`, and slower `sea_classic` time assumptions. |
-| Re:Zero / リゼロ | 1種2種 RUSH or ST-like limited RUSH | `re_zero_99`, `re_zero_199`, `re_zero_s2_129`, `re_zero_s2_349` | Use fast time assumptions; verify 3000-ball and bonus split carefully. Promote `re_zero_s2_129` only for confirmed low-rate HIPS rows unless 123/Rakuen low-rate installation is reconfirmed. |
+| Re:Zero / リゼロ | 1種2種 RUSH or ST-like limited RUSH | `re_zero_99`, `re_zero_199`, `re_zero_s2_129`, `re_zero_s2_349` | Use fast time assumptions; verify 3000-ball and bonus split carefully. Keep `re_zero_s2_129` reference-only while it is HIPS-only; promote it only if 123/Rakuen low-rate installation is reconfirmed. |
 | Hokuto / 北斗 | fall-type, battle RUSH, ST+時短 LT, or battle LT | `hokuto_jibo`, `hokuto_10` | Do not approximate fall/LT mechanics as plain ST when fall probability is public. For ST+long時短 LT, use `LT_JITAN` so low-probability time-short hits keep LT continuation rules. |
 | Other anime/battle LT | LT, upper RUSH, or charge/C-Time | `lupin_77_sweet`, `kabaneri_2`, `tokyo_ghoul` | Keep unsupported until normal probability, entry route, right distribution, LT route, and time profile are clear. Charge/C-Time models may use a combined normal denominator when public spec pages define one. |
 
@@ -391,9 +391,9 @@ python3 scripts/validate_data.py
 
 Current active other-machine policy:
 
-- Active: `hokuto_jibo`, `re_zero_99`, `re_zero_s2_129`, `lupin_77_sweet`, `kabaneri_2`, `tokyo_ghoul`
+- Active: `hokuto_jibo`, `re_zero_99`, `lupin_77_sweet`, `kabaneri_2`, `tokyo_ghoul`
 - Reference only: `re_zero_199`, `re_zero_s2_349`, `hokuto_10`
-- `re_zero_s2_129` must remain selectable only where the low-rate lineup row exists. As of the current checked data, that is HIPS 1円, not 123/Rakuen low-rate.
+- `re_zero_s2_129` remains reference-only while the confirmed low-rate row is HIPS 1円, not 123/Rakuen low-rate.
 
 ## What Not To Model Yet
 

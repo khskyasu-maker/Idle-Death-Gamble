@@ -823,6 +823,10 @@ def build_simulator_context():
         ),
         "standard_public_export": {
             "command": "python3 scripts/publish_sim_results.py",
+            "simulator_store_scope": [
+                "123難波店 1円",
+                "楽園なんば店 1.111円",
+            ],
             "output_files": [
                 "docs/latest-sim-results.json",
                 "docs/latest-sim-results.md",
@@ -841,7 +845,7 @@ def build_simulator_context():
             "strategy": "no_rule",
             "session_policy": "play_until_budget_and_balls_gone",
             "session_policy_note": "현금과 재사용 가능한 보유구슬이 모두 부족할 때까지 진행하되, 9시간 이후에는 진행 중인 우타치/RUSH 상태 종료 시 정리하고 11시간 하드 캡을 둡니다.",
-            "scope": "여행 전 가정 기반의 정제된 집계만 공개합니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다.",
+            "scope": "여행 전 가정 기반의 정제된 집계만 공개합니다. 시뮬 점포 범위는 123難波店과 楽園なんば店의 저대여 조건으로 제한하고, HIPS/마루한 나니와는 대화 중 비교·참조용으로만 둡니다. 원시 표본, 실제 플레이 기록, 방문 지시, 개인 지출은 포함하지 않습니다.",
         },
         "default_assumptions": {
             "exchange_rate_yen_per_ball": 0.89,
@@ -958,6 +962,7 @@ def build_simulator_context_markdown():
     md += f"- AI 정본: `{public_export['canonical_ai_file']}`\n"
     md += f"- 해설용 요약: `{public_export['summary_ai_file']}`\n"
     md += f"- 브라우저 표시: `{public_export['browser_file']}`\n"
+    md += f"- 시뮬 점포 범위: `{', '.join(public_export['simulator_store_scope'])}`\n"
     md += f"- 예산 케이스: `{public_export['budgets_yen']}`엔\n"
     md += f"- 행별 반복: `{public_export['iterations_per_row']}`회\n"
     md += f"- 회전 가정: `{public_export['rotation_basis']}`\n"

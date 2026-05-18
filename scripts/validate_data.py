@@ -717,7 +717,6 @@ def validate_simulator_lineup(errors, warnings):
     expected_active_other = {
         "hokuto_jibo",
         "re_zero_99",
-        "re_zero_s2_129",
         "lupin_77_sweet",
         "kabaneri_2",
         "tokyo_ghoul",
@@ -743,6 +742,18 @@ def validate_simulator_lineup(errors, warnings):
             errors,
             "pachinko-sim/stores.py.ACTIVE_EVA_SIM_MODEL_IDS",
             f"active Eva simulator subset must stay {sorted(expected_active_eva)}.",
+        )
+
+    expected_sim_store_ids = {"123_namba", "rakuen_namba"}
+    actual_sim_store_ids = {
+        store.get("store_id", "")
+        for store in STORE_INVENTORY.values()
+    }
+    if actual_sim_store_ids != expected_sim_store_ids:
+        add_issue(
+            errors,
+            "pachinko-sim/stores.py.STORE_INVENTORY",
+            "simulator store scope must stay limited to 123_namba and rakuen_namba.",
         )
 
     for choice, store in STORE_INVENTORY.items():

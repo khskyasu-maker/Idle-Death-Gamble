@@ -41,7 +41,7 @@ CATEGORY_LABELS = {
     "other": "기타",
 }
 CATEGORY_ORDER = {"대해물어": 0, "에바": 1, "기타": 2}
-STORE_ORDER = {"123_namba": 0, "arrow_namba_hips": 1, "rakuen_namba": 2}
+STORE_ORDER = {"123_namba": 0, "rakuen_namba": 1}
 
 
 def parse_budgets(value: str) -> list[int]:

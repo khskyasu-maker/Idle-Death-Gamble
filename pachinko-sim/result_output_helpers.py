@@ -117,7 +117,8 @@ def theoretical_no_hit_rate_from_results(probability_denominator: float, results
 
 def simulation_scope_note() -> str:
     return (
-        "시뮬 기준: 기종 스펙 + 실제/가정 회전수 + 예산 + 중단 규칙. "
+        "시뮬 점포 범위: 123難波店 1円, 楽園なんば店 1.111円 저대여. "
+        "기준: 기종 스펙 + 실제/가정 회전수 + 예산 + 중단 규칙. "
         "점포 정보는 레이트, 설치 대수, 보더 환산을 위한 보조 조건입니다."
     )
 

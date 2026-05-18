@@ -182,6 +182,7 @@ The normal data and report pipeline is:
 
 - `data/namba-actual-1yen-lineup.json` stores objective lineup/spec/border fields only.
 - `pachinko-sim/stores.py` may derive simulator-only fields such as supported models, temporary categories, risk labels, and keep/quit guidance at runtime.
+- Local simulator store choices are limited to 123難波店 1円 and 楽園なんば店 1.111円. ARROW namBa HIPS and 마루한 나니와 are comparison/reference stores only and must not become simulator store choices unless the project scope is intentionally changed.
 - Keep fixed real-world data separate from simulation assumptions and results. Machine counts, public specs, rates, and borderlines are constants; CLI inputs, strategy settings, sampled outcomes, and comparison scores are runtime data.
 - Use shared helpers such as `pachinko-sim/machine_traits.py` for LT and non-LT upper-RUSH detection instead of reimplementing those checks in output code.
 - Treat `spins_per_1000y` as an expected field observation. The simulator may sample realized start spins through `pachinko-sim/start_gate.py`; do not convert sampled outcomes back into fixed border or lineup data.
@@ -294,7 +295,7 @@ Current scope:
 
 - P-WORLD/DMM/minpachi links are used only for store links, basic status, machine-installation hints, business-hour hints, and notice confirmation.
 - Corrected Namba low-rate 機種情報 (machine/spec info) lives in `data/namba-actual-1yen-lineup.json`.
-- `data/namba-actual-1yen-lineup.json` is a low-rate file. Do not mix 4円 machines into it; Rakuen rows use `1.111yen`, while 123 Namba and ARROW namBa HIPS rows use `1yen`.
+- `data/namba-actual-1yen-lineup.json` is a low-rate file. Do not mix 4円 machines into it; Rakuen rows use `1.111yen`, while 123 Namba and ARROW namBa HIPS rows use `1yen`. Simulator selection remains limited to 123 Namba and Rakuen rows; HIPS rows are report/reference context.
 - The report uses manually checked fields such as store, machine name, 1円(1엔) status, category, 初当り確率(초당첨 확률), RUSH(러시) type, RUSH突入率(러시 진입률), RUSH継続率(러시 계속률), payout feature, source type, checked date, and memo.
 - 台番号(기기 번호)별 大当り(대당첨), 総回転(총 회전수), 差玉(구슬 수 증감), and スランプグラフ(구슬 수 추이 그래프) are out of scope.
 - App-only provider crawling, login/session handling, VPN-dependent scraping, and jackpot/payout prediction are out of scope.

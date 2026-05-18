@@ -6,17 +6,10 @@ from machines import MACHINES
 
 DATA_FILE = Path(__file__).resolve().parents[1] / "data" / "namba-actual-1yen-lineup.json"
 
+SIMULATION_STORE_IDS = ("123_namba", "rakuen_namba")
+
 STORE_CHOICES = {
     "1": {
-        "store_id": "rakuen_namba",
-        "name": "라쿠엔 난바점 (楽園なんば店)",
-        "rental_rate_label": "1.111パチ (100円/90玉)",
-        "rental_rate": 1.111,
-        "source_url": "https://p-town.dmm.com/shops/osaka/12558",
-        "dmm_low_rate_total_count": 170,
-        "lineup_scope": "DMM 1.111円パチ 중 로컬 수동 후보",
-    },
-    "2": {
         "store_id": "123_namba",
         "name": "123 난바점 (123難波店)",
         "rental_rate_label": "1円パチ (1円/1玉)",
@@ -25,14 +18,14 @@ STORE_CHOICES = {
         "dmm_low_rate_total_count": 179,
         "lineup_scope": "DMM 1円パチ 중 로컬 수동 후보",
     },
-    "3": {
-        "store_id": "arrow_namba_hips",
-        "name": "ARROW namBa HIPS",
-        "rental_rate_label": "1円パチ (1円/1玉)",
-        "rental_rate": 1.0,
-        "source_url": "https://p-town.dmm.com/shops/osaka/7579",
-        "dmm_low_rate_total_count": 136,
-        "lineup_scope": "DMM 1円パチ 중 로컬 수동 후보",
+    "2": {
+        "store_id": "rakuen_namba",
+        "name": "라쿠엔 난바점 (楽園なんば店)",
+        "rental_rate_label": "1.111パチ (100円/90玉)",
+        "rental_rate": 1.111,
+        "source_url": "https://p-town.dmm.com/shops/osaka/12558",
+        "dmm_low_rate_total_count": 170,
+        "lineup_scope": "DMM 1.111円パチ 중 로컬 수동 후보",
     },
 }
 
@@ -42,12 +35,11 @@ STORE_SHORT_LABELS = {
     "arrow_namba_hips": "HIPS",
 }
 
-STORE_ORDER = ("rakuen_namba", "123_namba", "arrow_namba_hips")
+STORE_ORDER = SIMULATION_STORE_IDS
 
 ACTIVE_OTHER_SIM_MODEL_IDS = {
     "hokuto_jibo",
     "re_zero_99",
-    "re_zero_s2_129",
     "lupin_77_sweet",
     "kabaneri_2",
     "tokyo_ghoul",
@@ -106,6 +98,8 @@ def store_short_label(store_id: str) -> str:
 def build_machine_placements(actual_machines: list[dict]) -> dict:
     placements = {}
     for row in actual_machines:
+        if row.get("store_id") not in SIMULATION_STORE_IDS:
+            continue
         sim_id = MACHINE_NAME_TO_SIM_ID.get(row.get("machine_name", ""))
         if not sim_id or sim_id not in MACHINES:
             continue

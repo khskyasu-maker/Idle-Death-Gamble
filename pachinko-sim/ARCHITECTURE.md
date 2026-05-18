@@ -113,6 +113,8 @@ Loads `../data/namba-actual-1yen-lineup.json` and builds store inventory.
 
 Responsibilities:
 
+- keep simulator store scope limited to 123難波店 1円 and 楽園なんば店
+  1.111円; HIPS and 마루한 나니와 stay comparison/reference context only
 - map DMM/manual lineup machine names to simulator model keys
 - keep `MACHINE_NAME_TO_SIM_ID` as the active selectable subset; `machine_definitions/`
   may retain extra reference models for deterministic spec checks
