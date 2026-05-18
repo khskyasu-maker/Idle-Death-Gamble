@@ -15,6 +15,12 @@ from result_output_helpers import denominator_tail_rows  # noqa: E402
 from rotation import rotation_reality_label  # noqa: E402
 from session_limits import SESSION_TIME_LIMIT_HOURS  # noqa: E402
 from session_sampling import effective_support_spins, sample_right_spend_balls  # noqa: E402
+from session_transitions import (  # noqa: E402
+    hit_distribution_for_state,
+    jitan_state_after_support,
+    support_spins_for_state,
+    support_window_for_payout,
+)
 from simulator import (  # noqa: E402
     run_budget_matrix,
     sample_payout_balls,
@@ -134,6 +140,22 @@ class SimulatorSessionTests(unittest.TestCase):
         self.assertAlmostEqual(expected_avg_hits, metrics["avg_hits"], delta=0.20)
         self.assertAlmostEqual(expected_hit_rate, metrics["hit_rate"], delta=1.0)
         self.assertAlmostEqual(metrics["avg_hits"] * 1000, metrics["avg_total_out_balls"], delta=250)
+
+    def test_transition_helpers_apply_support_windows_and_distribution_mapping(self):
+        machine = MACHINES["sea_5_agnes"]
+        payout = Payout(balls=550, weight=1.0, next_state="ST", st_spins=5, jitan_spins=95)
+
+        window = support_window_for_payout(machine, payout)
+
+        self.assertEqual("ST", window.state)
+        self.assertEqual(5, window.spins_left)
+        self.assertEqual(93, window.jitan_reserve)
+        self.assertEqual(98, support_spins_for_state(machine, "ST", 100))
+        self.assertEqual("LT_JITAN", jitan_state_after_support("LT"))
+        self.assertEqual("UPPER_JITAN", jitan_state_after_support("UPPER"))
+        self.assertEqual("JITAN", jitan_state_after_support("ST"))
+        self.assertIs(machine.normal_hit_dist, hit_distribution_for_state(machine, "NORMAL"))
+        self.assertIs(machine.st_hit_dist, hit_distribution_for_state(machine, "ST"))
 
     def test_basic_stop_uses_probe_rotation_and_charges_failed_probe(self):
         slow_machine = Machine(

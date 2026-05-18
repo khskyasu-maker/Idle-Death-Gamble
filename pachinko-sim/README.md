@@ -69,6 +69,7 @@ python3 scripts/clean.py --apply
 - `session_accounting.py`: 전략/세션 정책 라벨, 정책 정규화, 손익 잠금/재투입 회계 helper
 - `session_runtime.py`: 시간 제한, cash cutoff, 정상 회전 초수, 스핀 캡 계산 helper
 - `session_sampling.py`: 당첨 라벨, payout 추첨, payout 변동, 독립 시행 hit wait sampling helper
+- `session_transitions.py`: payout 이후 상태 전이, 지원 회전수, 잔보류/時短(시단) 상태 매핑 helper
 - `session_setup.py`: 세션 시작 회전율 표본, 시작확률, stop-loss probe, normal spin cap 계산 helper
 - `session_events.py`: 단일 실행 중 hit event 기록 딕셔너리 생성 helper
 - `session_result.py`: 단일 실행 종료 후 공개/CLI 공통 결과 딕셔너리 조립 helper

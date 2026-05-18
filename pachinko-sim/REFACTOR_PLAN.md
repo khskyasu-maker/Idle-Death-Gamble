@@ -100,6 +100,7 @@ pachinko-sim/
 ├── rotation.py          # 회전율/보더/단위 환산
 ├── session_scenarios.py # 단일/매트릭스/예산/전략 시나리오 빌더
 ├── session_sampling.py  # 당첨 라벨, payout 추첨, hit wait sampling
+├── session_transitions.py # payout 이후 지원 회전/상태 전이 helper
 ├── session_setup.py     # 시작 회전율/시작확률/stop-loss probe 계산
 ├── result_metrics.py    # calculate_metrics, 신뢰구간, 조건부 플러스 통계
 ├── result_output_helpers.py # 출력 문구, 보더/스펙 비교, 표 행 보조
@@ -317,7 +318,8 @@ CLI에는 회전율 입력 모드를 추가한다.
 - 완료: 단일 실행 요약/event/구슬 그래프 행 생성을 `result_single_table_builders.py`로 분리
 - 완료: `result_table_builders.py`의 반복/매트릭스/프로파일/전략 행 생성을 `result_repeated_table_builders.py`, `result_matrix_table_builders.py`, `result_profile_table_builders.py`, `result_strategy_table_builders.py`로 분리
 - 완료: `simulator.py`의 hit event 생성과 최종 result 딕셔너리 조립을 `session_events.py`, `session_result.py`로 분리
-- 남음: `simulator.py`의 상태 전이 세부 처리 추가 축소
+- 완료: payout 이후 지원 회전수/잔보류 상태 매핑과 상태별 hit distribution 선택을 `session_transitions.py`로 분리
+- 남음: `simulator.py`의 메인 루프 안에 남아 있는 NORMAL/ST/時短(시단)/転落(전락) 진행 절차 추가 축소
 
 ### 1단계: 회전율/보더 모듈 추가
 

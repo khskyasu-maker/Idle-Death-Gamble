@@ -163,7 +163,7 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - **`Payout`**: nominal balls won, weight, next state transition, optional jitan/lt entry counts.
 - **`RotationEstimate`** (rotation.py): preserves input basis (1000円, 200玉, 250玉, observed cash, border margin) so output can explain conversion.
 - **Stores** (stores.py): Maps DMM lineup → simulator machine IDs, tracks installed/unsupported machines, converts borders to `spins_per_1000yen`.
-- **Session** (`simulator.py` + `session_accounting.py` + `session_runtime.py` + `session_sampling.py` + `session_setup.py`): Monte Carlo state, cash budget, rented balls, card reuse, exchange rate, 9-hour soft stop, 11-hour hard cap, strategy accounting, stochastic sampling helpers, and initial spin setup.
+- **Session** (`simulator.py` + `session_accounting.py` + `session_runtime.py` + `session_sampling.py` + `session_transitions.py` + `session_setup.py`): Monte Carlo state, cash budget, rented balls, card reuse, exchange rate, 9-hour soft stop, 11-hour hard cap, strategy accounting, stochastic sampling helpers, state transition helpers, and initial spin setup.
 
 **Important Simulator Constraints**:
 - Borderline does NOT change jackpot probability. It only bounds the table-quality rotation distribution and indexes default scenario cases (e.g., `보더-5/±0/+5`).
@@ -218,6 +218,7 @@ cli_modes.py + cli_export.py (interactive mode orchestration, explicit public ex
 - **`session_accounting.py`**: Strategy names, policy names, profit conversion, and lock/exit rules.
 - **`session_runtime.py`**: Session time-limit conversion and spin capping helpers.
 - **`session_sampling.py`**: Hit labels, payout sampling, payout variance, and geometric hit-wait helpers.
+- **`session_transitions.py`**: State transition support-window calculation, residual 時短(시단) state mapping, and state-to-hit-distribution lookup.
 - **`session_setup.py`**: Initial session rotation sampling, start probability, stop-loss probe, and normal-spin cap helpers.
 - **`session_scenarios.py`**: Rotation, budget, and strategy matrix builders. `simulator.py` keeps wrappers for legacy imports.
 - **`simulator.py`**: Monte Carlo engine and state machine (NORMAL, ST, JITAN, KAKUBEN, LT, UPPER, JINBEE, etc.).

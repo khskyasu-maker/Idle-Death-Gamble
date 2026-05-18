@@ -53,6 +53,9 @@ pachinko-sim/session_runtime.py
 pachinko-sim/session_sampling.py
         |
         v
+pachinko-sim/session_transitions.py
+        |
+        v
 pachinko-sim/session_setup.py
         |
         v
@@ -99,6 +102,7 @@ Fixed real-world inputs and runtime outputs must remain separate:
 - runtime session assumptions: CLI inputs, strategy settings, `spins_per_1000y`, budget, exchange rate
 - runtime time assumptions: launch speed, display seconds per start, right-side seconds per spin, payout/effect time
 - runtime stochastic helpers: independent hit wait sampling, payout selection, and payout variance in `session_sampling.py`
+- runtime state-transition helpers: support-window calculation, residual 時短(시단) mapping, and state-to-hit-distribution lookup in `session_transitions.py`
 - runtime session-start setup: rotation sample, start probability, stop-loss probe, and normal-spin cap in `session_setup.py`
 - runtime event/result shaping: hit event dictionaries in `session_events.py` and final session result dictionaries in `session_result.py`
 - runtime statistical output: `result_metrics.py` metrics, optional latest-only gitignored `results.csv`, and optional latest-only sanitized `docs/latest-sim-results.*`
@@ -341,6 +345,19 @@ Responsibilities:
   denominator
 - provide `jitan_denominator` for 時短(시단) states that fall back to normal
   probability when a machine has no separate `jitan_prob`
+
+### `session_transitions.py`
+
+Keeps deterministic state-transition helper rules outside the Monte Carlo loop.
+
+Responsibilities:
+
+- map `Payout.next_state` plus ST/時短(시단) counts into the active support
+  window consumed by `simulator.py`
+- apply coarse `support_spin_efficiency` consistently when a state receives
+  right-side support spins
+- map ST/LT/upper-RUSH states into their residual 時短(시단) states
+- select the hit distribution that belongs to the current simulator state
 
 ### `session_setup.py`
 

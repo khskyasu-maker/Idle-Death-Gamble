@@ -11,13 +11,18 @@ from session_accounting import (
 )
 from session_sampling import (
     HIT_LABELS,  # noqa: F401
-    effective_support_spins,
     get_payout,
     jitan_denominator,
     sample_hit_effect_seconds,
     sample_payout_balls,
     sample_right_spend_balls,
     spins_until_hit,
+)
+from session_transitions import (
+    hit_distribution_for_state,
+    jitan_state_after_support,
+    support_spins_for_state,
+    support_window_for_payout,
 )
 from session_events import build_hit_event
 from session_result import build_session_result
@@ -212,18 +217,6 @@ def simulate_single(
         seconds = right_seconds(state_name, spin_count, time_assumptions)
         right_play_seconds += seconds
         cashless_play_seconds += seconds
-
-    def support_spins(state_name: str, spin_count: int) -> int:
-        return effective_support_spins(machine, state_name, spin_count)
-
-    def reserve_state_for(state_name: str) -> str:
-        if state_name == 'LT':
-            return 'LT_JITAN'
-        if state_name == 'UPPER':
-            return 'UPPER_JITAN'
-        if state_name == 'JINBEE':
-            return 'JINBEE_JITAN'
-        return 'JITAN'
 
     def take_right_spins(state_name: str, spin_count: int) -> tuple[int, bool]:
         nonlocal bank_balls, right_spins, right_balls_spent
@@ -426,19 +419,10 @@ def simulate_single(
                 payout = get_payout(machine.normal_support_dist)
                 support_event_seconds += time_assumptions.normal_support_event_seconds
                 cashless_play_seconds += time_assumptions.normal_support_event_seconds
-                state = payout.next_state
-                if state in ['ST', 'LT', 'UPPER']:
-                    spins_left = support_spins(state, payout.st_spins)
-                    jitan_reserve = support_spins(reserve_state_for(state), payout.jitan_spins)
-                elif state in ['JITAN', 'UPPER_JITAN', 'JINBEE_JITAN']:
-                    spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
-                    jitan_reserve = 0
-                elif state in ['KAKUBEN', 'JINBEE']:
-                    spins_left = 0
-                    jitan_reserve = 0
-                else:
-                    spins_left = 0
-                    jitan_reserve = 0
+                support_window = support_window_for_payout(machine, payout)
+                state = support_window.state
+                spins_left = support_window.spins_left
+                jitan_reserve = support_window.jitan_reserve
                 continue
 
         if state in ['ST', 'LT', 'UPPER']:
@@ -457,8 +441,11 @@ def simulate_single(
                     if limited_by_time and right_spins_to_take < wait_to_fall:
                         break
 
-                    reserve_spins = machine.fall_reserve_spins.get(state, 0)
-                    reserve_spins = support_spins(state, reserve_spins)
+                    reserve_spins = support_spins_for_state(
+                        machine,
+                        state,
+                        machine.fall_reserve_spins.get(state, 0),
+                    )
                     if reserve_spins <= 0:
                         state = 'NORMAL'
                         streak = 0
@@ -486,12 +473,7 @@ def simulate_single(
                     continue
             else:
                 if jitan_reserve > 0:
-                    if state == 'LT':
-                        state = 'LT_JITAN'
-                    elif state == 'UPPER':
-                        state = 'UPPER_JITAN'
-                    else:
-                        state = 'JITAN'
+                    state = jitan_state_after_support(state)
                     spins_left = jitan_reserve
                     jitan_reserve = 0
                     continue # 이번 턴은 당첨 추첨 없이 상태 전환만 처리
@@ -540,22 +522,7 @@ def simulate_single(
                 max_streak = streak
 
             # 출옥 및 다음 상태 결정
-            if state == 'NORMAL':
-                payout = get_payout(machine.normal_hit_dist)
-            elif state == 'ST':
-                payout = get_payout(machine.st_hit_dist)
-            elif state == 'JITAN':
-                payout = get_payout(machine.jitan_hit_dist)
-            elif state == 'LT_JITAN':
-                payout = get_payout(machine.lt_hit_dist)
-            elif state == 'KAKUBEN':
-                payout = get_payout(machine.kakuben_hit_dist)
-            elif state == 'LT':
-                payout = get_payout(machine.lt_hit_dist)
-            elif state in ['UPPER', 'UPPER_JITAN']:
-                payout = get_payout(machine.upper_hit_dist)
-            elif state in ['JINBEE', 'JINBEE_JITAN']:
-                payout = get_payout(machine.jinbee_hit_dist)
+            payout = get_payout(hit_distribution_for_state(machine, state))
 
             previous_state = state
             payout_balls = sample_payout_balls(payout)
@@ -569,7 +536,8 @@ def simulate_single(
             cashless_play_seconds += hit_seconds
 
             # 다음 상태 전이 반영
-            state = payout.next_state
+            support_window = support_window_for_payout(machine, payout)
+            state = support_window.state
             rush_entry_event = False
             lt_entry_event = False
             upper_entry_event = False
@@ -582,42 +550,26 @@ def simulate_single(
                 if state == 'UPPER' and previous_state not in ['UPPER', 'UPPER_JITAN']:
                     upper_entries += 1
                     upper_entry_event = True
-                spins_left = support_spins(state, payout.st_spins)
-                jitan_reserve = support_spins(reserve_state_for(state), payout.jitan_spins)
-            elif state == 'JITAN':
-                spins_left = support_spins(state, payout.jitan_spins)
-                jitan_reserve = 0
-            elif state == 'LT_JITAN':
-                spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
-                jitan_reserve = 0
-            elif state == 'UPPER_JITAN':
-                spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
-                jitan_reserve = 0
             elif state == 'KAKUBEN':
                 if payout.counts_as_rush and not rush_active:
                     rush_entries += 1
                     rush_entry_event = True
                     rush_active = True
-                spins_left = 0
-                jitan_reserve = 0
             elif state == 'JINBEE':
                 if payout.counts_as_rush and not rush_active:
                     rush_entries += 1
                     rush_entry_event = True
                     rush_active = True
-                spins_left = 0
-                jitan_reserve = 0
             elif state == 'JINBEE_JITAN':
                 if payout.counts_as_rush and not rush_active:
                     rush_entries += 1
                     rush_entry_event = True
                     rush_active = True
-                spins_left = support_spins(state, payout.jitan_spins or payout.st_spins)
-                jitan_reserve = 0
             elif state == 'NORMAL':
-                spins_left = 0
-                jitan_reserve = 0
                 rush_active = False
+
+            spins_left = support_window.spins_left
+            jitan_reserve = support_window.jitan_reserve
 
             # LT 플래그는 진입 횟수 집계용입니다. 일부 기종의 LT는 별도
             # 전サポ 상태가 아니라 대량 출옥 보너스 후 RUSH로 복귀합니다.
