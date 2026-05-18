@@ -88,7 +88,7 @@ without inventing mechanics.
 
 | Family | Category to check first | Local examples | Notes |
 | --- | --- | --- | --- |
-| Eva / エヴァ | V-ST, breakthrough V-ST, LT-ST, or LT 1種2種 | `eva_15_roar`, `eva_15_premium`, `shin_eva_type_rei`, `shin_eva_premium_99`, `shin_eva_129_lt`, `eva_beginning` | Promote only when low-rate installation is confirmed. Use shared Eva templates when the state flow matches. |
+| Eva / エヴァ | V-ST, breakthrough V-ST, LT-ST, or LT 1種2種 | `eva_15_roar`, `eva_15_premium`, `eva_15_special_199`, `shin_eva_type_rei`, `shin_eva_premium_99`, `shin_eva_129_lt`, `eva_beginning` | Promote only when low-rate installation is confirmed. Use shared Eva templates when the state flow matches. `eゴジラ対エヴァンゲリオン2 超デカゴールド` stays lineup-only until its large-start/LT route is modeled explicitly. |
 | Daiumi / 海物語 | 確変ループ, ST+時短, 1種2種, LT, or non-LT upper RUSH | `sea_5`, `sea_5_special`, `sea_5_agnes`, `sea_5_black_lt`, `sea_5_black_199` | Prefer `sea_kakuhen_loop` or `sea_st_jitan` before hand-writing repeated distributions. Sea machines often need `KAKUBEN`, `JITAN`, and slower `sea_classic` time assumptions. |
 | Re:Zero / リゼロ | 1種2種 RUSH or ST-like limited RUSH | `re_zero_99`, `re_zero_199`, `re_zero_s2_129`, `re_zero_s2_349` | Use fast time assumptions; verify 3000-ball and bonus split carefully. Promote `re_zero_s2_129` only for confirmed low-rate HIPS rows unless 123/Rakuen low-rate installation is reconfirmed. |
 | Hokuto / 北斗 | fall-type, battle RUSH, ST+時短 LT, or battle LT | `hokuto_jibo`, `hokuto_10` | Do not approximate fall/LT mechanics as plain ST when fall probability is public. For ST+long時短 LT, use `LT_JITAN` so low-probability time-short hits keep LT continuation rules. |

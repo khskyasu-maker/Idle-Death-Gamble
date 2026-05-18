@@ -48,6 +48,7 @@ from session_limits import SESSION_TIME_LIMIT_HOURS  # noqa: E402
 from spec_benchmarks import PUBLIC_BENCHMARKS  # noqa: E402
 from start_gate import estimate_rate_from_observed_spins, sample_session_spin_rate  # noqa: E402
 from stores import (  # noqa: E402
+    ACTIVE_EVA_SIM_MODEL_IDS,
     ACTIVE_OTHER_SIM_MODEL_IDS,
     MACHINE_NAME_TO_SIM_ID,
     STORE_INVENTORY,
@@ -435,6 +436,34 @@ class SimulatorSpecTests(unittest.TestCase):
         self.assertIn("추천 순위가 아니라", store_auxiliary_note())
         self.assertIn("보조 분석", store_auxiliary_note())
         self.assertIn("점포 자체 평가가 아니라", store_comparison_assumption_text("border_margin"))
+
+    def test_active_eva_lineup_policy_is_explicit(self):
+        expected_active_eva = {
+            "eva_15_roar",
+            "eva_15_premium",
+            "eva_15_special_199",
+            "shin_eva_type_rei",
+            "shin_eva_premium_99",
+            "shin_eva_129_lt",
+            "eva_beginning",
+        }
+        self.assertEqual(expected_active_eva, set(ACTIVE_EVA_SIM_MODEL_IDS))
+
+        supported_eva_ids = {
+            row["id"]
+            for store in STORE_INVENTORY.values()
+            for row in store["machines"]
+            if row.get("lineup_category") == "eva"
+        }
+        self.assertTrue(supported_eva_ids <= expected_active_eva)
+
+        unsupported_eva_names = {
+            row["machine_name"]
+            for store in STORE_INVENTORY.values()
+            for row in store["unsupported_machines"]
+            if row.get("lineup_category") == "eva"
+        }
+        self.assertEqual({"eゴジラ対エヴァンゲリオン2 超デカゴールド"}, unsupported_eva_names)
 
     def test_shinsea_support_time_is_not_counted_as_a_jackpot(self):
         shinsea = MACHINES["shinsea_99"]

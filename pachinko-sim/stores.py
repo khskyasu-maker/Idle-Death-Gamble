@@ -53,6 +53,16 @@ ACTIVE_OTHER_SIM_MODEL_IDS = {
     "tokyo_ghoul",
 }
 
+ACTIVE_EVA_SIM_MODEL_IDS = {
+    "eva_15_roar",
+    "eva_15_premium",
+    "eva_15_special_199",
+    "shin_eva_type_rei",
+    "shin_eva_premium_99",
+    "shin_eva_129_lt",
+    "eva_beginning",
+}
+
 # Only names in this map become selectable simulator models from the current
 # store lineup. Extra reference models may remain in machines.py for spec checks.
 MACHINE_NAME_TO_SIM_ID = {
